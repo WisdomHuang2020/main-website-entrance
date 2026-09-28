@@ -99,7 +99,7 @@ export default function App() {
             </span>
 
             <h1 className="mt-8 text-[2.75rem] leading-[1.06] font-bold tracking-[-0.03em] text-balance sm:text-6xl lg:text-7xl">
-              一个入口，
+              一个入口
               <br className="hidden sm:block" />
               <span className="text-gradient">直达全部工程工具</span>
             </h1>
