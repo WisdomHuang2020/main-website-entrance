@@ -16,6 +16,16 @@ export default function Footer() {
             本页仅作入口导航。各工具的计算口径、假设、适用边界与免责声明，以对应站点内的说明为准
             —— 本站不对任何第三方引用或据此作出的工程决策负责。
           </p>
+          {/* ICP 备案号：工信部要求网站底部展示并链接至工信部官网。
+              置于页脚左下角 —— 桌面端落在左列底部，移动端随左列自然下移。 */}
+          <a
+            href="https://beian.miit.gov.cn/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 inline-block text-xs text-text-muted transition-colors hover:text-text-secondary"
+          >
+            苏ICP备2026073104号
+          </a>
         </div>
 
         <div className="text-xs text-text-muted md:text-right">
