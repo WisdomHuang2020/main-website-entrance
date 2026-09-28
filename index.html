@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <!--
+      favicon 指向 public/favicon.svg（Vite 会原样拷进 dist 根目录）。
+      勿改成 /vite.svg —— 本仓库没有那个文件，线上会恒 404。
+    -->
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Power Knowledge · 电源与光学工程工具入口</title>
+    <meta
+      name="description"
+      content="电源、光学与电气工程在线计算工具的入口页：LLC 谐振变换器、交错并联 Boost PFC、AHB 不对称半桥反激、光学照度与棱镜设计、电源与照明工程计算器。全部为纯前端工具，输入数据不上传服务器。"
+    />
+    <meta name="theme-color" content="#0a0a0a" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

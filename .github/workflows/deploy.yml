@@ -1,0 +1,64 @@
+name: Deploy to GitHub Pages
+
+# 兜底通道：https://wisdomhuang2020.github.io/main-website-entrance/
+# 与 deploy-lighthouse.yml（正式域名 https://power-knowledge.tech/）**并行独立**，
+# 两者互不阻塞、各自可达。
+#
+# 保留这条链路的理由：正式域名的 TLS 握手对境外客户端存在间歇性中断
+# （姊妹项目 interleaved-pfc 有实测取证），Pages 可作为境外可达性的备份入口。
+#
+# 由于 vite.config.ts 设为 `base: './'`，同一份 dist 在根路径与 /main-website-entrance/
+# 子路径下都能正确解析资源 —— 这一点在改 vite 配置时必须守住，否则 Pages 会整站白屏。
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify version single-source
+        run: npm run verify:version
+
+      # 本站不设 Lint 步：package.json 未声明 lint 脚本，也未安装 eslint 工具链；
+      # 类型检查由 Build 步的 `tsc --noEmit` 承担。
+      - name: Build
+        run: npm run build
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

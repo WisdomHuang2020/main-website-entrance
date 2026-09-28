@@ -1,0 +1,82 @@
+[
+  {
+    "id": "llc",
+    "name": "LLC 谐振变换器设计工具",
+    "subtitle": "LLC Resonant Converter Designer",
+    "domain": "llc.power-knowledge.tech",
+    "url": "https://llc.power-knowledge.tech/",
+    "desc": "由 Vin / Vout / Pout 规格出发，完成谐振腔参数（n、Lr、Cr、Lm、Q、k）设计并给出 ZVS 裕量与电流应力；另含谐振基础、工作原理、FHA 公式推导与可交互特性曲线，可导出工程报告。",
+    "tags": [
+      "谐振基础",
+      "参数设计",
+      "报告导出"
+    ],
+    "accent": "#0f766e",
+    "icon": "activity",
+    "version": "2.10.79"
+  },
+  {
+    "id": "interleavedpfc",
+    "name": "交错并联 Boost PFC 设计工具",
+    "subtitle": "Interleaved Boost PFC Designer",
+    "domain": "interleavedpfc.power-knowledge.tech",
+    "url": "https://interleavedpfc.power-knowledge.tech/",
+    "desc": "交错并联 Boost PFC 的完整设计路径：基本概念与器件作用、工作阶段划分（逐阶段给出各器件的电流电压）、交错导通实时演示，以及关键设计参数计算。",
+    "tags": [
+      "交错导通",
+      "工作阶段",
+      "参数设计"
+    ],
+    "accent": "#2563eb",
+    "icon": "waves",
+    "version": "0.4.1"
+  },
+  {
+    "id": "ahb",
+    "name": "AHB 不对称半桥反激设计工具",
+    "subtitle": "Asymmetric Half-Bridge Flyback Designer",
+    "domain": "ahb.power-knowledge.tech",
+    "url": "https://ahb.power-knowledge.tech/",
+    "desc": "不对称半桥反激的原理拆解与设计计算：工作模态、公式推导、特性曲线，并可由设计条件算出参数、生成工程报告。",
+    "tags": [
+      "工作模态",
+      "公式推导",
+      "设计报告"
+    ],
+    "accent": "#0f766e",
+    "icon": "zap",
+    "version": "1.6.1"
+  },
+  {
+    "id": "optical",
+    "name": "光学概念和光学设计",
+    "subtitle": "Optics & Illuminance Design",
+    "domain": "optical.power-knowledge.tech",
+    "url": "https://optical.power-knowledge.tech/",
+    "desc": "照度推算、立体角可视化、棱镜板参数化设计与最优设计方法，配套公式推导、棱镜原理与材料参考。",
+    "tags": [
+      "照度计算",
+      "立体角",
+      "棱镜设计"
+    ],
+    "accent": "#14b8a6",
+    "icon": "lightbulb",
+    "version": "3.11.3"
+  },
+  {
+    "id": "widget",
+    "name": "电源与照明工程计算器",
+    "subtitle": "Power Widget · Engineering Calculators",
+    "domain": "widget.power-knowledge.tech",
+    "url": "https://widget.power-knowledge.tech/",
+    "desc": "面向 LED 驱动与锂电池应用的工程估算集合：切相调压后的电压有效值、锂电池综合续航与实际充电时间。每个工具都写明公式、假设与偏差方向。",
+    "tags": [
+      "切相调压",
+      "电池续航",
+      "公式可溯"
+    ],
+    "accent": "#0e7490",
+    "icon": "calculator",
+    "version": "1.3.1"
+  }
+]

@@ -1,0 +1,29 @@
+{
+  "name": "main-website-entrance",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "power-knowledge.tech 站群入口门户",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "verify:version": "node scripts/verify-version.mjs",
+    "check:versions": "node scripts/check-versions.mjs"
+  },
+  "dependencies": {
+    "lucide-react": "^0.487.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.1",
+    "@types/node": "^22.14.0",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^4.3.4",
+    "tailwindcss": "^4.0.17",
+    "typescript": "~5.7.2",
+    "vite": "^6.2.0"
+  }
+}

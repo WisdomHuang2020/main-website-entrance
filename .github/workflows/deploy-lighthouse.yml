@@ -1,0 +1,201 @@
+name: Deploy to Tencent Lighthouse
+
+# ═══ 正式通道：发布到自有域名 https://power-knowledge.tech/ ═══
+#
+# 目标机：43.142.148.37（lhins-6i7vay90 / wisdom2026，ap-shanghai）
+# web 根：/var/www/entrance        ← 必须与 nginx 的 `root` 完全一致
+# 属主：  www-data
+#
+# ⚠️ 与其它四个子站同机共用。本工作流只允许写 /var/www/entrance 这一个目录，
+#    绝不触碰 /etc/nginx 或其它站的 web 根。
+#    nginx 的 server 块（server_name power-knowledge.tech www.power-knowledge.tech）
+#    需在服务器侧一次性建好，不在本工作流职责内。
+#
+# 所需 repository secrets：
+#   LH_HOST      43.142.148.37
+#   LH_USER      root
+#   LH_ROOT      /var/www/entrance
+#   LH_SSH_KEY   部署私钥全文（服务器只存对应公钥）
+#   LH_PORT      可选，缺省 22
+#
+# ⚠️ 未配置 secrets 时本工作流会「优雅跳过」——job 级仍显示成功（假绿）。
+#    判断是否真的部署了，必须下钻到步骤级，确认 `Deploy to server over SSH`
+#    是 success 而不是 skipped。
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: "lighthouse"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy · power-knowledge.tech
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check configuration
+        id: cfg
+        env:
+          LH_HOST: ${{ secrets.LH_HOST }}
+          LH_USER: ${{ secrets.LH_USER }}
+          LH_ROOT: ${{ secrets.LH_ROOT }}
+          LH_SSH_KEY: ${{ secrets.LH_SSH_KEY }}
+        run: |
+          if [ -z "$LH_HOST" ] || [ -z "$LH_USER" ] || [ -z "$LH_ROOT" ] || [ -z "$LH_SSH_KEY" ]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=已跳过轻量云部署::未配置 LH_HOST/LH_USER/LH_ROOT/LH_SSH_KEY，本次不上传任何文件。"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+            echo "配置齐备，将部署到 $LH_USER@$LH_HOST:$LH_ROOT"
+          fi
+
+      - name: Setup Node
+        if: steps.cfg.outputs.ready == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        if: steps.cfg.outputs.ready == 'true'
+        run: npm ci
+
+      # 本站不设 Lint 门禁：package.json 中未声明 lint 脚本，也未安装 eslint 工具链
+      # （判据：devDependencies 无 eslint、仓库无 eslint.config.*）。类型检查由
+      # Build 步的 tsc --noEmit 承担。
+      - name: Verify version single-source
+        if: steps.cfg.outputs.ready == 'true'
+        run: npm run verify:version
+
+      - name: Build
+        if: steps.cfg.outputs.ready == 'true'
+        run: npm run build
+
+      - name: Deploy to server over SSH
+        if: steps.cfg.outputs.ready == 'true'
+        env:
+          LH_HOST: ${{ secrets.LH_HOST }}
+          LH_USER: ${{ secrets.LH_USER }}
+          LH_ROOT: ${{ secrets.LH_ROOT }}
+          LH_SSH_KEY: ${{ secrets.LH_SSH_KEY }}
+          LH_PORT: ${{ secrets.LH_PORT }}
+        run: |
+          set -euo pipefail
+          PORT="${LH_PORT:-22}"
+          WEB_OWNER=www-data
+
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$LH_SSH_KEY" > ~/.ssh/lh_key
+          chmod 600 ~/.ssh/lh_key
+          ssh-keyscan -p "$PORT" -H "$LH_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+          SSH_CMD="ssh -p $PORT -i $HOME/.ssh/lh_key -o BatchMode=yes -o ConnectTimeout=20 $LH_USER@$LH_HOST"
+
+          echo "::group::服务器环境"
+          $SSH_CMD "whoami; hostname; echo '--- 目标目录 ---'; ls -la '$LH_ROOT' | head -20"
+          echo "::endgroup::"
+
+          # ---------- 降级护栏（上传前） ----------
+          ART_VER=$(node -p "require('./package.json').version")
+          LIVE_VER=$($SSH_CMD "cat '$LH_ROOT/.deployed-version' 2>/dev/null || true" \
+                     | tr -d '\r\n' | head -c 64)
+          echo "本次产物版本 : $ART_VER"
+          echo "线上已部署版本: ${LIVE_VER:-（无记录）}"
+
+          if [ -n "$LIVE_VER" ]; then
+            if [ "$LIVE_VER" = "$ART_VER" ]; then
+              echo "版本相同，按允许的重复部署处理。"
+            else
+              OLDEST=$(printf '%s\n%s\n' "$LIVE_VER" "$ART_VER" | sort -V | head -1)
+              if [ "$OLDEST" = "$ART_VER" ]; then
+                echo "::error title=拒绝降级部署::本次产物 $ART_VER 严格早于线上 $LIVE_VER，已中止以免覆盖线上较新版本。"
+                echo "若确需回滚，请手工在服务器上操作，并同步更新 $LH_ROOT/.deployed-version。"
+                exit 1
+              fi
+              echo "产物较新（$ART_VER > $LIVE_VER），允许部署。"
+            fi
+          else
+            echo "::warning title=无线上版本记录::服务器 $LH_ROOT/.deployed-version 不存在，本次跳过降级检查。"
+          fi
+
+          # 上传前先备份，留退路（失败不阻断部署）
+          $SSH_CMD "tar czf ~/webroot-backup-entrance-\$(date +%F-%H%M%S).tar.gz -C '$LH_ROOT' . 2>/dev/null || true"
+
+          # 清空目标目录（保留 .deployed-version，稍后由本步骤重写）。
+          # 理由：产物文件名带内容哈希，纯增量解包会让旧版 index-*.js 永久残留。
+          # 用 find -delete 而非 rm -rf "$LH_ROOT"，避免变量为空时误删 web 根本身。
+          $SSH_CMD "find '$LH_ROOT' -mindepth 1 -maxdepth 1 ! -name '.deployed-version' -exec rm -rf {} +"
+
+          # 流式上传：tar over ssh。--no-same-owner：不把 runner 的 uid/gid 带到线上
+          tar czf - -C dist . | $SSH_CMD "tar xzf - --no-same-owner -C '$LH_ROOT'"
+          $SSH_CMD "chown -R $WEB_OWNER:$WEB_OWNER '$LH_ROOT'" || true
+
+          # 上传成功后写版本哨兵，供下一次部署做降级比对
+          $SSH_CMD "printf '%s\n' '$ART_VER' > '$LH_ROOT/.deployed-version'"
+          echo "已写入版本哨兵：$LH_ROOT/.deployed-version = $ART_VER"
+
+      # ⚠️ 自检：只体检，绝不当门禁（境外 TLS 可能被中间设备中断，而部署本身已成功）。
+      - name: Verify live site (self-check, never blocks)
+        if: steps.cfg.outputs.ready == 'true'
+        continue-on-error: true
+        env:
+          LH_HOST: ${{ secrets.LH_HOST }}
+        run: |
+          set +e
+          set -uo pipefail
+          DOMAIN=power-knowledge.tech
+          URL="https://$DOMAIN/"
+          LIVE=/tmp/live.html
+          ok=0
+          for i in 1 2 3; do
+            code=$(curl -sS -o "$LIVE" -w '%{http_code}' -m 20 "$URL"); rc=$?
+            echo "第 ${i} 次请求：http=$code curl_exit=$rc"
+            if [ "$rc" = 0 ] && [ "$code" = "200" ]; then ok=1; break; fi
+            sleep 5
+          done
+          if [ "$ok" != 1 ] && [ -n "${LH_HOST:-}" ]; then
+            code=$(curl -sS -o "$LIVE" -w '%{http_code}' -m 20 \
+                   --resolve "$DOMAIN:443:$LH_HOST" "$URL"); rc=$?
+            echo "改走 IP（SNI 不变）：http=$code curl_exit=$rc"
+          fi
+          if [ "$ok" = 1 ]; then
+            LOCAL_JS=$(basename "$(ls dist/assets/index-*.js | head -1)")
+            echo "本次构建入口 JS: $LOCAL_JS"
+            if grep -q "$LOCAL_JS" "$LIVE"; then
+              echo "::notice title=核验通过::线上入口 JS 与本次构建一致（$LOCAL_JS）"
+            else
+              echo "::warning title=核验存疑::线上入口 JS 与本次构建不一致，可能是部署未生效或缓存"
+            fi
+            # 再核一层：版本串。__APP_VERSION__ 会被内联进 bundle，因此产物里必然出现
+            # 裸版本号（如 "0.1.0"）。注意**不要**去 grep "v0.1.0" —— 界面上的 v 前缀是
+            # 运行时由 JSX 的文本节点 "v" 与常量拼接出来的，bundle 里并不存在 "v0.1.0"
+            # 这个连续字面量（实测 grep 命中数为 0，会造成假告警）。
+            VER=$(node -p "require('./package.json').version")
+            if grep -q "$VER" dist/assets/index-*.js; then
+              echo "::notice title=版本串已注入::构建产物内含 $VER，__APP_VERSION__ 注入链路正常"
+            else
+              echo "::warning title=版本串缺失::构建产物里找不到 $VER，__APP_VERSION__ 注入可能失效"
+            fi
+          else
+            echo "::warning title=自检未通过（不影响本次部署）::域名多次访问均失败。"
+          fi
+          exit 0
+
+      # 子站版本漂移巡检：入口页卡片上写着各子站的版本号，子站发版后若不回填，
+      # 卡片就会长期显示过期版本。这里用同一把部署密钥直接读服务器哨兵对账。
+      # 只告警、不阻断（脚本默认非 strict）。
+      - name: Check sub-site version drift (never blocks)
+        if: steps.cfg.outputs.ready == 'true'
+        continue-on-error: true
+        env:
+          LH_HOST: ${{ secrets.LH_HOST }}
+          LH_USER: ${{ secrets.LH_USER }}
+          LH_PORT: ${{ secrets.LH_PORT }}
+          LH_SSH_KEY_PATH: /home/runner/.ssh/lh_key
+        run: node scripts/check-versions.mjs
