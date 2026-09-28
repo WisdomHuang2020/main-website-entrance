@@ -36,10 +36,18 @@ export function useLiveVersions(): Record<string, string> {
           // Pages 子路径部署时为 /main-website-entrance/api/version/<id>（那里没有端点，静默失败）
           const res = await fetch(`./api/version/${site.id}`, { cache: 'no-store' })
           if (!res.ok) return null
-          const text = (await res.text()).trim()
-          // 哨兵内容形如 2.10.80，optical 站带 v 前缀；只取语义化版本号本体
-          const m = text.match(/\d+\.\d+\.\d+/)
-          return m ? ([site.id, m[0]] as const) : null
+          const ctype = res.headers.get('content-type') || ''
+          // ⚠️ 实测坑（2026-09-28）：端点未配置时，请求会被 `location /` 的
+          //   `try_files $uri $uri/ /index.html` 兜住，**返回 200 + index.html 的 HTML**，
+          //   而不是 404。只判 res.ok 会把整页 HTML 当版本号来源，
+          //   宽松正则可能从 HTML 里捞到无关数字（如 CSS 里的 0.16.21），
+          //   于是在卡片上显示一个凭空的版本号。必须三重收紧：
+          //   ① 拒绝 HTML；② 限长；③ 整串锚定匹配。
+          if (ctype.indexOf('text/html') >= 0) return null
+          const raw = (await res.text()).trim()
+          if (raw.length === 0 || raw.length > 24) return null
+          const m = raw.match(/^v?(\d+\.\d+\.\d+)$/)
+          return m ? ([site.id, m[1]] as const) : null
         } catch {
           // 端点不存在 / 网络失败 / 被拦截 —— 一律静默降级到静态值
           return null
