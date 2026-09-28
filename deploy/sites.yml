@@ -29,24 +29,24 @@ sites:
     repo:   git@github.com:WisdomHuang2020/LLC-Design-Tool.git
     domain: llc.power-knowledge.tech
     web_root: /var/www/llc
-    version: 2.10.79
+    version: 2.10.80
   - id: interleavedpfc
     repo:   git@github.com:WisdomHuang2020/interleaved-pfc.git
     domain: interleavedpfc.power-knowledge.tech
     web_root: /var/www/interleavedpfc
-    version: 0.4.1
+    version: 0.4.2
   - id: ahb
     repo:   git@github.com:WisdomHuang2020/AHB.git
     domain: ahb.power-knowledge.tech
     web_root: /var/www/ahb
-    version: 1.6.1
+    version: 1.6.2
   - id: optical
     repo:   git@github.com:WisdomHuang2020/optical-calculator.git
     domain: optical.power-knowledge.tech
     web_root: /var/www/optical
-    version: v3.11.3          # 注意：该站哨兵带 v 前缀，其余四站不带
+    version: v3.11.4          # 注意：该站哨兵带 v 前缀，其余四站不带
   - id: widget
     repo:   git@github.com:WisdomHuang2020/widget.git
     domain: widget.power-knowledge.tech
     web_root: /var/www/widget
-    version: 1.3.1
+    version: 1.3.2
