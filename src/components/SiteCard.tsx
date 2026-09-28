@@ -10,10 +10,16 @@ import { ICONS, type Site } from '../data/sites'
 export default function SiteCard({
   site,
   index,
+  version,
+  live = false,
   className = '',
 }: {
   site: Site
   index: number
+  /** 生效的版本号：门户运行时能从 /api/version/<id> 取到就用实时值，否则用 sites.json 的静态值 */
+  version: string
+  /** 该值是否来自实时端点（仅影响 tooltip 文案，便于日后排查"为什么这个数字没变"） */
+  live?: boolean
   /** 网格跨度由调用方决定（见 App.tsx 的 6 列网格注释），卡片本身不关心排布 */
   className?: string
 }) {
@@ -65,9 +71,13 @@ export default function SiteCard({
         <div className="flex min-w-0 items-center gap-2.5">
           <span
             className="site-card-version shrink-0 rounded border border-border px-1.5 py-0.5 font-mono text-[10px] leading-none text-text-muted"
-            title="该工具当前线上版本（来源：服务器 .deployed-version 哨兵）"
+            title={
+              live
+                ? '该工具当前线上版本 —— 门户实时读取服务器 .deployed-version 哨兵'
+                : '该工具当前线上版本 —— 来自门户发布时记录的值（实时端点不可用时显示此值）'
+            }
           >
-            v{site.version}
+            v{version}
           </span>
           <span className="truncate font-mono text-[11px] text-text-muted">{site.domain}</span>
         </div>

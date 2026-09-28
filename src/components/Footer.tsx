@@ -12,10 +12,6 @@ export default function Footer() {
               v{__APP_VERSION__}
             </span>
           </div>
-          <p className="mt-3 text-xs leading-relaxed text-text-muted">
-            本页仅作入口导航。各工具的计算口径、假设、适用边界与免责声明，以对应站点内的说明为准
-            —— 本站不对任何第三方引用或据此作出的工程决策负责。
-          </p>
           {/* ICP 备案号：工信部要求网站底部展示并链接至工信部官网。
               置于页脚左下角 —— 桌面端落在左列底部，移动端随左列自然下移。 */}
           <a

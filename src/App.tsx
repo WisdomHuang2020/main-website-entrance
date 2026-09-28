@@ -11,6 +11,7 @@ import Footer from './components/Footer'
 import Header from './components/Header'
 import SiteCard from './components/SiteCard'
 import { SITES } from './data/sites'
+import { useLiveVersions } from './data/useLiveVersions'
 
 const REPO_URL = 'https://github.com/WisdomHuang2020/main-website-entrance'
 
@@ -54,6 +55,10 @@ const PRINCIPLES: { icon: LucideIcon; title: string; desc: string }[] = [
 ]
 
 export default function App() {
+  // 站点版本的运行时覆盖层：取到实时值就覆盖静态值，取不到就静默用静态值。
+  // 详见 src/data/useLiveVersions.ts 与 deploy/nginx-entrance.conf 的端点说明。
+  const liveVersions = useLiveVersions()
+
   return (
     <div id="top" className="flex min-h-screen flex-col bg-bg">
       <Header />
@@ -165,11 +170,14 @@ export default function App() {
           <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-6">
             {SITES.map((site, i) => {
               const isWideTail = SITES.length % 3 === 2 && i >= SITES.length - 2
+              const liveVer = liveVersions[site.id]
               return (
                 <SiteCard
                   key={site.id}
                   site={site}
                   index={i + 1}
+                  version={liveVer ?? site.version}
+                  live={!!liveVer}
                   className={isWideTail ? 'xl:col-span-3' : 'xl:col-span-2'}
                 />
               )
