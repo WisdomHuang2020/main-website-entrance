@@ -1,16 +1,16 @@
 import { Github } from 'lucide-react'
 import BrandMark from './BrandMark'
-
-const NAV = [
-  { href: '#tools', label: '工具集' },
-  { href: '#principles', label: '工程口径' },
-]
+import { SECTION_LINKS, onHomeClick, onSectionClick } from '../lib/sectionRoute'
 
 export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur">
       <div className="shell flex h-16 items-center justify-between gap-4 px-5 sm:h-20 sm:px-8 lg:px-10">
-        <a href="#top" className="flex items-center gap-3 text-text-primary transition-colors hover:text-brand-light">
+        <a
+          href="./"
+          onClick={onHomeClick}
+          className="flex items-center gap-3 text-text-primary transition-colors hover:text-brand-light"
+        >
           <BrandMark className="h-7 w-7 text-brand-light" />
           <span className="text-base font-bold tracking-tight">Power Knowledge</span>
           {/* 版本号显示点之一（另一处在页脚）。两处共用 __APP_VERSION__ 同一常量，
@@ -22,10 +22,11 @@ export default function Header() {
         </a>
 
         <nav className="flex items-center gap-1">
-          {NAV.map((item) => (
+          {SECTION_LINKS.map((item) => (
             <a
-              key={item.href}
-              href={item.href}
+              key={item.path}
+              href={item.path}
+              onClick={(e) => onSectionClick(e, item.id)}
               className="rounded-md px-4 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-surface-elevated hover:text-text-primary"
             >
               {item.label}

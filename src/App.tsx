@@ -12,6 +12,7 @@ import Header from './components/Header'
 import SiteCard from './components/SiteCard'
 import { SITES } from './data/sites'
 import { useLiveVersions } from './data/useLiveVersions'
+import { onSectionClick, useSectionRoute } from './lib/sectionRoute'
 
 const REPO_URL = 'https://github.com/WisdomHuang2020/main-website-entrance'
 
@@ -58,6 +59,10 @@ export default function App() {
   // 站点版本的运行时覆盖层：取到实时值就覆盖静态值，取不到就静默用静态值。
   // 详见 src/data/useLiveVersions.ts 与 deploy/nginx-entrance.conf 的端点说明。
   const liveVersions = useLiveVersions()
+
+  // 干净 URL（/tools、/engineers）的深链定位与前进后退处理。
+  // 详见 src/lib/sectionRoute.ts。
+  useSectionRoute()
 
   return (
     <div id="top" className="flex min-h-screen flex-col bg-bg">
@@ -106,7 +111,8 @@ export default function App() {
 
             <div className="mt-11 flex flex-wrap items-center gap-3">
               <a
-                href="#tools"
+                href="./tools"
+                onClick={(e) => onSectionClick(e, 'tools')}
                 className="inline-flex items-center gap-2 rounded-lg bg-brand px-6 py-3.5 text-sm font-medium text-white transition-colors hover:bg-brand-light"
               >
                 查看全部工具

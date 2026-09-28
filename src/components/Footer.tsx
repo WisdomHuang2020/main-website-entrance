@@ -27,12 +27,11 @@ export default function Footer() {
         <div className="text-xs text-text-muted md:text-right">
           <p className="font-mono">power-knowledge.tech</p>
           <p className="mt-1.5">
-            兜底通道：
             <a
               href="https://wisdomhuang2020.github.io/main-website-entrance/"
               target="_blank"
               rel="noopener noreferrer"
-              className="ml-1 text-text-secondary underline decoration-border-light underline-offset-2 transition-colors hover:text-brand-light"
+              className="text-text-secondary underline decoration-border-light underline-offset-2 transition-colors hover:text-brand-light"
             >
               GitHub Pages
             </a>
