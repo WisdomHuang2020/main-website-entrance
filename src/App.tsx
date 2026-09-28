@@ -19,7 +19,12 @@ const PRINCIPLES: { icon: LucideIcon; title: string; desc: string }[] = [
   {
     icon: Cpu,
     title: '纯本地计算',
-    desc: '全部运算在浏览器内完成，输入数据不上传、不留存，断网后仍可使用。',
+    // 措辞只保留可核实的事实：五个子站 src/ 内 fetch/axios/XHR/sendBeacon/WebSocket
+    // 命中均为 0 行，故「无后端调用、不上传服务器」成立。
+    // 不要写「断网后仍可使用」—— 各站字体走 Google Fonts CDN，断网体验无保证。
+    // 不要写「不留存」—— LLC 站的 DesignContext.tsx 会把设计参数/结果/建议/曲线
+    // 写进 localStorage（实测 27 处命中），该说法对它不成立。
+    desc: '全部运算在浏览器内完成；页面不含任何后端调用，输入数据不上传服务器。',
   },
   {
     icon: FunctionSquare,
@@ -119,15 +124,6 @@ export default function App() {
                 </div>
               ))}
             </div>
-
-            <p className="mt-10 rounded-lg border border-border border-l-2 border-l-brand/60 bg-surface/60 p-4 text-xs leading-relaxed text-text-muted">
-              <span className="font-medium text-text-secondary">新增工具时：</span>
-              本页的站点清单是单一数据源 <code className="font-mono text-text-secondary">src/data/sites.json</code>
-              —— 增删一个子站只需改这一个文件，页面卡片、数量统计与版本徽标会同步更新。
-              若新子域需要 <code className="font-mono text-text-secondary">www.</code> 别名，
-              须先重签证书：当前通配符证书 <code className="font-mono text-text-secondary">*.power-knowledge.tech</code>
-              只覆盖一级子域，且各 <code className="font-mono text-text-secondary">www.</code> 名称是逐个手工附加进 SAN 的，不是通配符带来的。
-            </p>
           </div>
         </section>
       </main>
