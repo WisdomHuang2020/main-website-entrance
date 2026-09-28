@@ -43,6 +43,25 @@ export default function Footer() {
           </p>
         </div>
       </div>
+
+      {/* 免责声明：分「工程决策」与「知识产权」两段，与站群其余站点保持同一文本。 */}
+      <div className="mx-auto max-w-6xl px-5 pb-10 sm:px-8">
+        <div className="border-t border-border pt-6">
+          <p className="text-xs leading-relaxed text-text-muted">
+            <span className="font-medium text-text-secondary">免责声明：</span>
+            本站为个人非商业性技术分享。本站及所链接的全部工具，其结果均基于公开理论模型
+            与解析/半解析近似，仅供工程估算与学习研究参考，不构成设计保证，亦不替代器件
+            数据手册、实测波形、仿真与第三方专业复核。任何主体引用本站内容或据此作出的
+            工程决策，风险与责任由该主体自行承担；因使用本站内容所产生的间接损失，
+            本站不予承担。
+          </p>
+          <p className="mt-2 text-xs leading-relaxed text-text-muted">
+            站内图表、公式推导与文字内容为作者原创或基于公开资料整理，著作权归作者所有；
+            文中提及的软件、标准、商标与厂商名称，权利均归各自权利人所有，仅作技术说明引用，
+            不代表任何隶属、赞助或背书关系。
+          </p>
+        </div>
+      </div>
     </footer>
   )
 }
