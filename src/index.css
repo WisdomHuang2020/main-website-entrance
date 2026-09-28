@@ -40,6 +40,15 @@
 }
 
 @layer components {
+  /* 统一内容宽度。1160(原 max-w-6xl) → 1280。
+     「大气」的第一来源是尺度与留白：大屏上更宽的版心 + 更从容的两侧留白，
+     比堆任何装饰都有效。集中成一个类，避免以后逐处改 */
+  .shell {
+    margin-inline: auto;
+    width: 100%;
+    max-width: 1280px;
+  }
+
   .text-gradient {
     background: linear-gradient(100deg, var(--color-brand-light), #22d3ee);
     -webkit-background-clip: text;
@@ -50,15 +59,16 @@
   /* 首屏底纹：一处柔和的主色辉光 + 一层很淡的通铺网格。
      网格刻意**不加遮罩**：先前版本用 radial-gradient 遮罩淡出，实测在首屏右侧会出现
      一道可见的矩形边界，看起来像贴了一块浅色面板。通铺 + 低透明度与姊妹站
-     llc-design-tool 的做法一致（它是 60px 网格、opacity 0.08），不会再有任何边界痕迹。 */
+     llc-design-tool 的做法一致（它是 60px 网格、opacity 0.08），不会再有任何边界痕迹。
+     2026-09-28：辉光放大到 80%×60%、网格 56px → 64px —— 尺度放大后更稳、更"大气"。 */
   .hero-glow {
-    background: radial-gradient(70% 55% at 50% -10%, rgba(99, 102, 241, 0.2), transparent 70%);
+    background: radial-gradient(80% 60% at 50% -12%, rgba(99, 102, 241, 0.26), transparent 72%);
   }
   .hero-grid {
     background-image:
-      linear-gradient(to right, rgba(255, 255, 255, 0.028) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.028) 1px, transparent 1px);
-    background-size: 56px 56px;
+      linear-gradient(to right, rgba(255, 255, 255, 0.026) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.026) 1px, transparent 1px);
+    background-size: 64px 64px;
   }
 
   /* 站点卡片：强调色由组件内联注入 --accent（取自该子站自己的主色），

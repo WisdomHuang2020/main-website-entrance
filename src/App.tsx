@@ -1,8 +1,18 @@
-import { Cpu, FunctionSquare, Layers, ShieldCheck, type LucideIcon } from 'lucide-react'
+import {
+  ArrowDown,
+  Cpu,
+  FunctionSquare,
+  Github,
+  Layers,
+  ShieldCheck,
+  type LucideIcon,
+} from 'lucide-react'
 import Footer from './components/Footer'
 import Header from './components/Header'
 import SiteCard from './components/SiteCard'
 import { SITES } from './data/sites'
+
+const REPO_URL = 'https://github.com/WisdomHuang2020/main-website-entrance'
 
 /** 首屏四个数字。全部为可核实事实，不写修辞：
  *  工具数 5（sites.json 长度）、后端依赖 0 与数据上传 0（五个子站 src/ 内
@@ -53,74 +63,136 @@ export default function App() {
         <section className="relative overflow-hidden border-b border-border">
           <div className="hero-glow pointer-events-none absolute inset-0" aria-hidden="true" />
           <div className="hero-grid pointer-events-none absolute inset-0" aria-hidden="true" />
-          <div className="relative mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-28">
-            <span className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-3 py-1 text-xs font-medium text-brand-light">
+
+          {/* 大尺度品牌标记：把首页的六边形符号放大 20 余倍作为版面锚点，右侧出血。
+              没有它，首屏右侧是一大片空底，整页会显得"平、小"。
+              小屏隐藏，避免与正文抢位。stroke-width 用 1（600 视框），
+              渲染到 560px 时约 0.9px，仍是细线。 */}
+          <svg
+            className="pointer-events-none absolute top-1/2 -right-32 hidden h-[560px] w-[560px] -translate-y-1/2 text-brand lg:block"
+            viewBox="0 0 600 600"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={1}
+            opacity={0.09}
+            aria-hidden="true"
+          >
+            <path d="M300 65 L502.5 182.5 L502.5 417.5 L300 535 L97.5 417.5 L97.5 182.5 Z" />
+            <circle cx="300" cy="300" r="52" />
+            <path d="M300 248 V158 M345 326 L428 374 M255 326 L172 374" />
+          </svg>
+
+          <div className="shell relative px-5 py-24 sm:px-8 sm:py-32 lg:px-10 lg:py-40">
+            <span className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-3.5 py-1.5 text-xs font-medium text-brand-light">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-brand-light" />
               电源 · 光学 · 电气工程
             </span>
 
-            <h1 className="mt-6 max-w-3xl text-4xl leading-[1.15] font-bold tracking-tight sm:text-5xl lg:text-6xl">
+            <h1 className="mt-8 text-[2.75rem] leading-[1.06] font-bold tracking-[-0.03em] text-balance sm:text-6xl lg:text-7xl">
               一个入口，
+              <br className="hidden sm:block" />
               <span className="text-gradient">直达全部工程工具</span>
             </h1>
 
-            <p className="mt-6 max-w-2xl text-base leading-relaxed text-text-secondary sm:text-lg">
+            <p className="mt-8 max-w-3xl text-lg leading-relaxed text-text-secondary sm:text-xl">
               这里汇集本人开发的电源、光学与电气工程在线工具。它们都是纯前端应用 ——
               打开即用、输入数据不出浏览器，公式与假设写在各自站内，结论可手工复核。
             </p>
 
-            <dl className="mt-12 grid max-w-2xl grid-cols-2 gap-x-8 gap-y-6 sm:grid-cols-4">
-              {STATS.map((s) => (
-                <div key={s.label}>
-                  <dt className="font-mono text-3xl font-semibold tracking-tight text-text-primary">
-                    {s.value}
-                    <span className="ml-0.5 text-sm font-normal text-text-muted">{s.unit}</span>
-                  </dt>
-                  <dd className="mt-1 text-xs text-text-muted">{s.label}</dd>
-                </div>
-              ))}
-            </dl>
+            <div className="mt-11 flex flex-wrap items-center gap-3">
+              <a
+                href="#tools"
+                className="inline-flex items-center gap-2 rounded-lg bg-brand px-6 py-3.5 text-sm font-medium text-white transition-colors hover:bg-brand-light"
+              >
+                查看全部工具
+                <ArrowDown className="h-4 w-4" strokeWidth={1.8} />
+              </a>
+              <a
+                href={REPO_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-lg border border-border-light px-6 py-3.5 text-sm font-medium text-text-secondary transition-colors hover:border-text-muted hover:text-text-primary"
+              >
+                <Github className="h-4 w-4" strokeWidth={1.8} />
+                源码仓库
+              </a>
+            </div>
           </div>
         </section>
 
+        {/* ── 数据带（整幅横带）──
+            原先这四个数字被塞在首屏的一个 max-w-2xl 窄格里、字号仅 30px，
+            本该是"气势担当"却成了配角。独立成整幅横带后，数字放到 48–60px，
+            等分四列，才撑得起版面。 */}
+        <section className="border-b border-border bg-surface/25">
+          <dl className="shell grid grid-cols-2 lg:grid-cols-4">
+            {STATS.map((s) => (
+              <div
+                key={s.label}
+                className="border-border px-5 py-10 sm:px-8 sm:py-12 lg:border-l lg:px-10 lg:first:border-l-0 lg:first:pl-0"
+              >
+                <dt className="font-mono text-4xl font-semibold tracking-tight text-text-primary sm:text-5xl lg:text-6xl">
+                  {s.value}
+                  <span className="ml-1.5 text-base font-normal text-text-muted">{s.unit}</span>
+                </dt>
+                <dd className="mt-3 text-sm text-text-muted">{s.label}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+
         {/* ── 工具集 ── */}
-        <section id="tools" className="mx-auto max-w-6xl scroll-mt-20 px-5 py-16 sm:px-8 sm:py-20">
-          <div className="mb-8 flex flex-wrap items-baseline justify-between gap-3">
+        <section
+          id="tools"
+          className="shell scroll-mt-24 px-5 py-20 sm:px-8 sm:py-28 lg:px-10"
+        >
+          <div className="mb-12 flex flex-wrap items-end justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">工具集</h2>
-              <p className="mt-1.5 text-sm text-text-muted">
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">工具集</h2>
+              <p className="mt-3 text-base text-text-muted">
                 点击卡片将在新标签页打开对应的工具站
               </p>
             </div>
-            <span className="font-mono text-xs text-text-muted">
+            <span className="font-mono text-sm text-text-muted">
               {String(SITES.length).padStart(2, '0')} 个工具
             </span>
           </div>
 
-          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-            {SITES.map((site) => (
-              <SiteCard key={site.id} site={site} />
-            ))}
+          {/* 6 列网格：首 3 张各占 2 列（= 一行 3 张），末 2 张各占 3 列（= 一行 2 张）。
+              5 个工具若按 3 列排，末行会空出一格、看着像"少了一个"；
+              这样收口后末行刚好填满，像一份编目而不是没排完。
+              规则写成 SITES.length % 3 === 2 判定，将来加到 6 个站时自动退回「两行各 3 张」。 */}
+          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-6">
+            {SITES.map((site, i) => {
+              const isWideTail = SITES.length % 3 === 2 && i >= SITES.length - 2
+              return (
+                <SiteCard
+                  key={site.id}
+                  site={site}
+                  index={i + 1}
+                  className={isWideTail ? 'xl:col-span-3' : 'xl:col-span-2'}
+                />
+              )
+            })}
           </div>
         </section>
 
-        {/* ── 工程口径 ── */}
-        <section
-          id="principles"
-          className="scroll-mt-20 border-t border-border bg-surface/40"
-        >
-          <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">共同的工程口径</h2>
-            <p className="mt-1.5 max-w-2xl text-sm text-text-muted">
+        {/* ── 工程口径 ──
+            刻意**去掉卡片盒子**，改为分隔线 + 大留白的编辑式排版。
+            四个小方框会让版面显得琐碎、局促；去掉盒子、拉开间距反而更稳更大气。 */}
+        <section id="principles" className="scroll-mt-24 border-t border-border bg-surface/40">
+          <div className="shell px-5 py-20 sm:px-8 sm:py-28 lg:px-10">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">共同的工程口径</h2>
+            <p className="mt-3 max-w-3xl text-base text-text-muted">
               这些工具面向工程估算，因此对「结果是怎么来的」和「在什么条件下不成立」有统一要求。
             </p>
 
-            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-14 grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
               {PRINCIPLES.map((p) => (
-                <div key={p.title} className="rounded-xl border border-border bg-surface/60 p-5">
-                  <p.icon className="h-5 w-5 text-brand-light" strokeWidth={1.8} />
-                  <h3 className="mt-3.5 text-sm font-semibold text-text-primary">{p.title}</h3>
-                  <p className="mt-2 text-xs leading-relaxed text-text-secondary">{p.desc}</p>
+                <div key={p.title} className="border-t border-border-light pt-6">
+                  <p.icon className="h-6 w-6 text-brand-light" strokeWidth={1.6} />
+                  <h3 className="mt-5 text-base font-semibold text-text-primary">{p.title}</h3>
+                  <p className="mt-2.5 text-sm leading-relaxed text-text-secondary">{p.desc}</p>
                 </div>
               ))}
             </div>

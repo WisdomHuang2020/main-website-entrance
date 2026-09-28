@@ -9,10 +9,10 @@ const NAV = [
 export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-5 sm:px-8">
-        <a href="#top" className="flex items-center gap-2.5 text-text-primary transition-colors hover:text-brand-light">
-          <BrandMark className="h-6 w-6 text-brand-light" />
-          <span className="text-[15px] font-bold tracking-tight">Power Knowledge</span>
+      <div className="shell flex h-16 items-center justify-between gap-4 px-5 sm:h-20 sm:px-8 lg:px-10">
+        <a href="#top" className="flex items-center gap-3 text-text-primary transition-colors hover:text-brand-light">
+          <BrandMark className="h-7 w-7 text-brand-light" />
+          <span className="text-base font-bold tracking-tight">Power Knowledge</span>
           {/* 版本号显示点之一（另一处在页脚）。两处共用 __APP_VERSION__ 同一常量，
               由 scripts/verify-version.mjs 断言不得各自硬编码。
               app-version 为核验钩子：线上可用 querySelectorAll('.app-version') 直接读到版本。 */}
@@ -26,7 +26,7 @@ export default function Header() {
             <a
               key={item.href}
               href={item.href}
-              className="rounded-md px-3 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-surface-elevated hover:text-text-primary"
+              className="rounded-md px-4 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-surface-elevated hover:text-text-primary"
             >
               {item.label}
             </a>
