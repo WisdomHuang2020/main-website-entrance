@@ -24,3 +24,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+
+# 本工作区的记忆与项目级技能（属于 WorkBuddy 自身数据，不是站点源码，不入仓库）
+.workbuddy/
+
+# 本地无头验证产生的临时探针/截图（如 _verify-*.png、__probe*.js）
+_verify-*
+__probe*
