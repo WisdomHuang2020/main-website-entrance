@@ -1,24 +1,28 @@
 /**
- * 站群品牌标记：六边形（电力电子的通用符号）+ 中心节点与三条辐条。
- * 语义：多个工具汇聚到同一个入口。
+ * 站群品牌标记（主入口） —— 与本站 public/favicon.svg 完全同源。
  *
- * 用 currentColor 描边，颜色由父元素的文字色决定，不在这里写死颜色。
+ * 造型：六边形外壳内的中心节点（门户 / 枢纽意象）。
+ * 语义：多个子站工具汇聚到同一个入口。
+ *
+ * ⚠️ 与 public/favicon.svg 使用同一套 path 数据：改一处必须同步另一处。
+ * 主形用站群统一 teal #14b8a6；amber 中心点为站群固定标记。
+ *
+ * 变更（2026-09-29）：原为 24 viewBox 的「六边形 + 节点 + 三条辐条」，
+ * 而本站 favicon 并无辐条 —— 二者本就不一致。现统一为同一套 path：
+ * 去掉辐条，与 favicon 完全同源（三条辐条在 16px 下也会糊成一团，去除后更清晰）。
  */
 export default function BrandMark({ className = '' }: { className?: string }) {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      className={className}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.6}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M12 2.6 20.1 7.3v9.4L12 21.4 3.9 16.7V7.3z" />
-      <circle cx="12" cy="12" r="2.1" />
-      <path d="M12 9.9V6.1M13.8 13.05l2.9 1.7M10.2 13.05l-2.9 1.7" />
+    <svg viewBox="0 0 32 32" className={className} aria-hidden="true">
+      <rect width="32" height="32" rx="7" fill="#0a0a0a" />
+      <path
+        d="M16 4 L27.4 10.4 L27.4 21.6 L16 28 L4.6 21.6 L4.6 10.4 Z"
+        fill="none"
+        stroke="#14b8a6"
+        strokeWidth={3.2}
+        strokeLinejoin="round"
+      />
+      <circle cx="16" cy="16" r="3.2" fill="#f59e0b" />
     </svg>
   )
 }
