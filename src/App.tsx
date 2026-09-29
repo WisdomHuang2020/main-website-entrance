@@ -93,8 +93,10 @@ export default function App() {
           </svg>
 
           <div className="shell relative px-5 py-24 sm:px-8 sm:py-32 lg:px-10 lg:py-40">
-            <span className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-3.5 py-1.5 text-xs font-medium text-brand-light">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-brand-light" />
+            {/* 眉标：字号 12px(text-xs) → 24px(text-2xl) 即放大一倍，字重 500 → 700 加粗。
+                内边距与小圆点按同比例放大 —— 24px 的字配 6px 的点、6px 的内边距会显得破。 */}
+            <span className="inline-flex items-center gap-2.5 rounded-full border border-brand/30 bg-brand/10 px-5 py-2 text-2xl font-bold text-brand-light">
+              <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-brand-light" />
               电源 · 光学 · 电气工程
             </span>
 
