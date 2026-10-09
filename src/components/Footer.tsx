@@ -12,16 +12,38 @@ export default function Footer() {
               v{__APP_VERSION__}
             </span>
           </div>
-          {/* ICP 备案号：工信部要求网站底部展示并链接至工信部官网。
-              置于页脚左下角 —— 桌面端落在左列底部，移动端随左列自然下移。 */}
-          <a
-            href="https://beian.miit.gov.cn/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-3 inline-block text-xs text-text-muted transition-colors hover:text-text-secondary"
-          >
-            苏ICP备2026073104号-1
-          </a>
+          {/* 备案信息：工信部 ICP 与公安部联网备案，法规均要求网站底部展示并链接至对应官网。
+              两个号并排一行、窄屏自动换行，置于页脚左下角
+              —— 桌面端落在左列底部，移动端随左列自然下移。 */}
+          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+            <a
+              href="https://beian.miit.gov.cn/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-text-muted transition-colors hover:text-text-secondary"
+            >
+              苏ICP备2026073104号-1
+            </a>
+            {/* 公安备案：规定要求「备案图标 + 备案号 + 链接至全国互联网安全管理服务平台」三者齐备。
+                图标是官方警徽图，原始 36×40（非正方形），故用 h-4 + w-auto 等比缩放
+                —— 写成 h-4 w-4 会把它横向拉伸约 11%。
+                alt 留空：紧随其后的文字已表达同样含义，重复朗读反而啰嗦（装饰性图标的正确用法）。 */}
+            <a
+              href="https://beian.mps.gov.cn/#/query/webSearch?code=32021402005238"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs text-text-muted transition-colors hover:text-text-secondary"
+            >
+              <img
+                src="./beian-gongan.png"
+                alt=""
+                width={36}
+                height={40}
+                className="h-4 w-auto shrink-0"
+              />
+              苏公网安备32021402005238号
+            </a>
+          </div>
         </div>
 
         <div className="text-xs text-text-muted md:text-right">
