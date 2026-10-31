@@ -117,7 +117,7 @@ export default function App() {
             </h1>
 
             <p className="mt-8 max-w-3xl text-lg leading-relaxed text-text-secondary sm:text-xl">
-              这里汇集本人开发的电源、光学与电气工程在线工具，外加一套把站点从本机推到线上的实训课。
+              这里汇集本人开发的电源与光学在线工具，外加一套把站点从本机推到线上的信息技术实训课。
               工具都是纯前端应用 —— 打开即用、输入数据不出浏览器，公式与假设写在各自站内，结论可手工复核。
             </p>
 
