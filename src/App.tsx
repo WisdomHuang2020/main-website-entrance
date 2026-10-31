@@ -99,10 +99,14 @@ export default function App() {
 
           <div className="shell relative px-5 py-24 sm:px-8 sm:py-32 lg:px-10 lg:py-40">
             {/* 眉标：字号 12px(text-xs) → 24px(text-2xl) 即放大一倍，字重 500 → 700 加粗。
-                内边距与小圆点按同比例放大 —— 24px 的字配 6px 的点、6px 的内边距会显得破。 */}
-            <span className="inline-flex items-center gap-2.5 rounded-full border border-brand/30 bg-brand/10 px-5 py-2 text-2xl font-bold text-brand-light">
+                内边距与小圆点按同比例放大 —— 24px 的字配 6px 的点、6px 的内边距会显得破。
+                2026-10-31 加入第 4 项「信息技术」后，窄屏必然折行（4 项自然宽 408px，
+                360/390/430 视口装不下）。加 `break-keep`（word-break: keep-all）：
+                CJK 默认可在任意字间断行，实测会把「信息技术」劈成「信」/「息技术」；
+                keep-all 后断点只能落在分隔符两侧的空格上，词不会再被切开。 */}
+            <span className="inline-flex items-center gap-2.5 rounded-full border border-brand/30 bg-brand/10 px-5 py-2 text-2xl font-bold break-keep text-brand-light">
               <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-brand-light" />
-              电源 · 光学 · 电气工程
+              电源 · 光学 · 电气工程 · 信息技术
             </span>
 
             <h1 className="mt-8 text-[2.75rem] leading-[1.06] font-bold tracking-[-0.03em] text-balance sm:text-6xl lg:text-7xl">
