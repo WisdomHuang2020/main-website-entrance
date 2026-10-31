@@ -63,7 +63,7 @@ if (!fs.existsSync(KEY)) {
 }
 
 // id 即 web 根目录名（/var/www/<id>），这条约定写在 src/data/sites.json 的注释里。
-// 一次性把 5 个哨兵全部读回，避免 5 次握手。
+// 一次性把全部哨兵读回，避免每站一次握手。
 const remote = sites.map((s) => `printf '%s\\t%s\\n' '${s.id}' "$(cat /var/www/${s.id}/.deployed-version 2>/dev/null)"`).join('; ')
 
 let stdout
@@ -120,7 +120,7 @@ for (const s of sites) {
 
 console.log('')
 if (drift.length === 0 && unknown.length === 0) {
-  console.log('✅ 5 个子站的版本号与入口页记录完全一致。')
+  console.log(`✅ ${sites.length} 个子站的版本号与入口页记录完全一致。`)
   process.exit(0)
 }
 if (drift.length) {

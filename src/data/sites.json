@@ -13,7 +13,7 @@
     ],
     "accent": "#115e59",
     "icon": "activity",
-    "version": "2.10.83"
+    "version": "2.10.150"
   },
   {
     "id": "interleavedpfc",
@@ -29,7 +29,7 @@
     ],
     "accent": "#0f766e",
     "icon": "waves",
-    "version": "0.4.4"
+    "version": "0.4.6"
   },
   {
     "id": "ahb",
@@ -45,7 +45,7 @@
     ],
     "accent": "#0d9488",
     "icon": "zap",
-    "version": "1.6.4"
+    "version": "1.6.7"
   },
   {
     "id": "optical",
@@ -61,7 +61,7 @@
     ],
     "accent": "#14b8a6",
     "icon": "lightbulb",
-    "version": "3.11.7"
+    "version": "3.11.9"
   },
   {
     "id": "widget",
@@ -77,6 +77,22 @@
     ],
     "accent": "#2dd4bf",
     "icon": "calculator",
-    "version": "1.4.2"
+    "version": "1.4.4"
+  },
+  {
+    "id": "web-training",
+    "name": "网站建设实训课",
+    "subtitle": "Web Building Practicum · From Zero to Live",
+    "domain": "www.web-training.power-knowledge.tech",
+    "url": "https://www.web-training.power-knowledge.tech/",
+    "desc": "一条从本机到访客屏幕的完整发布链路：10 个阶段 31 讲，覆盖版本管理、服务器与备案、nginx、HTTPS、自动化部署、权限密钥与日常巡检。每讲都给出步骤、产出物与验收判据，讲义可打印。",
+    "tags": [
+      "10 阶段 31 讲",
+      "部署全链路",
+      "可打印讲义"
+    ],
+    "accent": "#0f766e",
+    "icon": "book",
+    "version": "1.0.0"
   }
 ]

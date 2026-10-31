@@ -79,7 +79,12 @@ export default function SiteCard({
           >
             v{version}
           </span>
-          <span className="truncate font-mono text-[11px] text-text-muted">{site.domain}</span>
+          {/* 域名可能被 truncate 掉尾（web-training 是全站唯一的二级子域
+              www.web-training.*，比其他站多 4 个字符，1440 下必然截断）。
+              截断是防破版的设计，但完整地址必须可读 —— 用 title 兜住。 */}
+          <span className="truncate font-mono text-[11px] text-text-muted" title={site.domain}>
+            {site.domain}
+          </span>
         </div>
         <ArrowUpRight
           className="site-card-arrow h-4 w-4 shrink-0 text-text-muted transition-all duration-200"

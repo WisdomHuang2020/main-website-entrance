@@ -1,5 +1,6 @@
 import {
   Activity,
+  BookOpen,
   Calculator,
   Lightbulb,
   Waves,
@@ -17,7 +18,11 @@ import raw from './sites.json'
  *
  * version 的填写口径（重要）：
  *   写**不带 v 前缀**的纯语义化版本号，渲染时统一补 `v`。
- *   原因：optical 站的线上哨兵带 `v` 前缀（其余四站为纯数字）。
+ *   原因：optical 站的线上哨兵带 `v` 前缀（其余五站为纯数字）。
+ *   ⚠️ 必须三段式 x.y.z：useLiveVersions 的取值正则只认 `^v?(\d+\.\d+\.\d+)$`，
+ *   子站哨兵若写成两段式（如 v1.0），端点明明取到了值也会被丢弃，
+ *   卡片静默退回静态旧值 —— 且没有任何报错。web-training 首版就是这样，
+ *   已在 2026-10-31 改为三段式，并在其 deploy.sh 里加了格式门禁。
  *   若把带 v 的字面量写进源码，scripts/verify-version.mjs 的
  *   「禁止硬编码 vX.Y.Z」断言会把它误判成本站版本号。
  *   巡检脚本 scripts/check-versions.mjs 会自行剥离两侧的 v 再比对。
@@ -26,7 +31,13 @@ import raw from './sites.json'
  * （由各站自己的 CI 写入），不是各站仓库 package.json —— 后者可能领先于线上。
  */
 
-export type SiteIconKey = 'activity' | 'waves' | 'zap' | 'lightbulb' | 'calculator'
+export type SiteIconKey =
+  | 'activity'
+  | 'waves'
+  | 'zap'
+  | 'lightbulb'
+  | 'calculator'
+  | 'book'
 
 export interface Site {
   /** 同时用作服务器 web 根目录名：/var/www/<id>（巡检脚本依赖此约定） */
@@ -49,6 +60,7 @@ export const ICONS: Record<SiteIconKey, LucideIcon> = {
   zap: Zap,
   lightbulb: Lightbulb,
   calculator: Calculator,
+  book: BookOpen,
 }
 
 export const SITES = raw as unknown as Site[]

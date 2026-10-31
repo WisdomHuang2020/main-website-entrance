@@ -1,21 +1,29 @@
 # Power Knowledge · 站群入口门户
 
-`power-knowledge.tech` 的入口页 —— 把站群内所有在线工具收在一处，作为统一门面。
+`power-knowledge.tech` 的入口页 —— 把站群内的在线工具与实训课程收在一处，作为统一门面。
 
 - **正式地址**：https://power-knowledge.tech/ （别名 https://www.power-knowledge.tech/）
 - **兜底通道**：https://wisdomhuang2020.github.io/main-website-entrance/
 
-## 收录的工具
+## 收录的站点
 
-| 工具 | 域名 | 主色 |
+| 站点 | 域名 | 主色 |
 |---|---|---|
-| LLC 谐振变换器设计工具 | `llc.power-knowledge.tech` | `#0f766e` |
-| 交错并联 Boost PFC 设计工具 | `interleavedpfc.power-knowledge.tech` | `#2563eb` |
-| AHB 不对称半桥反激设计工具 | `ahb.power-knowledge.tech` | `#0f766e` |
+| LLC 谐振变换器设计工具 | `llc.power-knowledge.tech` | `#115e59` |
+| 交错并联 Boost PFC 设计工具 | `interleavedpfc.power-knowledge.tech` | `#0f766e` |
+| AHB 不对称半桥反激设计工具 | `ahb.power-knowledge.tech` | `#0d9488` |
 | 光学概念和光学设计 | `optical.power-knowledge.tech` | `#14b8a6` |
-| 电源与照明工程计算器 | `widget.power-knowledge.tech` | `#0e7490` |
+| 电源与照明工程计算器 | `widget.power-knowledge.tech` | `#2dd4bf` |
+| 网站建设实训课（课程，非计算工具） | `www.web-training.power-knowledge.tech` | `#0f766e` |
 
-各工具的计算口径与免责声明以对应站点内的说明为准；本站只做导航。
+主色列取各站自己的 `--color-primary`，即 `src/data/sites.json` 的 `accent`。
+**本节曾在 2026-10-31 校正过一次**：此前表格里 interleavedpfc / ahb / widget 三行写的是
+`#2563eb` / `#0f766e` / `#0e7490`，与实际 `accent` 不一致（属文档漂移，改新行时一并修正）。
+
+`web-training` 是全站唯一的**二级子域**（`www.web-training.*`），证书单独签发，
+域名在 1440px 下会被卡片 `truncate` 截尾，故在 `SiteCard.tsx` 里用 `title` 属性兜住完整地址。
+
+各站点的计算口径与免责声明以对应站内的说明为准；本站只做导航。
 
 ## 新增一个子站
 
@@ -23,6 +31,8 @@
 2. 字段约定：
    - `id` 必须等于该站在服务器上的 web 根目录名（巡检脚本按 `/var/www/<id>/.deployed-version` 取版本）。
    - `version` 写**不带 `v`** 的纯语义化版本号，渲染时统一补 `v`（见 `src/data/sites.ts` 的注释）。
+     必须**三段式 `x.y.z`**：`useLiveVersions` 的取值正则只认 `^v?(\d+\.\d+\.\d+)$`，
+     子站哨兵若写成两段式（如 `v1.0`）会被静默丢弃、卡片退回静态值，而且不报任何错。
    - `accent` 取该站自己的 `--color-primary`，让卡片点缀色与子站一致。
 3. 若新子域要用 `www.` 别名，**必须先重签证书**：当前通配符 `*.power-knowledge.tech` 只覆盖一级子域，
    且各 `www.` 名称是逐个手工附加进 SAN 的，不是通配符带来的。

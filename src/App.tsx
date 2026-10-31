@@ -17,26 +17,31 @@ import { onSectionClick, useSectionRoute } from './lib/sectionRoute'
 const REPO_URL = 'https://github.com/WisdomHuang2020/main-website-entrance'
 
 /** 首屏四个数字。全部为可核实事实，不写修辞：
- *  工具数 5（sites.json 长度）、后端依赖 0 与数据上传 0（五个子站 src/ 内
- *  fetch/axios/XMLHttpRequest/sendBeacon/WebSocket 命中均为 0 行，且部署形态是
- *  nginx 托管纯静态文件，不存在后端）、独立域名 5（每站一个子域）。 */
+ *  站点数取 SITES.length 而**不硬编码** —— 加一个子站却忘了同步这里，
+ *  首屏就会挂着一个当场撒谎的数字（2026-10-31 接入 web-training 时正是这个坑）；
+ *  后端依赖 0 与数据上传 0 覆盖全部六个站：各站源码内
+ *  fetch/axios/XMLHttpRequest/sendBeacon/WebSocket 命中均为 0 行
+ *  （web-training 接入时单独复查过 site/ 全量 JS/HTML，同为 0），
+ *  且部署形态一律是 nginx 托管纯静态文件，不存在后端；
+ *  独立域名同样取 SITES.length（每站一个子域）。 */
 const STATS = [
-  { value: '5', unit: '个', label: '在线工具' },
+  { value: String(SITES.length), unit: '个', label: '在线站点' },
   { value: '0', unit: '项', label: '后端依赖' },
   { value: '0', unit: '项', label: '数据上传' },
-  { value: '5', unit: '个', label: '独立域名' },
+  { value: String(SITES.length), unit: '个', label: '独立域名' },
 ]
 
 const PRINCIPLES: { icon: LucideIcon; title: string; desc: string }[] = [
   {
     icon: Cpu,
     title: '纯本地计算',
-    // 措辞只保留可核实的事实：五个子站 src/ 内 fetch/axios/XHR/sendBeacon/WebSocket
+    // 措辞只保留可核实的事实：六个子站源码内 fetch/axios/XHR/sendBeacon/WebSocket
     // 命中均为 0 行，故「无后端调用、不上传服务器」成立。
     // 不要写「断网后仍可使用」—— 各站字体走 Google Fonts CDN，断网体验无保证。
     // 不要写「不留存」—— LLC 站的 DesignContext.tsx 会把设计参数/结果/建议/曲线
     // 写进 localStorage（实测 27 处命中），该说法对它不成立。
-    desc: '全部运算在浏览器内完成；页面不含任何后端调用，输入数据不上传服务器。',
+    // 用「功能」而非「运算」：web-training 是课程站，没有计算可谈，但同样全在前端完成。
+    desc: '全部功能在浏览器内完成；页面不含任何后端调用，输入数据不上传服务器。',
   },
   {
     icon: FunctionSquare,
@@ -103,12 +108,12 @@ export default function App() {
             <h1 className="mt-8 text-[2.75rem] leading-[1.06] font-bold tracking-[-0.03em] text-balance sm:text-6xl lg:text-7xl">
               一个入口
               <br className="hidden sm:block" />
-              <span className="text-gradient">直达全部工程工具</span>
+              <span className="text-gradient">直达全部工程工具与课程</span>
             </h1>
 
             <p className="mt-8 max-w-3xl text-lg leading-relaxed text-text-secondary sm:text-xl">
-              这里汇集本人开发的电源、光学与电气工程在线工具。它们都是纯前端应用 ——
-              打开即用、输入数据不出浏览器，公式与假设写在各自站内，结论可手工复核。
+              这里汇集本人开发的电源、光学与电气工程在线工具，外加一套把站点从本机推到线上的实训课。
+              工具都是纯前端应用 —— 打开即用、输入数据不出浏览器，公式与假设写在各自站内，结论可手工复核。
             </p>
 
             <div className="mt-11 flex flex-wrap items-center gap-3">
@@ -117,7 +122,7 @@ export default function App() {
                 onClick={(e) => onSectionClick(e, 'tools')}
                 className="inline-flex items-center gap-2 rounded-lg bg-brand px-6 py-3.5 text-sm font-medium text-white transition-colors hover:bg-brand-light"
               >
-                查看全部工具
+                查看全部工具与课程
                 <ArrowDown className="h-4 w-4" strokeWidth={1.8} />
               </a>
               <a
@@ -161,20 +166,21 @@ export default function App() {
         >
           <div className="mb-12 flex flex-wrap items-end justify-between gap-4">
             <div>
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">工具集</h2>
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">工具与课程</h2>
               <p className="mt-3 text-base text-text-muted">
-                点击卡片将在新标签页打开对应的工具站
+                点击卡片将在新标签页打开对应的站点
               </p>
             </div>
             <span className="font-mono text-sm text-text-muted">
-              {String(SITES.length).padStart(2, '0')} 个工具
+              {String(SITES.length).padStart(2, '0')} 个站点
             </span>
           </div>
 
-          {/* 6 列网格：首 3 张各占 2 列（= 一行 3 张），末 2 张各占 3 列（= 一行 2 张）。
-              5 个工具若按 3 列排，末行会空出一格、看着像"少了一个"；
-              这样收口后末行刚好填满，像一份编目而不是没排完。
-              规则写成 SITES.length % 3 === 2 判定，将来加到 6 个站时自动退回「两行各 3 张」。 */}
+          {/* 6 列网格，跨度按站点数自适应：
+              数量 % 3 === 2 时（如 5 站）首 3 张各占 2 列、末 2 张各占 3 列，
+              否则末行会空出一格、看着像"少了一个"；
+              数量能被 3 整除时（2026-10-31 加入 web-training 后为 6 站）全部各占 2 列，
+              正好两行各 3 张 —— 早先注释里预留的"加到 6 个站自动退回两行各 3 张"已生效。 */}
           <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-6">
             {SITES.map((site, i) => {
               const isWideTail = SITES.length % 3 === 2 && i >= SITES.length - 2

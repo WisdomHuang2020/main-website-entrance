@@ -28,7 +28,9 @@ export interface SectionLink {
 }
 
 export const SECTION_LINKS: SectionLink[] = [
-  { path: './tools', id: 'tools', label: '工具集' },
+  // label 随收录内容放宽（2026-10-31 加入课程站）；path 与 id 保持 tools 不变 ——
+  // 它们是已对外发布的深链地址 /tools，改掉会让旧链接 404。
+  { path: './tools', id: 'tools', label: '工具与课程' },
   { path: './engineers', id: 'principles', label: '工程口径' },
 ]
 
