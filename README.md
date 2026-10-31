@@ -14,13 +14,16 @@
 | AHB 不对称半桥反激设计工具 | `ahb.power-knowledge.tech` | `#0d9488` |
 | 光学概念和光学设计 | `optical.power-knowledge.tech` | `#14b8a6` |
 | 电源与照明工程计算器 | `widget.power-knowledge.tech` | `#2dd4bf` |
-| 网站建设实训课（课程，非计算工具） | `www.web-training.power-knowledge.tech` | `#0f766e` |
+| 网站建设实训课（课程，非计算工具） | `web-training.power-knowledge.tech` | `#0f766e` |
 
 主色列取各站自己的 `--color-primary`，即 `src/data/sites.json` 的 `accent`。
 **本节曾在 2026-10-31 校正过一次**：此前表格里 interleavedpfc / ahb / widget 三行写的是
 `#2563eb` / `#0f766e` / `#0e7490`，与实际 `accent` 不一致（属文档漂移，改新行时一并修正）。
 
-`web-training` 是全站唯一的**二级子域**（`www.web-training.*`），证书单独签发，
+`web-training` 是全站唯一的**二级子域**，**实际服务域名带 `www.` 前缀**
+（`www.web-training.power-knowledge.tech`），证书因此单独签发；
+表格里为与其他 5 行格式一致省去了 `www.`，裸名访问会 **301 跳到带 www 的地址**
+（2026-10-31 实测：裸名 301 → www，跟随 1 跳后 200）。
 域名在 1440px 下会被卡片 `truncate` 截尾，故在 `SiteCard.tsx` 里用 `title` 属性兜住完整地址。
 
 各站点的计算口径与免责声明以对应站内的说明为准；本站只做导航。
