@@ -1,3 +1,4 @@
+import { Github } from 'lucide-react'
 import BrandMark from './BrandMark'
 
 export default function Footer() {
@@ -53,8 +54,13 @@ export default function Footer() {
               href="https://wisdomhuang2020.github.io/main-website-entrance/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-text-secondary underline decoration-border-light underline-offset-2 transition-colors hover:text-brand-light"
+              className="inline-flex items-center gap-1.5 text-text-secondary underline decoration-border-light underline-offset-2 transition-colors hover:text-brand-light"
             >
+              {/* 图标取 14px：本处文字是 text-xs(12px)，与 LLC 站同一个写法
+                  （`<Github /> GitHub`），但那边是 16px 配 text-sm(14px)；
+                  照搬 16px 配 12px 会显得头重脚轻，故按比例收一档。
+                  aria-hidden：文字已写明 GitHub，图标属装饰，不该被读屏重复朗读。 */}
+              <Github className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
               GitHub Pages
             </a>
           </p>
