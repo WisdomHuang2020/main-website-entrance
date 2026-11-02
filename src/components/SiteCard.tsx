@@ -79,9 +79,10 @@ export default function SiteCard({
           >
             v{version}
           </span>
-          {/* 域名可能被 truncate 掉尾（web-training 是全站唯一的二级子域
-              www.web-training.*，比其他站多 4 个字符，1440 下必然截断）。
-              截断是防破版的设计，但完整地址必须可读 —— 用 title 兜住。 */}
+          {/* 域名用 truncate 防止超长地址破版；宽度够时完整显示。
+              一旦截断，完整地址仍必须可读 —— 用 title 兜住。
+              （2026-11-02 前 web-training 显示带 www 的 38 字符版本，1440px 下确实截尾；
+               改为裸名 34 字符后不再截断，但规则保留，防止将来出现更长的子域。） */}
           <span className="truncate font-mono text-[11px] text-text-muted" title={site.domain}>
             {site.domain}
           </span>

@@ -20,11 +20,13 @@
 **本节曾在 2026-10-31 校正过一次**：此前表格里 interleavedpfc / ahb / widget 三行写的是
 `#2563eb` / `#0f766e` / `#0e7490`，与实际 `accent` 不一致（属文档漂移，改新行时一并修正）。
 
-`web-training` 是全站唯一的**二级子域**，**实际服务域名带 `www.` 前缀**
-（`www.web-training.power-knowledge.tech`），证书因此单独签发；
-表格里为与其他 5 行格式一致省去了 `www.`，裸名访问会 **301 跳到带 www 的地址**
-（2026-10-31 实测：裸名 301 → www，跟随 1 跳后 200）。
-域名在 1440px 下会被卡片 `truncate` 截尾，故在 `SiteCard.tsx` 里用 `title` 属性兜住完整地址。
+`web-training` 的对外写法与其余五行一致（`web-training.power-knowledge.tech`），
+但它的**实际服务域带 `www.` 前缀**（`www.web-training.power-knowledge.tech`），证书因此单独签发。
+裸名访问会 **301 跳到带 `www.` 的地址**（2026-11-02 实测：301 → www，跟随 1 跳后 200）。
+
+2026-11-02 起卡片也改为显示裸名，`sites.json` 的 `domain` / `url` 同步为裸名。
+此前显示带 `www.` 的版本共 38 字符，在 1440px 下会被 `truncate` 截尾；改裸名后 34 字符完整显示，
+且与其余五行的写法统一。点击后仍会跟随一次 301（与 llc / interleavedpfc / ahb 三站同构）。
 
 各站点的计算口径与免责声明以对应站内的说明为准；本站只做导航。
 
