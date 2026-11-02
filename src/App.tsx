@@ -100,14 +100,17 @@ export default function App() {
           <div className="shell relative px-5 py-24 sm:px-8 sm:py-32 lg:px-10 lg:py-40">
             {/* 眉标：字号 12px(text-xs) → 24px(text-2xl) 即放大一倍，字重 500 → 700 加粗。
                 内边距与小圆点按同比例放大 —— 24px 的字配 6px 的点、6px 的内边距会显得破。
-                2026-10-31 曾短暂为 4 项（多一个「电气工程」）：4 项自然宽 408px，在 360–430
-                视口必然折行；而 CJK 默认可在任意字间断行，会把词劈开（实测「信息技术」被切成
-                「信」/「息技术」），故加了 `break-keep`（word-break: keep-all）。
-                现为 3 项（自然宽约 293px，360px 视口也放得下一行），break-keep 不再被触发，
-                但**保留它作为将来再加项时的护栏** —— 单行渲染下它不改变任何表现。 */}
+                分隔符用 **U+00B7 MIDDLE DOT 且两侧不留空格**（`电源·光学·信息技术`）：
+                2026-11-02 按用户给的参考图收紧 —— 此前写作 `电源 · 光学 · 信息技术`
+                （点两侧各一个半角空格），24px 下间隙过大，点看着像"浮"在两个词之间。
+                注意 U+00B7 本身就是垂直居中的点，不需要额外偏移；换成 `・`(U+30FB) 会更宽。
+                ⚠️ 去空格后整串**没有换行点**了，`break-keep` 因此是必需的：
+                否则 CJK 可任意字间断行（会把「信息技术」劈开）。
+                代价是它也**永远不能折行** ⇒ 若日后再加第 4 项，须重新评估窄屏是否放得下
+                （2026-11-02 实测 3 项 24px 去掉空格后 pill 宽 **270px**，360px 视口容器内宽 320px）。 */}
             <span className="inline-flex items-center gap-2.5 rounded-full border border-brand/30 bg-brand/10 px-5 py-2 text-2xl font-bold break-keep text-brand-light">
               <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-brand-light" />
-              电源 · 光学 · 信息技术
+              电源·光学·信息技术
             </span>
 
             <h1 className="mt-8 text-[2.75rem] leading-[1.06] font-bold tracking-[-0.03em] text-balance sm:text-6xl lg:text-7xl">
