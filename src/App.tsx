@@ -100,17 +100,29 @@ export default function App() {
           <div className="shell relative px-5 py-24 sm:px-8 sm:py-32 lg:px-10 lg:py-40">
             {/* 眉标：字号 12px(text-xs) → 24px(text-2xl) 即放大一倍，字重 500 → 700 加粗。
                 内边距与小圆点按同比例放大 —— 24px 的字配 6px 的点、6px 的内边距会显得破。
-                分隔符用 **U+00B7 MIDDLE DOT 且两侧不留空格**（`电源·光学·信息技术`）：
-                2026-11-02 按用户给的参考图收紧 —— 此前写作 `电源 · 光学 · 信息技术`
-                （点两侧各一个半角空格），24px 下间隙过大，点看着像"浮"在两个词之间。
-                注意 U+00B7 本身就是垂直居中的点，不需要额外偏移；换成 `・`(U+30FB) 会更宽。
-                ⚠️ 去空格后整串**没有换行点**了，`break-keep` 因此是必需的：
-                否则 CJK 可任意字间断行（会把「信息技术」劈开）。
-                代价是它也**永远不能折行** ⇒ 若日后再加第 4 项，须重新评估窄屏是否放得下
-                （2026-11-02 实测 3 项 24px 去掉空格后 pill 宽 **270px**，360px 视口容器内宽 320px）。 */}
-            <span className="inline-flex items-center gap-2.5 rounded-full border border-brand/30 bg-brand/10 px-5 py-2 text-2xl font-bold break-keep text-brand-light">
-              <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-brand-light" />
-              电源·光学·信息技术
+
+                词间分隔用**渲染出来的圆点（span + rounded-full）**，不再用「·」字符：
+                  · 字符版本的位置**由字体决定** —— U+00B7 在 Inter 里居 x 字高中线，
+                    而汉字有独立的视觉中心，两者只能近似对齐；更麻烦的是本站字体走 Google Fonts CDN，
+                    在字体加载失败/被拦的机器上会回退到系统字体，点的位置随之改变（同一份代码两种观感）。
+                  · 渲染圆点由 `items-center` 决定垂直位置，**与字体无关**，
+                    且与左侧那个脉冲指示点落在同一条中线上（2026-11-02 实测：两者中心差 0.33px）。
+                间距/尺寸按用户给的参考图定：间隙 ≈8–9px、点径 5px（参考图换算到 24px 后为 8.2/8.9px 与 4.8px）。
+                ⚠️ 代价：分隔符不再是文本字符，复制这段文字只会得到「电源光学信息技术」。
+                对一个装饰性眉标可以接受；若日后要求可复制的分隔符，需换回字符版并接受字体差异。 */}
+            <span className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-full border border-brand/30 bg-brand/10 px-5 py-2 text-2xl font-bold text-brand-light">
+              <span className="h-2.5 w-2.5 shrink-0 animate-pulse rounded-full bg-brand-light" />
+              {/* 「词 + 后置圆点」各成一组（nowrap），折行只发生在组与组之间
+                  —— 这样点永远不会被甩到下一行的行首，也不会把词劈开。 */}
+              <span className="inline-flex items-center gap-[8px] whitespace-nowrap">
+                <span>电源</span>
+                <span className="h-[4px] w-[4px] shrink-0 rounded-full bg-brand-light" aria-hidden="true" />
+              </span>
+              <span className="inline-flex items-center gap-[8px] whitespace-nowrap">
+                <span>光学</span>
+                <span className="h-[4px] w-[4px] shrink-0 rounded-full bg-brand-light" aria-hidden="true" />
+              </span>
+              <span className="whitespace-nowrap">信息技术</span>
             </span>
 
             <h1 className="mt-8 text-[2.75rem] leading-[1.06] font-bold tracking-[-0.03em] text-balance sm:text-6xl lg:text-7xl">
