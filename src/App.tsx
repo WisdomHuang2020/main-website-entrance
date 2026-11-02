@@ -17,31 +17,35 @@ import { onSectionClick, useSectionRoute } from './lib/sectionRoute'
 const REPO_URL = 'https://github.com/WisdomHuang2020/main-website-entrance'
 
 /** 首屏四个数字。全部为可核实事实，不写修辞：
- *  站点数取 SITES.length 而**不硬编码** —— 加一个子站却忘了同步这里，
- *  首屏就会挂着一个当场撒谎的数字（2026-10-31 接入 web-training 时正是这个坑）；
- *  后端依赖 0 与数据上传 0 覆盖全部六个站：各站源码内
- *  fetch/axios/XMLHttpRequest/sendBeacon/WebSocket 命中均为 0 行
- *  （web-training 接入时单独复查过 site/ 全量 JS/HTML，同为 0），
- *  且部署形态一律是 nginx 托管纯静态文件，不存在后端；
- *  独立域名同样取 SITES.length（每站一个子域）。 */
+ *  ① 站点数与独立域名数取 SITES.length 而**不硬编码** —— 加一个子站却忘了同步这里，
+ *    首屏就会挂着一个当场撒谎的数字（2026-10-31 接入 web-training 时正是这个坑）。
+ *  ② 2026-11-02 五个子站接入留言板后，原先的「后端依赖 0 项」「数据上传 0 项」
+ *    **已不成立**，必须换掉，否则首屏当场说谎。判据：各站 nginx 均新增
+ *    `location ^~ /api/` 反代到 127.0.0.1:8792，服务端确有 SQLite 落库。
+ *    改为「注册门槛 0 项」「计算数据上传 0 项」——这两条仍然可核实：
+ *      · 全部工具匿名可用，没有任何账号体系拦在计算功能前面；
+ *      · 计算/设计的输入参数只在浏览器内参与运算，不发往服务器
+ *        （留言是唯一例外，且只存用户主动提交的文字，见 PRINCIPLES）。
+ *  ③ 不要改回「后端依赖 0」这类绝对表述。它曾经是真的，现在是假的；
+ *    文案的可信度靠的是每条都经得起核对，不是数字好看。 */
 const STATS = [
   { value: String(SITES.length), unit: '个', label: '在线站点' },
-  { value: '0', unit: '项', label: '后端依赖' },
-  { value: '0', unit: '项', label: '数据上传' },
   { value: String(SITES.length), unit: '个', label: '独立域名' },
+  { value: '0', unit: '项', label: '使用门槛' },
+  { value: '0', unit: '项', label: '计算数据上传' },
 ]
 
 const PRINCIPLES: { icon: LucideIcon; title: string; desc: string }[] = [
   {
     icon: Cpu,
-    title: '纯本地计算',
-    // 措辞只保留可核实的事实：六个子站源码内 fetch/axios/XHR/sendBeacon/WebSocket
-    // 命中均为 0 行，故「无后端调用、不上传服务器」成立。
-    // 不要写「断网后仍可使用」—— 各站字体走 Google Fonts CDN，断网体验无保证。
-    // 不要写「不留存」—— LLC 站的 DesignContext.tsx 会把设计参数/结果/建议/曲线
-    // 写进 localStorage（实测 27 处命中），该说法对它不成立。
-    // 用「功能」而非「运算」：web-training 是课程站，没有计算可谈，但同样全在前端完成。
-    desc: '全部功能在浏览器内完成；页面不含任何后端调用，输入数据不上传服务器。',
+    title: '计算在本地',
+    // 2026-11-02 改写：五个子站接入留言板后，「页面不含任何后端调用」这句不再成立
+    // （/api/feedback、/api/admin/* 都是真实的后端调用）。但**计算本身**仍然全在前端：
+    // 输入参数只参与浏览器内运算，不发往服务器。这两件事必须分开说，
+    // 否则要么撒谎（说无后端），要么连真话一起丢掉（说数据都上传）。
+    // 仍需避免的表述：「断网后仍可使用」—— 字体走 Google Fonts CDN，断网体验无保证；
+    // 「不留存」—— LLC 站会把设计参数写进 localStorage（实测 27 处）。
+    desc: '计算与设计全部在浏览器内完成，输入参数不回传服务器；各站只有留言一项经服务端落库，且仅作者可见。',
   },
   {
     icon: FunctionSquare,
@@ -55,8 +59,10 @@ const PRINCIPLES: { icon: LucideIcon; title: string; desc: string }[] = [
   },
   {
     icon: ShieldCheck,
-    title: '无需注册',
-    desc: '纯静态站点，没有账号体系，也不埋点采集任何使用数据。',
+    title: '免注册可用',
+    // 原文案写「纯静态站点，没有账号体系」—— 留言板后台确实有账号，
+    // 但它只属于作者一人，读者侧仍然零门槛。按读者视角如实描述。
+    desc: '使用全部工具不需要注册，也不埋点采集使用数据；后台账号只有作者一人持有。',
   },
 ]
 
@@ -133,7 +139,8 @@ export default function App() {
 
             <p className="mt-8 max-w-3xl text-lg leading-relaxed text-text-secondary sm:text-xl">
               这里汇集本人开发的电源与光学在线工具，外加一套把站点从本机推到线上的信息技术实训课。
-              工具都是纯前端应用 —— 打开即用、输入数据不出浏览器，公式与假设写在各自站内，结论可手工复核。
+              工具都是纯前端应用 —— 打开即用、输入参数不出浏览器，公式与假设写在各自站内，结论可手工复核。
+              发现哪里算错了，可直接在对应站点的「留言」里指出，留言只有本人能看到。
             </p>
 
             <div className="mt-11 flex flex-wrap items-center gap-3">

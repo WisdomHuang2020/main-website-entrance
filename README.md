@@ -72,6 +72,27 @@ npm run check:versions -- --host 43.142.148.37 --key ~/.ssh/pfc_ci   # 子站版
    两个 server 块声明同一个 `server_name` 会触发 nginx `conflicting server name` 警告，
    匹配顺序变得不可预期。
 
+## 站群留言板后端（`server/feedback-api/`）
+
+本站是纯静态门户，但**站群**自 2026-11-02 起不再全静态：五个工具/课程站各加了
+「读者留言」，留言的可见性必须在服务端判定，因此有一个自建 Node 服务。
+
+它放在本仓库，是因为入口站是站群的协调点（nginx 里的 `/api/version/<id>` 端点也在这里），
+而不是因为本站自己用到了它 —— **入口页自身不调用任何后端接口**。
+
+| 项 | 值 |
+|---|---|
+| 代码 | `server/feedback-api/`（`index.mjs` / `sites.mjs` / `init-site.mjs`）|
+| 部署位置 | 服务器 `/opt/feedback-api/`，systemd 单元 `feedback-api.service` |
+| 监听 | `127.0.0.1:8792`，由各站 nginx 的 `location ^~ /api/` 反代 |
+| 接入站点 | llc / interleavedpfc / ahb / optical / web-training（widget 另有单站版，端口 8791）|
+
+部署、初始化管理员（一次性令牌，密码不经过聊天记录）、备份与排障，
+全部写在 **`server/feedback-api/README.md`**，改动前先读它。
+
+⚠️ 本仓库的 CI **只发布 `dist`**，不会部署 `/opt/feedback-api`。
+后端代码变更须按上述 README 手工同步到服务器，否则前端会报「留言服务尚未就绪」。
+
 ## 部署链路
 
 - `deploy-lighthouse.yml` —— 正式域名。需要仓库 secrets：`LH_HOST` / `LH_USER` / `LH_ROOT`
