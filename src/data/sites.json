@@ -13,7 +13,7 @@
     ],
     "accent": "#115e59",
     "icon": "activity",
-    "version": "3.0.0"
+    "version": "3.1.0"
   },
   {
     "id": "interleavedpfc",
@@ -29,7 +29,7 @@
     ],
     "accent": "#0f766e",
     "icon": "waves",
-    "version": "1.0.0"
+    "version": "1.1.0"
   },
   {
     "id": "ahb",
@@ -45,7 +45,7 @@
     ],
     "accent": "#0d9488",
     "icon": "zap",
-    "version": "2.0.0"
+    "version": "2.1.0"
   },
   {
     "id": "optical",
@@ -61,7 +61,7 @@
     ],
     "accent": "#14b8a6",
     "icon": "lightbulb",
-    "version": "4.0.0"
+    "version": "4.1.0"
   },
   {
     "id": "widget",
@@ -93,6 +93,6 @@
     ],
     "accent": "#0f766e",
     "icon": "book",
-    "version": "2.0.0"
+    "version": "2.1.0"
   }
 ]

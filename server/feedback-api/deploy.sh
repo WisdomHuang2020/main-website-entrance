@@ -60,15 +60,22 @@ fi
 # ── ① 部署后端 ──────────────────────────────────────────────────────────────
 if [ "$MODE" != "--nginx-only" ]; then
   say "① 上传后端到 /opt/feedback-api"
-  $SSH 'mkdir -p /opt/feedback-api /var/lib/feedback-api'
+  # uploads 必须与 data.db 同级同属主：附件由服务进程（www-data）直接写盘，
+  # 目录不存在或属主不对会在第一次上传时抛 EACCES，而那时读者已经填完整篇描述。
+  $SSH 'mkdir -p /opt/feedback-api /var/lib/feedback-api /var/lib/feedback-api/uploads'
   tar -C "$ROOT/server/feedback-api" -czf - index.mjs sites.mjs init-site.mjs feedback-api.service README.md \
     | $SSH "tar -xzf - -C /opt/feedback-api"
-  $SSH 'chown -R www-data:www-data /opt/feedback-api /var/lib/feedback-api && chmod 750 /var/lib/feedback-api'
+  $SSH 'chown -R www-data:www-data /opt/feedback-api /var/lib/feedback-api && chmod 750 /var/lib/feedback-api && chmod 750 /var/lib/feedback-api/uploads'
   echo "   已上传：$(ls "$ROOT/server/feedback-api" | tr '\n' ' ')"
 
   say "② 安装并启动 systemd 单元"
+  # ⚠️ 必须 restart 而不是 enable --now：后者对**已在运行**的服务是空操作，
+  # 表现为「脚本报成功、文件已更新、但进程还在跑旧代码」。
+  # 2026-11-02 加附件功能时正是这样：服务启动于 19:36，新代码 19:56 落盘，
+  # 接口却仍按旧逻辑返回，排查了一轮才发现进程从未重启。
   $SSH 'cp /opt/feedback-api/feedback-api.service /etc/systemd/system/ && \
-        systemctl daemon-reload && systemctl enable --now feedback-api'
+        systemctl daemon-reload && systemctl enable feedback-api && \
+        systemctl restart feedback-api'
   sleep 2
   $SSH 'systemctl is-active --quiet feedback-api' || {
     $SSH 'journalctl -u feedback-api -n 30 --no-pager' >&2

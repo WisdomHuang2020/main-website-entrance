@@ -39,8 +39,8 @@
 import { createServer } from 'node:http'
 import { DatabaseSync } from 'node:sqlite'
 import { randomBytes, scryptSync, timingSafeEqual, createHash } from 'node:crypto'
-import { mkdirSync } from 'node:fs'
-import { dirname } from 'node:path'
+import { mkdirSync, writeFileSync, readFileSync, unlinkSync, existsSync } from 'node:fs'
+import { dirname, join } from 'node:path'
 
 import { SITES } from './sites.mjs'
 
@@ -86,6 +86,68 @@ const LIMITS = {
   username: 64,
   password: 200,
   passwordMin: 10,
+}
+
+// ── 附件（2026-11-02 新增）──────────────────────────────────────────────────
+/**
+ * 为什么落盘而不进数据库：SQLite 存 blob 会让单条留言的读写放大到 MB 级，
+// 备份与 WAL 也会被拖累；而这些文件只在管理员点开时读一次。
+ *
+ * 为什么是 base64 走 JSON 而不是 multipart：Node 内置模块没有 multipart 解析器，
+ * 手写边界解析（boundary、分块、编码、超长行）是典型的高风险低收益代码。
+ * 代价是流量膨胀 33%，对「留言附一张截图或一段日志」这个量级可以接受。
+ *
+ * 为什么禁止 SVG：SVG 是 XML，可以内联 <script>。即便以 attachment 下载，
+ * 仍有人会在本地用浏览器打开它——这类文件不该进入站群。
+ */
+const UPLOAD_DIR = process.env.UPLOAD_DIR || '/var/lib/feedback-api/uploads'
+const ATTACH = {
+  maxFiles: 3,
+  maxBytes: 2 * 1024 * 1024,      // 单文件 2MB
+  maxTotalBytes: 6 * 1024 * 1024, // 一次提交合计 6MB
+  // 白名单只放"留言时真会附上的东西"：截图、PDF 说明、日志文本。
+  allow: {
+    'image/png': 'png',
+    'image/jpeg': 'jpg',
+    'image/webp': 'webp',
+    'image/gif': 'gif',
+    'application/pdf': 'pdf',
+    'text/plain': 'txt',
+    'text/csv': 'csv',
+  },
+}
+
+/** 魔数校验：mime 是客户端自报的，必须用文件头复核，否则改个后缀就能混进来。 */
+function sniffOk(mime, buf) {
+  const b = (i) => buf[i]
+  switch (mime) {
+    case 'image/png':
+      return b(0) === 0x89 && b(1) === 0x50 && b(2) === 0x4e && b(3) === 0x47
+    case 'image/jpeg':
+      return b(0) === 0xff && b(1) === 0xd8 && b(2) === 0xff
+    case 'image/gif':
+      return b(0) === 0x47 && b(1) === 0x49 && b(2) === 0x46 && b(3) === 0x38
+    case 'image/webp':
+      return (
+        buf.slice(0, 4).toString('latin1') === 'RIFF' &&
+        buf.slice(8, 12).toString('latin1') === 'WEBP'
+      )
+    case 'application/pdf':
+      return buf.slice(0, 4).toString('latin1') === '%PDF'
+    case 'text/plain':
+    case 'text/csv': {
+      // 纯文本没有魔数，退而求其次：不能含 NUL 字节（二进制特征），且能按 UTF-8 解码
+      if (buf.includes(0)) return false
+      try {
+        new TextDecoder('utf-8', { fatal: true }).decode(buf.subarray(0, 4096))
+        return true
+      } catch {
+        return false
+      }
+    }
+    default:
+      return false
+  }
 }
 
 // ── 通用工具 ────────────────────────────────────────────────────────────────
@@ -222,6 +284,7 @@ const DUMMY_HASH = hashPassword(randomBytes(24).toString('base64'))
 
 // ── 数据库 ──────────────────────────────────────────────────────────────────
 mkdirSync(dirname(DB_PATH), { recursive: true })
+mkdirSync(UPLOAD_DIR, { recursive: true })
 const db = new DatabaseSync(DB_PATH)
 
 db.exec(`
@@ -263,13 +326,106 @@ db.exec(`
     created_at TEXT NOT NULL
   );
 
+  -- 附件元数据。文件本体在 UPLOAD_DIR 下，这里只记「谁、原名、多大、存在哪」。
+  -- orig_name 仅用于后台显示，永远不参与拼路径（防路径穿越）。
+  CREATE TABLE IF NOT EXISTS attachments (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    site        TEXT NOT NULL,
+    message_id  INTEGER NOT NULL,
+    orig_name   TEXT NOT NULL,
+    mime        TEXT NOT NULL,
+    size        INTEGER NOT NULL,
+    stored_name TEXT NOT NULL,
+    created_at  TEXT NOT NULL
+  );
+
   CREATE INDEX IF NOT EXISTS idx_msg_site_created ON messages(site, created_at DESC);
   CREATE INDEX IF NOT EXISTS idx_msg_site_status  ON messages(site, status);
+  CREATE INDEX IF NOT EXISTS idx_att_msg          ON attachments(message_id);
   CREATE INDEX IF NOT EXISTS idx_sess_site        ON sessions(site);
   CREATE INDEX IF NOT EXISTS idx_sess_expires     ON sessions(expires_at);
 `)
 
 const nowIso = () => new Date().toISOString()
+
+// ── 附件落盘与读取 ──────────────────────────────────────────────────────────
+/**
+ * 任一项不合规就**整批拒绝**，不写入部分文件。
+ * 半个附件比没有附件更让人困惑：读者以为传上去了，作者看到的是一半。
+ */
+function saveAttachments(site, messageId, files) {
+  if (!Array.isArray(files) || files.length === 0) return { saved: [] }
+  if (files.length > ATTACH.maxFiles) return { error: `最多 ${ATTACH.maxFiles} 个附件。` }
+
+  const prepared = []
+  let total = 0
+
+  for (const f of files) {
+    const name = typeof f?.name === 'string' ? f.name.slice(0, 120) : 'file'
+    const mime = typeof f?.mime === 'string' ? f.mime.toLowerCase() : ''
+    const ext = ATTACH.allow[mime]
+    if (!ext) {
+      return { error: `不支持的文件类型：${mime || '未知'}。仅允许 PNG / JPEG / WebP / GIF / PDF / TXT / CSV。` }
+    }
+
+    const b64 = typeof f?.data === 'string' ? f.data : ''
+    // 先按 base64 长度估算，避免把超大串解码后才判定
+    if (b64.length > Math.ceil((ATTACH.maxBytes * 4) / 3) + 16) {
+      return { error: `单个附件不能超过 ${ATTACH.maxBytes / 1024 / 1024} MB。` }
+    }
+    let buf
+    try {
+      buf = Buffer.from(b64, 'base64')
+    } catch {
+      return { error: '附件编码无效。' }
+    }
+    if (buf.length === 0) return { error: '附件内容为空。' }
+    if (buf.length > ATTACH.maxBytes) {
+      return { error: `单个附件不能超过 ${ATTACH.maxBytes / 1024 / 1024} MB。` }
+    }
+    total += buf.length
+    if (total > ATTACH.maxTotalBytes) {
+      return { error: `附件合计不能超过 ${ATTACH.maxTotalBytes / 1024 / 1024} MB。` }
+    }
+    if (!sniffOk(mime, buf)) {
+      return { error: `文件内容与类型不符：${name}` }
+    }
+    prepared.push({ name, mime, ext, buf })
+  }
+
+  const dir = join(UPLOAD_DIR, site)
+  mkdirSync(dir, { recursive: true })
+  const saved = []
+  for (const p of prepared) {
+    // 存储名完全由服务端生成；原始文件名只进数据库用于显示，绝不参与拼路径
+    const stored = `${randomBytes(16).toString('hex')}.${p.ext}`
+    writeFileSync(join(dir, stored), p.buf)
+    db.prepare(`
+      INSERT INTO attachments (site, message_id, orig_name, mime, size, stored_name, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).run(site, messageId, p.name, p.mime, p.buf.length, stored, nowIso())
+    saved.push({ name: p.name, mime: p.mime, size: p.buf.length })
+  }
+  return { saved }
+}
+
+function listAttachments(messageId) {
+  return db
+    .prepare('SELECT id, orig_name AS name, mime, size FROM attachments WHERE message_id = ?')
+    .all(messageId)
+}
+
+/** 删除留言时一并删文件，否则磁盘只增不减（这里没有回收站）。 */
+function deleteAttachmentsOf(site, messageId) {
+  const rows = db.prepare('SELECT stored_name FROM attachments WHERE message_id = ?').all(messageId)
+  for (const r of rows) {
+    const p = join(UPLOAD_DIR, site, r.stored_name)
+    try {
+      if (existsSync(p)) unlinkSync(p)
+    } catch {}
+  }
+  db.prepare('DELETE FROM attachments WHERE message_id = ?').run(messageId)
+}
 
 const q = {
   getAdmin: db.prepare('SELECT * FROM admins WHERE site = ?'),
@@ -401,7 +557,8 @@ route('POST', '/api/feedback', async (req, res, ctx) => {
     return sendJson(res, 429, { error: '提交过于频繁，请稍后再试。' })
   }
 
-  const body = await readJson(req)
+  // 正文 4000 字 + 附件 6MB，base64 后约 8MB；留到 12MB 免得卡在边界
+  const body = await readJson(req, 12 * 1024 * 1024)
   const page = str(body.page, LIMITS.page) || '未指定'
   const content = str(body.content, LIMITS.content)
   const contact = str(body.contact, LIMITS.contact)
@@ -422,8 +579,19 @@ route('POST', '/api/feedback', async (req, res, ctx) => {
     )
     .run(site.id, page, content, contact || null, 'new', nowIso(), ipHash(ip), uaHash)
 
-  console.log(`[feedback] ${site.id} 新增 #${r.lastInsertRowid} page=${page} len=${content.length}`)
-  sendJson(res, 201, { ok: true })
+  const messageId = Number(r.lastInsertRowid)
+
+  // 附件失败就回滚这条留言：宁可让读者重填，也不要留一条"正文到了、图没到"的记录
+  const att = saveAttachments(site.id, messageId, body.files)
+  if (att.error) {
+    db.prepare('DELETE FROM messages WHERE id = ? AND site = ?').run(messageId, site.id)
+    return sendJson(res, 400, { error: att.error })
+  }
+
+  console.log(
+    `[feedback] ${site.id} 新增 #${messageId} page=${page} len=${content.length} files=${att.saved.length}`,
+  )
+  sendJson(res, 201, { ok: true, attachments: att.saved.length })
 })
 
 // —— 管理：一次性令牌初始化 / 重置密码 ——
@@ -544,6 +712,9 @@ route('GET', '/api/admin/messages', async (req, res, ctx) => {
     )
     .all(...args, limit, offset)
 
+  // 附件随列表一起返回：后台要显示"有几张图"，分页拉取会让列表闪烁
+  for (const it of items) it.attachments = listAttachments(it.id)
+
   const total = Number(db.prepare(`SELECT COUNT(*) AS c FROM messages ${where}`).get(...args).c)
 
   const counts = { all: 0, new: 0, read: 0, archived: 0 }
@@ -587,7 +758,45 @@ route('DELETE', '/api/admin/messages/:id', async (req, res, ctx) => {
 
   const r = db.prepare('DELETE FROM messages WHERE id = ? AND site = ?').run(id, site.id)
   if (!r.changes) return sendJson(res, 404, { error: '留言不存在。' })
+  // 先删留言再删文件：即使删文件抛错，数据库也不会留下指向空文件的孤儿记录
+  deleteAttachmentsOf(site.id, id)
   sendJson(res, 200, { ok: true })
+})
+
+// —— 管理：下载附件 ——
+/**
+ * 必须带管理员会话才能下 —— 这不是"多余的一道锁"：留言本身对作者以外的
+ * 所有人不可见，附件里往往就是电路照片、客户截图，泄露一条等于泄露整条留言。
+ *
+ * Content-Type 一律 application/octet-stream + Content-Disposition: attachment：
+ * 就算上传的是 png，也不让浏览器内联渲染。历史上"图片内联 + 同源"是
+ * 存储型 XSS 的常见入口，这里直接掐掉这条路。
+ */
+route('GET', '/api/admin/attachments/:id', async (req, res, ctx) => {
+  const { site } = ctx
+  if (!readSession(req, site.id)) return sendJson(res, 401, { error: '未登录。' })
+
+  const id = Number(req.url.split('?')[0].split('/').pop())
+  if (!Number.isInteger(id)) return sendJson(res, 400, { error: 'id 无效。' })
+
+  const row = db.prepare('SELECT * FROM attachments WHERE id = ? AND site = ?').get(id, site.id)
+  if (!row) return sendJson(res, 404, { error: '附件不存在。' })
+
+  let buf
+  try {
+    buf = readFileSync(join(UPLOAD_DIR, site.id, row.stored_name))
+  } catch {
+    return sendJson(res, 404, { error: '附件文件已丢失（可能被手工清理过）。' })
+  }
+
+  res.writeHead(200, {
+    'Content-Type': 'application/octet-stream',
+    'Content-Length': buf.length,
+    'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent(row.orig_name)}`,
+    'X-Content-Type-Options': 'nosniff',
+    'Cache-Control': 'no-store',
+  })
+  res.end(buf)
 })
 
 // —— 管理：改密码 ——
