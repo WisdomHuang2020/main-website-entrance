@@ -22,8 +22,10 @@ export const SITE_TABLE = {
   interleavedpfc: {
     name: '交错并联 Boost PFC 设计工具',
     hosts: ['www.interleavedpfc.power-knowledge.tech', 'interleavedpfc.power-knowledge.tech'],
-    adminPath: '/#/admin',
-    feedbackPath: '/#/feedback',
+    // 该站 v0.4.0 起路由由 HashRouter 改为 BrowserRouter，后台是 /admin。
+    // 若日后又改回 hash 路由，这里与 README 的地址表要一起改。
+    adminPath: '/admin',
+    feedbackPath: '/feedback',
   },
   ahb: {
     name: 'AHB 不对称半桥反激设计工具',
