@@ -52,8 +52,10 @@ sites:
     version: 1.4.4
   - id: web-training
     repo:   git@github.com:WisdomHuang2020/web-training.git
-    # ⚠ 本站是二级子域（www.web-training.*），通配符 *.power-knowledge.tech
-    #   只覆盖一级，证书必须单独签发；裸域与 http 均 301 归一 www。
-    domain: www.web-training.power-knowledge.tech
+    # 入口页与本站对外写法均为裸名（与其余五站一致）；但**实际服务域带 www**。
+    # 原因：www.web-training.* 是二级子域，通配符 *.power-knowledge.tech 只覆盖一级，
+    # 证书必须单独签发；裸名与 http 均 301 归一 www。
+    domain: web-training.power-knowledge.tech
+    serve_domain: www.web-training.power-knowledge.tech   # 实际服务的地址，裸名一跳后的落点
     web_root: /var/www/web-training
-    version: 1.0.0            # 哨兵由该站 deploy/deploy.sh 在发布时写入，含三段式格式门禁
+    version: 1.5.3            # 哨兵由该站 deploy/deploy.sh 在发布时写入，含三段式格式门禁
