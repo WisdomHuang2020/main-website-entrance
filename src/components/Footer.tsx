@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="max-w-md">
           <div className="flex items-center gap-2.5">
             <BrandMark className="h-5 w-5 text-brand-light" />
-            <span className="text-sm font-semibold tracking-tight">Know-How.Tools.Skills</span>
+            <span className="text-sm font-semibold tracking-tight">Know-How·Tools·Skills</span>
             <span className="app-version font-mono text-[10px] text-text-muted">
               v{__APP_VERSION__}
             </span>
