@@ -1,4 +1,4 @@
-# Know-How&Tools&Skills · 站群入口门户
+# Know-How.Tools.Skills · 站群入口门户
 
 `power-knowledge.tech` 的入口页 —— 把站群内的在线工具与实训课程收在一处，作为统一门面。
 

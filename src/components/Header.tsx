@@ -13,15 +13,16 @@ export default function Header() {
         >
           <BrandMark className="h-7 w-7 shrink-0 text-brand-light" />
           {/* 品牌文字与版本徽标在 <sm 隐藏。
-              为什么：2026-10-31 品牌名由「Power Knowledge」（15 字符）改为
-              「Know-How&Tools&Skills」（20 字符，宽 183px）后，页头内容在 360px 下需 413px、
-              390px 下也超过视口；同时导航项被挤成**每个字一行**（「工具与课程」折 5 行、
-              高 116px），而页头高度固定 65px ⇒ 文字溢出页头外。
+              起因（2026-10-31 实测）：品牌名由「Power Knowledge」（15 字符）改为更长的
+              「Know-How.Tools.Skills」（21 字符、宽 172px）后，页头在窄屏放不下 ——
+              最早那一版用 `&` 连接（21 字符、183px）时，360px 需 413px、390px 也超视口，
+              导航项还被挤成**每个字一行**（「工具与课程」折 5 行、高 116px > 页头固定 65px）。
+              改用点号只窄了 11px，不足以让它回到窄屏页头，故隐藏策略保留。
               窄屏留六边形标记即足以识别品牌（标记本身就是品牌符号），版本号在页脚仍有一处。
               ⚠️ 用 CSS 隐藏而非条件渲染：`.app-version` 必须留在 DOM 里，
               scripts/verify-version.mjs 的「显示点 ≥ 2 处」断言依赖它存在。 */}
           <span className="hidden text-base font-bold tracking-tight sm:inline">
-            Know-How&Tools&Skills
+            Know-How.Tools.Skills
           </span>
           {/* 版本号显示点之一（另一处在页脚）。两处共用 __APP_VERSION__ 同一常量，
               由 scripts/verify-version.mjs 断言不得各自硬编码。
