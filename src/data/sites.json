@@ -13,7 +13,7 @@
     ],
     "accent": "#115e59",
     "icon": "activity",
-    "version": "2.10.150"
+    "version": "3.0.0"
   },
   {
     "id": "interleavedpfc",
@@ -29,7 +29,7 @@
     ],
     "accent": "#0f766e",
     "icon": "waves",
-    "version": "0.4.6"
+    "version": "1.0.0"
   },
   {
     "id": "ahb",
@@ -45,7 +45,7 @@
     ],
     "accent": "#0d9488",
     "icon": "zap",
-    "version": "1.6.7"
+    "version": "2.0.0"
   },
   {
     "id": "optical",
@@ -61,7 +61,7 @@
     ],
     "accent": "#14b8a6",
     "icon": "lightbulb",
-    "version": "3.11.9"
+    "version": "4.0.0"
   },
   {
     "id": "widget",
@@ -77,7 +77,7 @@
     ],
     "accent": "#2dd4bf",
     "icon": "calculator",
-    "version": "1.4.4"
+    "version": "2.0.0"
   },
   {
     "id": "web-training",
@@ -93,6 +93,6 @@
     ],
     "accent": "#0f766e",
     "icon": "book",
-    "version": "1.5.3"
+    "version": "2.0.0"
   }
 ]
