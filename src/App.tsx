@@ -152,7 +152,7 @@ export default function App() {
                   ④ 卡内：标题、描述、主体区、底栏四层同款
                 强调色分工：第一入口 teal，第二入口 internal 蓝，同构但一眼可分辨。
                 背景装饰（hero-glow / hero-grid / 出血六边形水印）按用户选择**全部保留、一个没动**。 */}
-            <div className="grid gap-14 lg:grid-cols-2 lg:gap-12">
+            <div className="grid gap-14 lg:grid-cols-2 lg:gap-14 xl:gap-16">
               {/* ── 第一入口：公开 ──
                   眉标按用户要求改成「白色 + 放大」，参照右下角「进入内网入口」按钮的
                   text-white / font-medium。原为 11px text-text-muted + 0.16em 大字距，
@@ -161,7 +161,7 @@ export default function App() {
                   **保留 font-mono**：「第一入口 · 公开」里的 U+00B7 位置随字体 fallback 漂移，
                   换字体家族会把 11-02 那轮调过的圆点问题重新引回来。 */}
               <div className="flex flex-col">
-                <span className="mb-5 block font-mono text-base font-medium tracking-[0.06em] text-white uppercase">
+                <span className="mb-6 block font-mono text-base font-medium tracking-[0.06em] text-white uppercase">
                   第一入口 · 公开
                 </span>
 
@@ -183,24 +183,25 @@ export default function App() {
                   <span className="whitespace-nowrap">信息技术</span>
                 </span>
 
-                {/* 标题按卡片内宽重算：xl 每栏 576px，减 p-8×2=64 → 512px 可用；
-                    「直达全部工程工具与课程」11 字在 30px 时约 330px，单行放得下。
+                {/* 标题按卡片内宽重算（2026-11-07「更大气」整体放大一档）：
+                    xl 每栏 568px，减 p-10×2=80 → 488px 可用；
+                    「直达全部工程工具与课程」11 字在 40px 时约 440px，单行放得下（余量 48px）。
+                    lg(1024) 每栏 444px、内容宽 364px，40px 会折行 ⇒ 该档仍用 text-3xl(30px)。
                     <br> 必须**始终生效**：原先写 hidden sm:block，窄屏把两句连成 16 字，
-                    390px 下会断出「与课程」孤儿行（实测）。窄屏改 text-xl + 卡片 p-5，
-                    11 字 × 20px ≈ 220px < 240px 可用宽，仍是整齐两行。
-                    原先 48px 是单栏时代的尺度，塞进半栏卡片会折三行。 */}
-                <div className="group mt-6 flex flex-1 flex-col rounded-2xl border border-brand/30 bg-surface/70 p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand/50 hover:bg-surface sm:p-8">
-                  <h1 className="text-xl leading-[1.15] font-bold tracking-[-0.02em] sm:text-3xl">
+                    390px 下会断出「与课程」孤儿行（实测）。窄屏 text-xl + 卡片 p-6，
+                    11 字 × 20px ≈ 220px < 232px 可用宽（320px 视口），仍是整齐两行。 */}
+                <div className="group mt-7 flex flex-1 flex-col rounded-2xl border border-brand/30 bg-surface/70 p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand/50 hover:bg-surface sm:p-10">
+                  <h1 className="text-xl leading-[1.12] font-bold tracking-[-0.03em] sm:text-3xl xl:text-[2.5rem]">
                     一个入口
                     <br />
                     直达全部工程工具与课程
                   </h1>
 
-                  <p className="mt-4 text-[15px] leading-relaxed text-text-secondary">
+                  <p className="mt-5 text-[15px] leading-relaxed text-text-secondary sm:text-base">
                     这里汇集本人开发的电源与光学在线工具，外加一套把站点从本机推到线上的信息技术实训课。
                   </p>
 
-                  <div className="mt-5 text-[13px] leading-relaxed text-text-muted">
+                  <div className="mt-5 text-[13px] leading-relaxed text-text-muted sm:mt-6 sm:text-sm">
                     <p>
                       工具都是纯前端应用 —— 打开即用、输入参数不出浏览器，公式与假设写在各自站内，
                       结论可手工复核。发现哪里算错了，可直接在对应站点的「留言」里指出，留言只有本人能看到。
@@ -218,7 +219,7 @@ export default function App() {
 
                   <div className="flex-1" aria-hidden="true" />
 
-                  <div className="mt-8 flex flex-col items-stretch gap-3 border-t border-border pt-5 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="mt-10 flex flex-col items-stretch gap-3 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
                     <span className="font-mono text-xs text-text-muted">
                       {String(SITES.length).padStart(2, '0')} 个站点 · 免注册
                     </span>
@@ -240,7 +241,7 @@ export default function App() {
                   `/internal` —— Pages 子路径部署会 404（同 /tools 的教训）。
                   卡内 CTA 用 span 而非 a：外层已经是 a，嵌套链接是非法 HTML。 */}
               <div className="flex flex-col">
-                <span className="mb-5 block font-mono text-base font-medium tracking-[0.06em] text-white uppercase">
+                <span className="mb-6 block font-mono text-base font-medium tracking-[0.06em] text-white uppercase">
                   第二入口 · 内网
                 </span>
 
@@ -255,38 +256,40 @@ export default function App() {
 
                 <a
                   href="./internal"
-                  className="group mt-6 flex flex-1 flex-col rounded-2xl border border-internal/35 bg-surface/70 p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-internal/60 hover:bg-surface sm:p-8"
+                  className="group mt-7 flex flex-1 flex-col rounded-2xl border border-internal/35 bg-surface/70 p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-internal/60 hover:bg-surface sm:p-10"
                 >
-                  <h2 className="text-xl leading-[1.15] font-bold tracking-[-0.02em] sm:text-3xl">
+                  <h2 className="text-xl leading-[1.12] font-bold tracking-[-0.03em] sm:text-3xl xl:text-[2.5rem]">
                     团队内部系统
                   </h2>
 
-                  <p className="mt-4 text-[15px] leading-relaxed text-text-secondary">
+                  <p className="mt-5 text-[15px] leading-relaxed text-text-secondary sm:text-base">
                     需要账号与密码登录，不对公众开放，因此不列在下面的公开清单里。
                   </p>
 
-                  {/* 每行带副标题（取 sites.json 的 subtitle），是真实数据不是凑字数。 */}
-                  <ul className="mt-5 space-y-4">
+                  {/* 每行带副标题（取 sites.json 的 subtitle），是真实数据不是凑字数。
+                      字号跟着整体上移一档：列表标题 16px、副标题 14px，
+                      卡片被撑到与左卡同高后，右卡中部才不会显空。 */}
+                  <ul className="mt-6 space-y-5">
                     {INTERNAL_SITES.map((s) => (
                       <li key={s.id}>
-                        <div className="flex items-center gap-2.5 text-sm font-medium text-text-primary">
+                        <div className="flex items-center gap-2.5 text-sm font-medium text-text-primary sm:text-base">
                           <span className="h-1 w-1 shrink-0 rounded-full bg-internal-light" aria-hidden="true" />
                           {s.name}
                         </div>
-                        <p className="mt-1 pl-[14px] text-[13px] leading-relaxed text-text-muted">
+                        <p className="mt-1.5 pl-[14px] text-[13px] leading-relaxed text-text-muted sm:text-sm">
                           {s.subtitle}
                         </p>
                       </li>
                     ))}
                   </ul>
 
-                  <p className="mt-5 text-[13px] leading-relaxed text-text-muted">
+                  <p className="mt-6 text-[13px] leading-relaxed text-text-muted sm:text-sm">
                     点进去会先跳到登录页。
                   </p>
 
                   <div className="flex-1" aria-hidden="true" />
 
-                  <div className="mt-8 flex flex-col items-stretch gap-3 border-t border-border pt-5 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="mt-10 flex flex-col items-stretch gap-3 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
                     <span className="font-mono text-xs text-text-muted">
                       {String(INTERNAL_SITES.length).padStart(2, '0')} 个系统 · 需登录
                     </span>
