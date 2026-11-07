@@ -2,6 +2,7 @@ import {
   Activity,
   BookOpen,
   Calculator,
+  FileText,
   Lightbulb,
   Waves,
   Zap,
@@ -38,6 +39,7 @@ export type SiteIconKey =
   | 'lightbulb'
   | 'calculator'
   | 'book'
+  | 'filetext'
 
 export interface Site {
   /** 同时用作服务器 web 根目录名：/var/www/<id>（巡检脚本依赖此约定） */
@@ -52,6 +54,12 @@ export interface Site {
   accent: string
   icon: SiteIconKey
   version: string
+  /** 是否为内网系统（需账号登录、不对公众开放）。
+   *  2026-11-07 新增：validation-test 与 psu-model 两个团队内部系统接入门户。
+   *  · 首页「工具与课程」只列公开站（SITES），内网站在 `/internal` 这一层单独列（INTERNAL_SITES）；
+   *  · 这样首屏的「使用门槛 0 项」等表述仍然成立 —— 内网系统另有登录门禁，不混在公开工具里算。
+   *  · id 仍必须等于服务器 web 根目录名（/var/www/<id>），巡检脚本依赖此约定。 */
+  internal?: boolean
 }
 
 export const ICONS: Record<SiteIconKey, LucideIcon> = {
@@ -61,6 +69,14 @@ export const ICONS: Record<SiteIconKey, LucideIcon> = {
   lightbulb: Lightbulb,
   calculator: Calculator,
   book: BookOpen,
+  filetext: FileText,
 }
 
-export const SITES = raw as unknown as Site[]
+/** 全量清单（含内网）。sites.json 保持扁平数组 —— scripts/check-versions.mjs 直接按数组读。 */
+export const ALL_SITES = raw as unknown as Site[]
+
+/** 公开站：首页卡片墙与首屏统计口径都只认这一份 */
+export const SITES = ALL_SITES.filter((s) => !s.internal)
+
+/** 内网站：只在 /internal 这一层展示 */
+export const INTERNAL_SITES = ALL_SITES.filter((s) => s.internal)

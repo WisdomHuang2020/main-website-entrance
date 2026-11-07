@@ -30,6 +30,25 @@
 
 各站点的计算口径与免责声明以对应站内的说明为准；本站只做导航。
 
+### 内网系统（第二入口 `/internal`）
+
+| 系统 | 域名 | 主色 | 版本 | 版本的核实依据 |
+|---|---|---|---|---|
+| 评鉴测试报告系统 | `validation.power-knowledge.tech` | `#0070c0` | **1.16.1** | 服务器 `/var/www/validation-test/app/package.json`（与仓库 tag `v1.16.1` 一致） |
+| 电源型号编码生成器 | `psu-model.power-knowledge.tech` | `#0f766e` | **1.2.1** | 服务器 `/var/www/psu-model/index.html` 内嵌版本 + 仓库 `VERSION` 文件 |
+
+这两个系统**需要账号与密码登录、不对公众开放**（未登录访问任一系统都会被拦到 `/login`），因此：
+
+- 首页「工具与课程」只列上面 6 个公开站（`SITES`），内网站只在 `/internal` 这一层列（`INTERNAL_SITES`）；
+- 首屏四条统计的口径限定为**公开站** —— 否则「使用门槛 0 项」会与内网系统的登录门禁自相矛盾；
+- 它们**没有** `.deployed-version` 哨兵，门户也**没有**给它们配 `/api/version/<id>` 端点，
+  所以卡片显示的是 `sites.json` 里的静态版本值，`scripts/check-versions.mjs` 会显式跳过它们
+  （跳过是为了不制造「未找到哨兵」的假告警，见该脚本注释）。
+  ⚠️ **内网系统发新版后要手动改 `sites.json` 的 `version`** —— 没有自动同步，这是已知缺口。
+- `id` 仍等于服务器 web 根目录名（`/var/www/validation-test`、`/var/www/psu-model`），与公开站同一约定。
+- 2026-11-07 接入时，validation-test 尚未写哨兵；若日后给两个内网系统补上哨兵与门户端点，
+  这里可以改回实时读取。
+
 ## 新增一个子站
 
 1. 改 **`src/data/sites.json`** —— 这是站点清单的单一数据源，卡片、数量统计、版本徽标都读它。

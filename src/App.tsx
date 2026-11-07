@@ -1,20 +1,31 @@
 import {
   ArrowDown,
+  ArrowRight,
   Cpu,
   FunctionSquare,
   Github,
   Layers,
+  Lock,
   ShieldCheck,
   type LucideIcon,
 } from 'lucide-react'
 import Footer from './components/Footer'
 import Header from './components/Header'
+import InternalPage from './components/InternalPage'
 import SiteCard from './components/SiteCard'
-import { SITES } from './data/sites'
+import { INTERNAL_SITES, SITES } from './data/sites'
 import { useLiveVersions } from './data/useLiveVersions'
 import { onSectionClick, useSectionRoute } from './lib/sectionRoute'
 
 const REPO_URL = 'https://github.com/WisdomHuang2020/main-website-entrance'
+
+/** 当前是否停留在「第二入口」内网页（`/internal`）。
+ *  只取路径最后一段，兼容 Pages 子路径部署（/repo/internal）。
+ *  本站没有路由库，靠这一个判断在同一份 index.html 上切换两个视图。 */
+function isInternalPage(): boolean {
+  const segs = window.location.pathname.split('/').filter(Boolean)
+  return segs[segs.length - 1] === 'internal'
+}
 
 /** 首屏四个数字。全部为可核实事实，不写修辞：
  *  ① 站点数与独立域名数取 SITES.length 而**不硬编码** —— 加一个子站却忘了同步这里，
@@ -27,10 +38,13 @@ const REPO_URL = 'https://github.com/WisdomHuang2020/main-website-entrance'
  *      · 计算/设计的输入参数只在浏览器内参与运算，不发往服务器
  *        （留言是唯一例外，且只存用户主动提交的文字，见 PRINCIPLES）。
  *  ③ 不要改回「后端依赖 0」这类绝对表述。它曾经是真的，现在是假的；
- *    文案的可信度靠的是每条都经得起核对，不是数字好看。 */
+ *    文案的可信度靠的是每条都经得起核对，不是数字好看。
+ *  ④ 2026-11-07 接入两个内网系统（validation-test / psu-model）后，口径收窄到**公开站**：
+ *    它们需要账号登录，若继续用「在线站点 6」笼统说法，就和「使用门槛 0 项」当场打架。
+ *    故四条全部限定在公开站范围内，标签也写明「公开」。 */
 const STATS = [
-  { value: String(SITES.length), unit: '个', label: '在线站点' },
-  { value: String(SITES.length), unit: '个', label: '独立域名' },
+  { value: String(SITES.length), unit: '个', label: '公开站点' },
+  { value: String(SITES.length), unit: '个', label: '公开域名' },
   { value: '0', unit: '项', label: '使用门槛' },
   { value: '0', unit: '项', label: '计算数据上传' },
 ]
@@ -62,7 +76,9 @@ const PRINCIPLES: { icon: LucideIcon; title: string; desc: string }[] = [
     title: '免注册可用',
     // 原文案写「纯静态站点，没有账号体系」—— 留言板后台确实有账号，
     // 但它只属于作者一人，读者侧仍然零门槛。按读者视角如实描述。
-    desc: '使用全部工具不需要注册，也不埋点采集使用数据；后台账号只有作者一人持有。',
+    // 2026-11-07：接入两个内网系统后，「使用全部工具不需要注册」不再成立 ——
+    // 那两个确实要账号。故限定为「公开工具」。
+    desc: '公开工具全部免注册使用，也不埋点采集使用数据；需账号的只有团队内部系统与作者本人的后台。',
   },
 ]
 
@@ -74,6 +90,22 @@ export default function App() {
   // 干净 URL（/tools、/engineers）的深链定位与前进后退处理。
   // 详见 src/lib/sectionRoute.ts。
   useSectionRoute()
+
+  // 第二入口（/internal）是独立一页：内网系统需要账号登录，不与公众首页混排。
+  // 用提前返回而不是把首页整段包进三元条件 —— 后者会让 Home 那几十行集体缩进两级，
+  // diff 噪音大、日后 review 也难看清真正的改动。
+  // ⚠️ 两个 hook 必须仍在上方无条件调用（组件内不能有条件 hook）。
+  if (isInternalPage()) {
+    return (
+      <div id="top" className="flex min-h-screen flex-col bg-bg">
+        <Header />
+        <main className="flex-1">
+          <InternalPage />
+        </main>
+        <Footer />
+      </div>
+    )
+  }
 
   return (
     <div id="top" className="flex min-h-screen flex-col bg-bg">
@@ -104,63 +136,131 @@ export default function App() {
           </svg>
 
           <div className="shell relative px-5 py-24 sm:px-8 sm:py-32 lg:px-10 lg:py-40">
-            {/* 眉标：字号 12px(text-xs) → 24px(text-2xl) 即放大一倍，字重 500 → 700 加粗。
-                内边距与小圆点按同比例放大 —— 24px 的字配 6px 的点、6px 的内边距会显得破。
+            {/* 首屏改为**左右两个入口各占一半**（2026-11-07）。
+                左边是第一入口（公开的工具与课程），右边是第二入口（内网系统，点进 /internal 这一层）。
+                原先右侧只有一片空底 + 放大六边形水印，宽屏上很空；现在两边各司其职。
+                内网卡只做"入口"，不直接列内网站 —— 那些系统需要账号，不该出现在公众首屏。
+                配套判断见 src/data/sites.ts：首页卡片墙只列 SITES，内网站在 /internal 列 INTERNAL_SITES。 */}
+            <div className="grid items-center gap-14 lg:grid-cols-2 lg:gap-12">
+              {/* ── 第一入口：公开 ── */}
+              <div>
+                <span className="mb-5 block font-mono text-[11px] tracking-[0.16em] text-text-muted uppercase">
+                  第一入口 · 公开
+                </span>
 
-                词间分隔用**渲染出来的圆点（span + rounded-full）**，不再用「·」字符：
-                  · 字符版本的位置**由字体决定** —— U+00B7 在 Inter 里居 x 字高中线，
-                    而汉字有独立的视觉中心，两者只能近似对齐；更麻烦的是本站字体走 Google Fonts CDN，
-                    在字体加载失败/被拦的机器上会回退到系统字体，点的位置随之改变（同一份代码两种观感）。
-                  · 渲染圆点由 `items-center` 决定垂直位置，**与字体无关**，
-                    且与左侧那个脉冲指示点落在同一条中线上（2026-11-02 实测：两者中心差 0.33px）。
-                间距/尺寸按用户给的参考图定：间隙 ≈8–9px、点径 5px（参考图换算到 24px 后为 8.2/8.9px 与 4.8px）。
-                ⚠️ 代价：分隔符不再是文本字符，复制这段文字只会得到「电源光学信息技术」。
-                对一个装饰性眉标可以接受；若日后要求可复制的分隔符，需换回字符版并接受字体差异。 */}
-            <span className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-full border border-brand/30 bg-brand/10 px-5 py-2 text-2xl font-bold text-brand-light">
-              <span className="h-2.5 w-2.5 shrink-0 animate-pulse rounded-full bg-brand-light" />
-              {/* 「词 + 后置圆点」各成一组（nowrap），折行只发生在组与组之间
-                  —— 这样点永远不会被甩到下一行的行首，也不会把词劈开。 */}
-              <span className="inline-flex items-center gap-[8px] whitespace-nowrap">
-                <span>电源</span>
-                <span className="h-[4px] w-[4px] shrink-0 rounded-full bg-brand-light" aria-hidden="true" />
-              </span>
-              <span className="inline-flex items-center gap-[8px] whitespace-nowrap">
-                <span>光学</span>
-                <span className="h-[4px] w-[4px] shrink-0 rounded-full bg-brand-light" aria-hidden="true" />
-              </span>
-              <span className="whitespace-nowrap">信息技术</span>
-            </span>
+                {/* 眉标：字号 12px(text-xs) → 24px(text-2xl) 即放大一倍，字重 500 → 700 加粗。
+                    内边距与小圆点按同比例放大 —— 24px 的字配 6px 的点、6px 的内边距会显得破。
 
-            <h1 className="mt-8 text-[2.75rem] leading-[1.06] font-bold tracking-[-0.03em] text-balance sm:text-6xl lg:text-7xl">
-              一个入口
-              <br className="hidden sm:block" />
-              <span className="text-gradient">直达全部工程工具与课程</span>
-            </h1>
+                    词间分隔用**渲染出来的圆点（span + rounded-full）**，不再用「·」字符：
+                      · 字符版本的位置**由字体决定** —— U+00B7 在 Inter 里居 x 字高中线，
+                        而汉字有独立的视觉中心，两者只能近似对齐；更麻烦的是本站字体走 Google Fonts CDN，
+                        在字体加载失败/被拦的机器上会回退到系统字体，点的位置随之改变（同一份代码两种观感）。
+                      · 渲染圆点由 `items-center` 决定垂直位置，**与字体无关**，
+                        且与左侧那个脉冲指示点落在同一条中线上（2026-11-02 实测：两者中心差 0.33px）。
+                    间距/尺寸按用户给的参考图定：间隙 ≈8–9px、点径 5px（参考图换算到 24px 后为 8.2/8.9px 与 4.8px）。
+                    ⚠️ 代价：分隔符不再是文本字符，复制这段文字只会得到「电源光学信息技术」。
+                    对一个装饰性眉标可以接受；若日后要求可复制的分隔符，需换回字符版并接受字体差异。 */}
+                <span className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-full border border-brand/30 bg-brand/10 px-5 py-2 text-2xl font-bold text-brand-light">
+                  <span className="h-2.5 w-2.5 shrink-0 animate-pulse rounded-full bg-brand-light" />
+                  {/* 「词 + 后置圆点」各成一组（nowrap），折行只发生在组与组之间
+                      —— 这样点永远不会被甩到下一行的行首，也不会把词劈开。 */}
+                  <span className="inline-flex items-center gap-[8px] whitespace-nowrap">
+                    <span>电源</span>
+                    <span className="h-[4px] w-[4px] shrink-0 rounded-full bg-brand-light" aria-hidden="true" />
+                  </span>
+                  <span className="inline-flex items-center gap-[8px] whitespace-nowrap">
+                    <span>光学</span>
+                    <span className="h-[4px] w-[4px] shrink-0 rounded-full bg-brand-light" aria-hidden="true" />
+                  </span>
+                  <span className="whitespace-nowrap">信息技术</span>
+                </span>
 
-            <p className="mt-8 max-w-3xl text-lg leading-relaxed text-text-secondary sm:text-xl">
-              这里汇集本人开发的电源与光学在线工具，外加一套把站点从本机推到线上的信息技术实训课。
-              工具都是纯前端应用 —— 打开即用、输入参数不出浏览器，公式与假设写在各自站内，结论可手工复核。
-              发现哪里算错了，可直接在对应站点的「留言」里指出，留言只有本人能看到。
-            </p>
+                {/* 字号随分栏收小，且**按栏宽算过**：两栏后每栏约 448px(lg) / 576px(xl)。
+                    「直达全部工程工具与课程」11 个字，44px 时 484px、48px 时 528px —— 都能在
+                    xl 的 576px 栏里单行放下；lg 的 448px 栏需要 ≤40px，故 lg 段取 2.5rem。
+                    原先单列时用的 72px 放到两栏里会折成三行、末尾「课程」还成了孤儿行。 */}
+                <h1 className="mt-8 text-[2.1rem] leading-[1.1] font-bold tracking-[-0.03em] text-balance sm:text-4xl lg:text-[2.5rem] xl:text-5xl">
+                  一个入口
+                  <br className="hidden sm:block" />
+                  <span className="text-gradient">直达全部工程工具与课程</span>
+                </h1>
 
-            <div className="mt-11 flex flex-wrap items-center gap-3">
-              <a
-                href="./tools"
-                onClick={(e) => onSectionClick(e, 'tools')}
-                className="inline-flex items-center gap-2 rounded-lg bg-brand px-6 py-3.5 text-sm font-medium text-white transition-colors hover:bg-brand-light"
-              >
-                查看全部工具与课程
-                <ArrowDown className="h-4 w-4" strokeWidth={1.8} />
-              </a>
-              <a
-                href={REPO_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-lg border border-border-light px-6 py-3.5 text-sm font-medium text-text-secondary transition-colors hover:border-text-muted hover:text-text-primary"
-              >
-                <Github className="h-4 w-4" strokeWidth={1.8} />
-                源码仓库
-              </a>
+                <p className="mt-7 max-w-2xl text-lg leading-relaxed text-text-secondary">
+                  这里汇集本人开发的电源与光学在线工具，外加一套把站点从本机推到线上的信息技术实训课。
+                  工具都是纯前端应用 —— 打开即用、输入参数不出浏览器，公式与假设写在各自站内，结论可手工复核。
+                  发现哪里算错了，可直接在对应站点的「留言」里指出，留言只有本人能看到。
+                </p>
+
+                <div className="mt-10 flex flex-wrap items-center gap-3">
+                  <a
+                    href="./tools"
+                    onClick={(e) => onSectionClick(e, 'tools')}
+                    className="inline-flex items-center gap-2 rounded-lg bg-brand px-6 py-3.5 text-sm font-medium text-white transition-colors hover:bg-brand-light"
+                  >
+                    查看全部工具与课程
+                    <ArrowDown className="h-4 w-4" strokeWidth={1.8} />
+                  </a>
+                  <a
+                    href={REPO_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-lg border border-border-light px-6 py-3.5 text-sm font-medium text-text-secondary transition-colors hover:border-text-muted hover:text-text-primary"
+                  >
+                    <Github className="h-4 w-4" strokeWidth={1.8} />
+                    源码仓库
+                  </a>
+                </div>
+              </div>
+
+              {/* ── 第二入口：内网 ──
+                  整块是一个 <a>，点任意位置进 /internal。用相对路径 `./internal`：
+                  Pages 子路径部署时写成 `/internal` 会 404（同 /tools 的教训）。 */}
+              <div>
+                <a
+                  href="./internal"
+                  className="group flex h-full flex-col justify-between rounded-2xl border border-border bg-surface/70 p-8 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand/40 hover:bg-surface"
+                >
+                  <div>
+                    <div className="flex items-center gap-2.5">
+                      <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-brand/15 text-brand-light">
+                        <Lock className="h-4 w-4" strokeWidth={1.9} />
+                      </span>
+                      <span className="font-mono text-[11px] tracking-[0.16em] text-text-muted uppercase">
+                        第二入口 · 内网
+                      </span>
+                    </div>
+
+                    <h2 className="mt-6 text-2xl font-semibold tracking-tight text-text-primary">
+                      团队内部系统
+                    </h2>
+                    <p className="mt-3 text-[15px] leading-relaxed text-text-secondary">
+                      需要账号与密码登录，不对公众开放，因此不列在下面的公开清单里。
+                    </p>
+
+                    <ul className="mt-6 space-y-2.5">
+                      {INTERNAL_SITES.map((s) => (
+                        <li key={s.id} className="flex items-center gap-2.5 text-sm text-text-secondary">
+                          <span className="h-1 w-1 shrink-0 rounded-full bg-text-muted" aria-hidden="true" />
+                          {s.name}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="mt-8 flex items-center justify-between gap-3 border-t border-border pt-5">
+                    <span className="font-mono text-xs text-text-muted">
+                      {String(INTERNAL_SITES.length).padStart(2, '0')} 个系统 · 需登录
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 text-sm font-medium text-brand-light">
+                      进入内网入口
+                      <ArrowRight
+                        className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5"
+                        strokeWidth={1.8}
+                      />
+                    </span>
+                  </div>
+                </a>
+              </div>
             </div>
           </div>
         </section>
@@ -195,7 +295,7 @@ export default function App() {
             <div>
               <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">工具与课程</h2>
               <p className="mt-3 text-base text-text-muted">
-                点击卡片将在新标签页打开对应的站点
+                点击卡片将在新标签页打开对应站点；需要账号登录的内部系统在首屏「第二入口」里
               </p>
             </div>
             <span className="font-mono text-sm text-text-muted">

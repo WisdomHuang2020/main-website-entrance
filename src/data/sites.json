@@ -94,5 +94,39 @@
     "accent": "#0f766e",
     "icon": "book",
     "version": "2.2.2"
+  },
+  {
+    "id": "validation-test",
+    "name": "评鉴测试报告系统",
+    "subtitle": "LED 灯具评鉴测试报告填报与生成",
+    "domain": "validation.power-knowledge.tech",
+    "url": "https://validation.power-knowledge.tech/",
+    "desc": "按站内测试标准填报 LED 灯具的评鉴测试数据并生成报告。需账号登录，仅团队内部使用。",
+    "tags": [
+      "评鉴测试",
+      "报告生成",
+      "需登录"
+    ],
+    "accent": "#0070c0",
+    "icon": "filetext",
+    "version": "1.16.1",
+    "internal": true
+  },
+  {
+    "id": "psu-model",
+    "name": "电源型号编码生成器",
+    "subtitle": "电源型号编码生成",
+    "domain": "psu-model.power-knowledge.tech",
+    "url": "https://psu-model.power-knowledge.tech/",
+    "desc": "按既定规则生成电源型号编码。需账号登录，仅团队内部使用。",
+    "tags": [
+      "型号编码",
+      "规则生成",
+      "需登录"
+    ],
+    "accent": "#0f766e",
+    "icon": "calculator",
+    "version": "1.2.1",
+    "internal": true
   }
 ]

@@ -47,7 +47,17 @@ const KEY_RAW = opt('key') ?? process.env.LH_SSH_KEY_PATH
 /** 展开 ~ ：ssh 是原生程序，不认 shell 的波浪号展开 */
 const expand = (p) => (p && p.startsWith('~') ? path.join(os.homedir(), p.slice(1)) : p)
 
-const sites = JSON.parse(fs.readFileSync(path.join(root, 'src/data/sites.json'), 'utf8'))
+const ALL = JSON.parse(fs.readFileSync(path.join(root, 'src/data/sites.json'), 'utf8'))
+
+/**
+ * 内网系统（internal: true，2026-11-07 接入）不参与本巡检：
+ *   · 它们没有 `.deployed-version` 哨兵（validation-test 是 Node 应用、psu-model 是单页静态），
+ *   · 门户也没有给它们配 `/api/version/<id>` 端点。
+ * 强行巡检只会得到「未找到哨兵」的假告警，反而掩盖真正的漂移。
+ * 它们的版本以 sites.json 的静态值为准，可信来源是各自的 package.json / VERSION 文件。
+ */
+const sites = ALL.filter((s) => !s.internal)
+
 const norm = (v) => String(v ?? '').trim().replace(/^v/, '')
 
 if (!HOST || !KEY_RAW) {
