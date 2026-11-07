@@ -46,6 +46,21 @@ export function sectionIdFromLocation(): string | null {
 }
 
 /**
+ * 当前是否在「第二入口」内网页（`/internal`）。
+ *
+ * 与区块导航同样只取路径**最后一段**，兼容 Pages 子路径
+ * （`/main-website-entrance/internal` 的最后一段仍是 `internal`）。
+ *
+ * 页头据此切换导航（2026-11-07）：内网页显示「返回入口」而不是首页那两项区块目录 ——
+ * 「工具与课程」「工程口径」都是**首页的锚点**，挂在第二层页面上会让人误以为
+ * 还在首页、点下去却是"跳走 + 滚到某一段"，语义对不上当前所在层级。
+ */
+export function isInternalRoute(): boolean {
+  const segs = window.location.pathname.split('/').filter(Boolean)
+  return segs[segs.length - 1] === 'internal'
+}
+
+/**
  * 滚动到指定区块。
  *
  * 用 scrollIntoView 而非 window.scrollTo —— 前者会**自动遵守区块上的

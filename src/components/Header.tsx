@@ -1,8 +1,17 @@
-import { Github } from 'lucide-react'
+import { ArrowLeft, Github } from 'lucide-react'
 import BrandMark from './BrandMark'
-import { SECTION_LINKS, onHomeClick, onSectionClick } from '../lib/sectionRoute'
+import { SECTION_LINKS, isInternalRoute, onHomeClick, onSectionClick } from '../lib/sectionRoute'
 
 export default function Header() {
+  /**
+   * 内网页（/internal）的导航与首页不同：
+   * 「工具与课程」「工程口径」是**首页的区块锚点**，挂在第二层页面上会出现两个问题 ——
+   * ① 看着像当前页的目录，点下去却是"离开本页 + 滚到首页某一段"；
+   * ② 与页面里已有的「返回入口」语义打架，用户不知道哪个才是"上一级"。
+   * 所以内网页只留一个明确的「返回入口」。GitHub 图标两页都保留（全站通用出口）。
+   * ⚠️ 进出内网页都是整页跳转（<a href>），Header 会重新挂载，渲染时读一次 pathname 即可。
+   */
+  const internal = isInternalRoute()
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur">
       <div className="shell flex h-16 items-center justify-between gap-4 px-5 sm:h-20 sm:px-8 lg:px-10">
@@ -36,19 +45,29 @@ export default function Header() {
         </a>
 
         <nav className="flex shrink-0 items-center gap-1">
-          {SECTION_LINKS.map((item) => (
+          {internal ? (
             <a
-              key={item.path}
-              href={item.path}
-              onClick={(e) => onSectionClick(e, item.id)}
-              // whitespace-nowrap：CJK 默认可在任意字间断行，不加这条会被挤成竖排单字堆
-              // （2026-10-31 实测 390px 下「工具与课程」折 5 行）。宁可横向挤，
-              // 也不能竖排——竖排会溢出页头高度。
-              className="rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap text-text-secondary transition-colors hover:bg-surface-elevated hover:text-text-primary sm:px-4"
+              href="./"
+              className="inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap text-text-secondary transition-colors hover:bg-surface-elevated hover:text-text-primary sm:px-4"
             >
-              {item.label}
+              <ArrowLeft className="h-4 w-4 shrink-0" strokeWidth={1.8} aria-hidden="true" />
+              返回入口
             </a>
-          ))}
+          ) : (
+            SECTION_LINKS.map((item) => (
+              <a
+                key={item.path}
+                href={item.path}
+                onClick={(e) => onSectionClick(e, item.id)}
+                // whitespace-nowrap：CJK 默认可在任意字间断行，不加这条会被挤成竖排单字堆
+                // （2026-10-31 实测 390px 下「工具与课程」折 5 行）。宁可横向挤，
+                // 也不能竖排——竖排会溢出页头高度。
+                className="rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap text-text-secondary transition-colors hover:bg-surface-elevated hover:text-text-primary sm:px-4"
+              >
+                {item.label}
+              </a>
+            ))
+          )}
           <a
             href="https://github.com/WisdomHuang2020/main-website-entrance"
             target="_blank"

@@ -1,4 +1,3 @@
-import { ArrowLeft } from 'lucide-react'
 import SiteCard from '../components/SiteCard'
 import { INTERNAL_SITES } from '../data/sites'
 
@@ -19,19 +18,14 @@ import { INTERNAL_SITES } from '../data/sites'
 export default function InternalPage() {
   return (
     <div className="shell px-5 py-16 sm:px-8 sm:py-20 lg:px-10">
-      <a
-        href="./"
-        className="inline-flex items-center gap-2 text-sm font-medium text-text-secondary transition-colors hover:text-internal-light"
-      >
-        <ArrowLeft className="h-4 w-4" strokeWidth={1.8} />
-        返回入口
-      </a>
+      {/* 「返回入口」已移到**页头导航**（2026-11-07）：页头是吸顶的，比页面内链接始终可见；
+          两处都放会让同一页出现两个「返回入口」，反而要用户猜哪个才是上一级。 */}
 
       {/* 与首屏「第二入口」的大药丸**逐字同款**（脉冲点 → 词组 + 渲染圆点 → 末词），
           只去掉 self-start：这里是块级一行，不需要收缩到内容宽。
           点进下一层还能认出同一个入口，是这次「首屏 + 内网页」风格同步的锚点。
           原先这里是 text-xs 的小 badge + Lock 图标，与首屏的大药丸完全两套语言。 */}
-      <div className="mt-10 flex flex-wrap items-center gap-4">
+      <div className="flex flex-wrap items-center gap-4">
         <span className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-full border border-internal/35 bg-internal/10 px-5 py-2 text-2xl font-bold text-internal-light">
           <span className="h-2.5 w-2.5 shrink-0 animate-pulse rounded-full bg-internal-light" />
           <span className="inline-flex items-center gap-[8px] whitespace-nowrap">
@@ -48,8 +42,12 @@ export default function InternalPage() {
       <h1 className="mt-6 text-3xl leading-[1.1] font-bold tracking-[-0.02em] sm:text-4xl">
         团队内部系统
       </h1>
+      {/* 拆成两句独立段落：原来是一整段，在 1080px 下会断在「未登录时打｜开任一系统」，
+          把「打开」这个词从中间劈开（实测截图）。拆段后两句各自断行，不会再跨句劈词。 */}
       <p className="mt-5 max-w-2xl text-base leading-relaxed text-text-secondary">
         下面这些系统需要账号与密码登录，不对公众开放，因此不在首页的公开列表里。
+      </p>
+      <p className="mt-2 max-w-2xl text-base leading-relaxed text-text-secondary">
         未登录时打开任一系统，都会被拦到登录页。
       </p>
 
@@ -59,9 +57,11 @@ export default function InternalPage() {
         ))}
       </div>
 
+      {/* 原来这里写的是「版本哨兵端点 / 门户读不到实时值」—— 那是维护说明，
+          访客看了一头雾水（本项目的既定口径：实现细节写 README，不上门户页面）。
+          改成一句人话，保留"这个数字可能不准"这个真正对读者有用的信息。 */}
       <p className="mt-10 max-w-2xl border-t border-internal/30 pt-6 text-sm leading-relaxed text-text-muted">
-        版本号取自门户发布时记录的值，不是各系统实时回读的 ——
-        内网系统没有对外的版本哨兵端点，门户读不到实时值。
+        版本号由门户手动记录，可能与系统内实际版本不一致。
       </p>
     </div>
   )
