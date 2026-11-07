@@ -8,7 +8,8 @@ export default function Header() {
    * 「工具与课程」「工程口径」是**首页的区块锚点**，挂在第二层页面上会出现两个问题 ——
    * ① 看着像当前页的目录，点下去却是"离开本页 + 滚到首页某一段"；
    * ② 与页面里已有的「返回入口」语义打架，用户不知道哪个才是"上一级"。
-   * 所以内网页只留一个明确的「返回入口」。GitHub 图标两页都保留（全站通用出口）。
+   * 所以内网页只留一个明确的「返回总入口」（2026-11-07 按用户要求由「返回入口」改名，
+   * 强调回到的是站群总入口这一层，而不是随便某个上一级）。GitHub 图标两页都保留。
    * ⚠️ 进出内网页都是整页跳转（<a href>），Header 会重新挂载，渲染时读一次 pathname 即可。
    */
   const internal = isInternalRoute()
@@ -51,7 +52,7 @@ export default function Header() {
               className="inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap text-text-secondary transition-colors hover:bg-surface-elevated hover:text-text-primary sm:px-4"
             >
               <ArrowLeft className="h-4 w-4 shrink-0" strokeWidth={1.8} aria-hidden="true" />
-              返回入口
+              返回总入口
             </a>
           ) : (
             SECTION_LINKS.map((item) => (
