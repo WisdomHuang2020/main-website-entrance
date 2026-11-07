@@ -1,4 +1,4 @@
-import { ArrowLeft, Lock } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import SiteCard from '../components/SiteCard'
 import { INTERNAL_SITES } from '../data/sites'
 
@@ -21,16 +21,24 @@ export default function InternalPage() {
     <div className="shell px-5 py-16 sm:px-8 sm:py-20 lg:px-10">
       <a
         href="./"
-        className="inline-flex items-center gap-2 text-sm font-medium text-text-secondary transition-colors hover:text-brand-light"
+        className="inline-flex items-center gap-2 text-sm font-medium text-text-secondary transition-colors hover:text-internal-light"
       >
         <ArrowLeft className="h-4 w-4" strokeWidth={1.8} />
         返回入口
       </a>
 
-      <div className="mt-10 flex flex-wrap items-center gap-3">
-        <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3.5 py-1.5 text-xs font-semibold tracking-wide text-text-secondary">
-          <Lock className="h-3.5 w-3.5" strokeWidth={2} />
-          第二入口 · 内网
+      {/* 与首屏「第二入口」的大药丸**逐字同款**（脉冲点 → 词组 + 渲染圆点 → 末词），
+          只去掉 self-start：这里是块级一行，不需要收缩到内容宽。
+          点进下一层还能认出同一个入口，是这次「首屏 + 内网页」风格同步的锚点。
+          原先这里是 text-xs 的小 badge + Lock 图标，与首屏的大药丸完全两套语言。 */}
+      <div className="mt-10 flex flex-wrap items-center gap-4">
+        <span className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-full border border-internal/35 bg-internal/10 px-5 py-2 text-2xl font-bold text-internal-light">
+          <span className="h-2.5 w-2.5 shrink-0 animate-pulse rounded-full bg-internal-light" />
+          <span className="inline-flex items-center gap-[8px] whitespace-nowrap">
+            <span>内网</span>
+            <span className="h-[4px] w-[4px] shrink-0 rounded-full bg-internal-light" aria-hidden="true" />
+          </span>
+          <span className="whitespace-nowrap">需登录</span>
         </span>
         <span className="font-mono text-xs text-text-muted">
           {String(INTERNAL_SITES.length).padStart(2, '0')} 个系统
@@ -51,7 +59,7 @@ export default function InternalPage() {
         ))}
       </div>
 
-      <p className="mt-10 max-w-2xl border-t border-border pt-6 text-sm leading-relaxed text-text-muted">
+      <p className="mt-10 max-w-2xl border-t border-internal/30 pt-6 text-sm leading-relaxed text-text-muted">
         版本号取自门户发布时记录的值，不是各系统实时回读的 ——
         内网系统没有对外的版本哨兵端点，门户读不到实时值。
       </p>

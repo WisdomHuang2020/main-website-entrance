@@ -140,35 +140,32 @@ export default function App() {
                 原先右侧只有一片空底 + 放大六边形水印，宽屏上很空；现在两边各司其职。
                 内网卡只做"入口"，不直接列内网站 —— 那些系统需要账号，不该出现在公众首屏。
                 配套判断见 src/data/sites.ts：首页卡片墙只列 SITES，内网站在 /internal 列 INTERNAL_SITES。 */}
-            {/* 两栏**顶部对齐**，且右卡撑满到左栏底沿（2026-11-07 修「左右不一致」）：
-                原先用 `items-center`，右卡在栏内垂直居中 —— 结果它的上沿比左栏眉标低 40px、
-                下沿又比左栏按钮行高 40px，一块带边框的卡片上下都错开，宽屏上看着"悬空"。
-                现在改成默认 `items-stretch` + 右栏 `flex flex-col` + 卡片 `flex-1`：
-                右栏眉标与左栏眉标落在同一条基线，卡片上沿与左侧眉标药丸同高、下沿与按钮行同高，
-                两个带边框的圆角块因此共享上下两条水平线。 */}
+            {/* 双卡对称（2026-11-07，用户选 A 方案）。
+                根因不是"没对齐"：左栏是**排版语言**（渐变巨标题 + 裸文字 + 按钮组），
+                右栏是**组件语言**（描边卡片 + 列表 + 底栏），两套语言并排本身就割裂，
+                上一版把上下沿对齐只是把两块摆正，消不掉语言差异。
+                现在两栏**逐层同款**：
+                  ① 卡外眉标：同字号/同字距/同 mb-5
+                  ② 卡外大药丸：同尺寸/同内边距/同字重，连「前置脉冲点 + 词 + 后置渲染圆点」
+                     的结构都逐字对应（只换词与强调色）—— 保留 11-02 那轮调过的圆点机制
+                  ③ 卡片：同圆角/同描边样式/同底色/同内边距/同 flex-1 撑高
+                  ④ 卡内：标题、描述、主体区、底栏四层同款
+                强调色分工：第一入口 teal，第二入口 internal 蓝，同构但一眼可分辨。
+                背景装饰（hero-glow / hero-grid / 出血六边形水印）按用户选择**全部保留、一个没动**。 */}
             <div className="grid gap-14 lg:grid-cols-2 lg:gap-12">
               {/* ── 第一入口：公开 ── */}
-              <div>
+              <div className="flex flex-col">
                 <span className="mb-5 block font-mono text-[11px] tracking-[0.16em] text-text-muted uppercase">
                   第一入口 · 公开
                 </span>
 
-                {/* 眉标：字号 12px(text-xs) → 24px(text-2xl) 即放大一倍，字重 500 → 700 加粗。
-                    内边距与小圆点按同比例放大 —— 24px 的字配 6px 的点、6px 的内边距会显得破。
-
-                    词间分隔用**渲染出来的圆点（span + rounded-full）**，不再用「·」字符：
-                      · 字符版本的位置**由字体决定** —— U+00B7 在 Inter 里居 x 字高中线，
-                        而汉字有独立的视觉中心，两者只能近似对齐；更麻烦的是本站字体走 Google Fonts CDN，
-                        在字体加载失败/被拦的机器上会回退到系统字体，点的位置随之改变（同一份代码两种观感）。
-                      · 渲染圆点由 `items-center` 决定垂直位置，**与字体无关**，
-                        且与左侧那个脉冲指示点落在同一条中线上（2026-11-02 实测：两者中心差 0.33px）。
-                    间距/尺寸按用户给的参考图定：间隙 ≈8–9px、点径 5px（参考图换算到 24px 后为 8.2/8.9px 与 4.8px）。
-                    ⚠️ 代价：分隔符不再是文本字符，复制这段文字只会得到「电源光学信息技术」。
-                    对一个装饰性眉标可以接受；若日后要求可复制的分隔符，需换回字符版并接受字体差异。 */}
-                <span className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-full border border-brand/30 bg-brand/10 px-5 py-2 text-2xl font-bold text-brand-light">
+                {/* 眉标药丸：词间分隔仍用**渲染出来的圆点（span + rounded-full）**，不用「·」字符 ——
+                    U+00B7 的位置由字体决定，本站字体走 Google Fonts CDN，加载失败回退到系统字体时
+                    点的位置会变；渲染圆点由 items-center 决定，与字体无关。
+                    与右侧药丸逐字同构：脉冲点 → 词组（词 + 后置圆点）→ 末词。
+                    ⚠️ 代价：复制这段文字只会得到「电源光学信息技术」，装饰性眉标可接受。 */}
+                <span className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1 self-start rounded-full border border-brand/30 bg-brand/10 px-5 py-2 text-2xl font-bold text-brand-light">
                   <span className="h-2.5 w-2.5 shrink-0 animate-pulse rounded-full bg-brand-light" />
-                  {/* 「词 + 后置圆点」各成一组（nowrap），折行只发生在组与组之间
-                      —— 这样点永远不会被甩到下一行的行首，也不会把词劈开。 */}
                   <span className="inline-flex items-center gap-[8px] whitespace-nowrap">
                     <span>电源</span>
                     <span className="h-[4px] w-[4px] shrink-0 rounded-full bg-brand-light" aria-hidden="true" />
@@ -180,96 +177,114 @@ export default function App() {
                   <span className="whitespace-nowrap">信息技术</span>
                 </span>
 
-                {/* 字号随分栏收小，且**按栏宽算过**：两栏后每栏约 448px(lg) / 576px(xl)。
-                    「直达全部工程工具与课程」11 个字，44px 时 484px、48px 时 528px —— 都能在
-                    xl 的 576px 栏里单行放下；lg 的 448px 栏需要 ≤40px，故 lg 段取 2.5rem。
-                    原先单列时用的 72px 放到两栏里会折成三行、末尾「课程」还成了孤儿行。 */}
-                <h1 className="mt-8 text-[2.1rem] leading-[1.1] font-bold tracking-[-0.03em] text-balance sm:text-4xl lg:text-[2.5rem] xl:text-5xl">
-                  一个入口
-                  <br className="hidden sm:block" />
-                  <span className="text-gradient">直达全部工程工具与课程</span>
-                </h1>
+                {/* 标题按卡片内宽重算：xl 每栏 576px，减 p-8×2=64 → 512px 可用；
+                    「直达全部工程工具与课程」11 字在 30px 时约 330px，单行放得下。
+                    <br> 必须**始终生效**：原先写 hidden sm:block，窄屏把两句连成 16 字，
+                    390px 下会断出「与课程」孤儿行（实测）。窄屏改 text-xl + 卡片 p-5，
+                    11 字 × 20px ≈ 220px < 240px 可用宽，仍是整齐两行。
+                    原先 48px 是单栏时代的尺度，塞进半栏卡片会折三行。 */}
+                <div className="group mt-6 flex flex-1 flex-col rounded-2xl border border-brand/30 bg-surface/70 p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand/50 hover:bg-surface sm:p-8">
+                  <h1 className="text-xl leading-[1.15] font-bold tracking-[-0.02em] sm:text-3xl">
+                    一个入口
+                    <br />
+                    直达全部工程工具与课程
+                  </h1>
 
-                <p className="mt-7 max-w-2xl text-lg leading-relaxed text-text-secondary">
-                  这里汇集本人开发的电源与光学在线工具，外加一套把站点从本机推到线上的信息技术实训课。
-                  工具都是纯前端应用 —— 打开即用、输入参数不出浏览器，公式与假设写在各自站内，结论可手工复核。
-                  发现哪里算错了，可直接在对应站点的「留言」里指出，留言只有本人能看到。
-                </p>
+                  <p className="mt-4 text-[15px] leading-relaxed text-text-secondary">
+                    这里汇集本人开发的电源与光学在线工具，外加一套把站点从本机推到线上的信息技术实训课。
+                  </p>
 
-                <div className="mt-10 flex flex-wrap items-center gap-3">
-                  <a
-                    href="./tools"
-                    onClick={(e) => onSectionClick(e, 'tools')}
-                    className="inline-flex items-center gap-2 rounded-lg bg-brand px-6 py-3.5 text-sm font-medium text-white transition-colors hover:bg-brand-light"
-                  >
-                    查看全部工具与课程
-                    <ArrowDown className="h-4 w-4" strokeWidth={1.8} />
-                  </a>
-                  <a
-                    href={REPO_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-lg border border-border-light px-6 py-3.5 text-sm font-medium text-text-secondary transition-colors hover:border-text-muted hover:text-text-primary"
-                  >
-                    <Github className="h-4 w-4" strokeWidth={1.8} />
-                    源码仓库
-                  </a>
+                  <div className="mt-5 text-[13px] leading-relaxed text-text-muted">
+                    <p>
+                      工具都是纯前端应用 —— 打开即用、输入参数不出浏览器，公式与假设写在各自站内，
+                      结论可手工复核。发现哪里算错了，可直接在对应站点的「留言」里指出，留言只有本人能看到。
+                    </p>
+                    <a
+                      href={REPO_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-4 inline-flex items-center gap-1.5 text-text-secondary transition-colors hover:text-brand-light"
+                    >
+                      <Github className="h-3.5 w-3.5" strokeWidth={1.8} />
+                      源码仓库
+                    </a>
+                  </div>
+
+                  <div className="flex-1" aria-hidden="true" />
+
+                  <div className="mt-8 flex flex-col items-stretch gap-3 border-t border-border pt-5 sm:flex-row sm:items-center sm:justify-between">
+                    <span className="font-mono text-xs text-text-muted">
+                      {String(SITES.length).padStart(2, '0')} 个站点 · 免注册
+                    </span>
+                    <a
+                      href="./tools"
+                      onClick={(e) => onSectionClick(e, 'tools')}
+                      className="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-brand px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-brand-light sm:w-auto"
+                    >
+                      查看全部工具与课程
+                      <ArrowDown className="h-4 w-4" strokeWidth={1.8} />
+                    </a>
+                  </div>
                 </div>
               </div>
 
               {/* ── 第二入口：内网 ──
-                  与左栏**同构**：眉标放在卡片外面，样式与左栏眉标逐字一致（同字号/同字距/同 mb-5），
-                  这样两栏的眉标落在同一条线上；锁形图标原先占着卡片顶部一行，导致两侧起始内容
-                  高度不一致，已去掉 —— 「内网 / 需登录」由眉标与正文已经说清，不需要再顶一个图标。
-                  整块是一个 <a>，点任意位置进 /internal。用相对路径 `./internal`：
-                  Pages 子路径部署时写成 `/internal` 会 404（同 /tools 的教训）。 */}
+                  与左栏逐层同款，只把词与强调色换成 internal 蓝。
+                  整块是一个 <a>，点任意位置进 /internal；相对路径 `./internal` 不能写成
+                  `/internal` —— Pages 子路径部署会 404（同 /tools 的教训）。
+                  卡内 CTA 用 span 而非 a：外层已经是 a，嵌套链接是非法 HTML。 */}
               <div className="flex flex-col">
                 <span className="mb-5 block font-mono text-[11px] tracking-[0.16em] text-text-muted uppercase">
                   第二入口 · 内网
                 </span>
 
+                <span className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1 self-start rounded-full border border-internal/35 bg-internal/10 px-5 py-2 text-2xl font-bold text-internal-light">
+                  <span className="h-2.5 w-2.5 shrink-0 animate-pulse rounded-full bg-internal-light" />
+                  <span className="inline-flex items-center gap-[8px] whitespace-nowrap">
+                    <span>内网</span>
+                    <span className="h-[4px] w-[4px] shrink-0 rounded-full bg-internal-light" aria-hidden="true" />
+                  </span>
+                  <span className="whitespace-nowrap">需登录</span>
+                </span>
+
                 <a
                   href="./internal"
-                  className="group flex flex-1 flex-col rounded-2xl border border-border bg-surface/70 p-8 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand/40 hover:bg-surface"
+                  className="group mt-6 flex flex-1 flex-col rounded-2xl border border-internal/35 bg-surface/70 p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-internal/60 hover:bg-surface sm:p-8"
                 >
-                  <div>
-                    <h2 className="text-2xl font-semibold tracking-tight text-text-primary">
-                      团队内部系统
-                    </h2>
-                    <p className="mt-3 text-[15px] leading-relaxed text-text-secondary">
-                      需要账号与密码登录，不对公众开放，因此不列在下面的公开清单里。
-                    </p>
+                  <h2 className="text-xl leading-[1.15] font-bold tracking-[-0.02em] sm:text-3xl">
+                    团队内部系统
+                  </h2>
 
-                    {/* 每行带副标题（取 sites.json 的 subtitle），一是把"卡片撑到左栏高度后
-                        中间那段空白"填掉，二是让人不用点进去就知道两个系统各是做什么的。 */}
-                    <ul className="mt-6 space-y-4">
-                      {INTERNAL_SITES.map((s) => (
-                        <li key={s.id}>
-                          <div className="flex items-center gap-2.5 text-sm font-medium text-text-primary">
-                            <span className="h-1 w-1 shrink-0 rounded-full bg-brand-light" aria-hidden="true" />
-                            {s.name}
-                          </div>
-                          <p className="mt-1 pl-[14px] text-[13px] leading-relaxed text-text-muted">
-                            {s.subtitle}
-                          </p>
-                        </li>
-                      ))}
-                    </ul>
+                  <p className="mt-4 text-[15px] leading-relaxed text-text-secondary">
+                    需要账号与密码登录，不对公众开放，因此不列在下面的公开清单里。
+                  </p>
 
-                    <p className="mt-6 text-[13px] leading-relaxed text-text-muted">
-                      点进去会先跳到登录页。
-                    </p>
-                  </div>
+                  {/* 每行带副标题（取 sites.json 的 subtitle），是真实数据不是凑字数。 */}
+                  <ul className="mt-5 space-y-4">
+                    {INTERNAL_SITES.map((s) => (
+                      <li key={s.id}>
+                        <div className="flex items-center gap-2.5 text-sm font-medium text-text-primary">
+                          <span className="h-1 w-1 shrink-0 rounded-full bg-internal-light" aria-hidden="true" />
+                          {s.name}
+                        </div>
+                        <p className="mt-1 pl-[14px] text-[13px] leading-relaxed text-text-muted">
+                          {s.subtitle}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
 
-                  {/* 撑高时才吃剩余空间；内容本来就这么高时坍成 0，
-                      最小间距仍由下方 mt-8 保证（否则窄一点的栏里分隔线会贴住列表）。 */}
+                  <p className="mt-5 text-[13px] leading-relaxed text-text-muted">
+                    点进去会先跳到登录页。
+                  </p>
+
                   <div className="flex-1" aria-hidden="true" />
 
-                  <div className="mt-8 flex items-center justify-between gap-3 border-t border-border pt-5">
+                  <div className="mt-8 flex flex-col items-stretch gap-3 border-t border-border pt-5 sm:flex-row sm:items-center sm:justify-between">
                     <span className="font-mono text-xs text-text-muted">
                       {String(INTERNAL_SITES.length).padStart(2, '0')} 个系统 · 需登录
                     </span>
-                    <span className="inline-flex items-center gap-1.5 text-sm font-medium text-brand-light">
+                    <span className="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-internal px-5 py-2.5 text-sm font-medium text-white sm:w-auto">
                       进入内网入口
                       <ArrowRight
                         className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5"
