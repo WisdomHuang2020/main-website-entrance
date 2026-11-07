@@ -153,9 +153,15 @@ export default function App() {
                 强调色分工：第一入口 teal，第二入口 internal 蓝，同构但一眼可分辨。
                 背景装饰（hero-glow / hero-grid / 出血六边形水印）按用户选择**全部保留、一个没动**。 */}
             <div className="grid gap-14 lg:grid-cols-2 lg:gap-12">
-              {/* ── 第一入口：公开 ── */}
+              {/* ── 第一入口：公开 ──
+                  眉标按用户要求改成「白色 + 放大」，参照右下角「进入内网入口」按钮的
+                  text-white / font-medium。原为 11px text-text-muted + 0.16em 大字距，
+                  在 1440 大屏上几乎看不见。字号取 16px（比按钮的 14px 大一档，才像"标题"），
+                  字距从 0.16em 收到 0.06em —— 大字配大字距会散。
+                  **保留 font-mono**：「第一入口 · 公开」里的 U+00B7 位置随字体 fallback 漂移，
+                  换字体家族会把 11-02 那轮调过的圆点问题重新引回来。 */}
               <div className="flex flex-col">
-                <span className="mb-5 block font-mono text-[11px] tracking-[0.16em] text-text-muted uppercase">
+                <span className="mb-5 block font-mono text-base font-medium tracking-[0.06em] text-white uppercase">
                   第一入口 · 公开
                 </span>
 
@@ -234,7 +240,7 @@ export default function App() {
                   `/internal` —— Pages 子路径部署会 404（同 /tools 的教训）。
                   卡内 CTA 用 span 而非 a：外层已经是 a，嵌套链接是非法 HTML。 */}
               <div className="flex flex-col">
-                <span className="mb-5 block font-mono text-[11px] tracking-[0.16em] text-text-muted uppercase">
+                <span className="mb-5 block font-mono text-base font-medium tracking-[0.06em] text-white uppercase">
                   第二入口 · 内网
                 </span>
 
