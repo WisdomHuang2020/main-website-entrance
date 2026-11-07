@@ -18,16 +18,19 @@ export default function Header() {
               最早那一版用 `&` 连接（21 字符、183px）时，360px 需 413px、390px 也超视口，
               导航项还被挤成**每个字一行**（「工具与课程」折 5 行、高 116px > 页头固定 65px）。
               改用点号只窄了 11px，不足以让它回到窄屏页头，故隐藏策略保留。
+              2026-11-07 品牌名再加一个词（`·Systems`，21 → 29 字符、宽 172 → 约 237px），
+              sm(640) 这一档的余量被吃光，故把品牌文字与版本徽标的显隐断点从 sm 提到 md
+              —— 640–767px 只留六边形标记，导航不再被挤压。
               窄屏留六边形标记即足以识别品牌（标记本身就是品牌符号），版本号在页脚仍有一处。
               ⚠️ 用 CSS 隐藏而非条件渲染：`.app-version` 必须留在 DOM 里，
               scripts/verify-version.mjs 的「显示点 ≥ 2 处」断言依赖它存在。 */}
-          <span className="hidden text-base font-bold tracking-tight sm:inline">
-            Know-How·Tools·Skills
+          <span className="hidden text-base font-bold tracking-tight md:inline">
+            Know-How·Tools·Skills·Systems
           </span>
           {/* 版本号显示点之一（另一处在页脚）。两处共用 __APP_VERSION__ 同一常量，
               由 scripts/verify-version.mjs 断言不得各自硬编码。
               app-version 为核验钩子：线上可用 querySelectorAll('.app-version') 直接读到版本。 */}
-          <span className="app-version hidden rounded border border-brand/30 bg-brand-dark/40 px-1.5 py-0.5 font-mono text-[10px] leading-none font-semibold text-brand-light sm:inline">
+          <span className="app-version hidden rounded border border-brand/30 bg-brand-dark/40 px-1.5 py-0.5 font-mono text-[10px] leading-none font-semibold text-brand-light md:inline">
             v{__APP_VERSION__}
           </span>
         </a>
