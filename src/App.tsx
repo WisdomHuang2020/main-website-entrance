@@ -5,7 +5,6 @@ import {
   FunctionSquare,
   Github,
   Layers,
-  Lock,
   ShieldCheck,
   type LucideIcon,
 } from 'lucide-react'
@@ -141,7 +140,13 @@ export default function App() {
                 原先右侧只有一片空底 + 放大六边形水印，宽屏上很空；现在两边各司其职。
                 内网卡只做"入口"，不直接列内网站 —— 那些系统需要账号，不该出现在公众首屏。
                 配套判断见 src/data/sites.ts：首页卡片墙只列 SITES，内网站在 /internal 列 INTERNAL_SITES。 */}
-            <div className="grid items-center gap-14 lg:grid-cols-2 lg:gap-12">
+            {/* 两栏**顶部对齐**，且右卡撑满到左栏底沿（2026-11-07 修「左右不一致」）：
+                原先用 `items-center`，右卡在栏内垂直居中 —— 结果它的上沿比左栏眉标低 40px、
+                下沿又比左栏按钮行高 40px，一块带边框的卡片上下都错开，宽屏上看着"悬空"。
+                现在改成默认 `items-stretch` + 右栏 `flex flex-col` + 卡片 `flex-1`：
+                右栏眉标与左栏眉标落在同一条基线，卡片上沿与左侧眉标药丸同高、下沿与按钮行同高，
+                两个带边框的圆角块因此共享上下两条水平线。 */}
+            <div className="grid gap-14 lg:grid-cols-2 lg:gap-12">
               {/* ── 第一入口：公开 ── */}
               <div>
                 <span className="mb-5 block font-mono text-[11px] tracking-[0.16em] text-text-muted uppercase">
@@ -213,39 +218,52 @@ export default function App() {
               </div>
 
               {/* ── 第二入口：内网 ──
+                  与左栏**同构**：眉标放在卡片外面，样式与左栏眉标逐字一致（同字号/同字距/同 mb-5），
+                  这样两栏的眉标落在同一条线上；锁形图标原先占着卡片顶部一行，导致两侧起始内容
+                  高度不一致，已去掉 —— 「内网 / 需登录」由眉标与正文已经说清，不需要再顶一个图标。
                   整块是一个 <a>，点任意位置进 /internal。用相对路径 `./internal`：
                   Pages 子路径部署时写成 `/internal` 会 404（同 /tools 的教训）。 */}
-              <div>
+              <div className="flex flex-col">
+                <span className="mb-5 block font-mono text-[11px] tracking-[0.16em] text-text-muted uppercase">
+                  第二入口 · 内网
+                </span>
+
                 <a
                   href="./internal"
-                  className="group flex h-full flex-col justify-between rounded-2xl border border-border bg-surface/70 p-8 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand/40 hover:bg-surface"
+                  className="group flex flex-1 flex-col rounded-2xl border border-border bg-surface/70 p-8 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand/40 hover:bg-surface"
                 >
                   <div>
-                    <div className="flex items-center gap-2.5">
-                      <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-brand/15 text-brand-light">
-                        <Lock className="h-4 w-4" strokeWidth={1.9} />
-                      </span>
-                      <span className="font-mono text-[11px] tracking-[0.16em] text-text-muted uppercase">
-                        第二入口 · 内网
-                      </span>
-                    </div>
-
-                    <h2 className="mt-6 text-2xl font-semibold tracking-tight text-text-primary">
+                    <h2 className="text-2xl font-semibold tracking-tight text-text-primary">
                       团队内部系统
                     </h2>
                     <p className="mt-3 text-[15px] leading-relaxed text-text-secondary">
                       需要账号与密码登录，不对公众开放，因此不列在下面的公开清单里。
                     </p>
 
-                    <ul className="mt-6 space-y-2.5">
+                    {/* 每行带副标题（取 sites.json 的 subtitle），一是把"卡片撑到左栏高度后
+                        中间那段空白"填掉，二是让人不用点进去就知道两个系统各是做什么的。 */}
+                    <ul className="mt-6 space-y-4">
                       {INTERNAL_SITES.map((s) => (
-                        <li key={s.id} className="flex items-center gap-2.5 text-sm text-text-secondary">
-                          <span className="h-1 w-1 shrink-0 rounded-full bg-text-muted" aria-hidden="true" />
-                          {s.name}
+                        <li key={s.id}>
+                          <div className="flex items-center gap-2.5 text-sm font-medium text-text-primary">
+                            <span className="h-1 w-1 shrink-0 rounded-full bg-brand-light" aria-hidden="true" />
+                            {s.name}
+                          </div>
+                          <p className="mt-1 pl-[14px] text-[13px] leading-relaxed text-text-muted">
+                            {s.subtitle}
+                          </p>
                         </li>
                       ))}
                     </ul>
+
+                    <p className="mt-6 text-[13px] leading-relaxed text-text-muted">
+                      点进去会先跳到登录页。
+                    </p>
                   </div>
+
+                  {/* 撑高时才吃剩余空间；内容本来就这么高时坍成 0，
+                      最小间距仍由下方 mt-8 保证（否则窄一点的栏里分隔线会贴住列表）。 */}
+                  <div className="flex-1" aria-hidden="true" />
 
                   <div className="mt-8 flex items-center justify-between gap-3 border-t border-border pt-5">
                     <span className="font-mono text-xs text-text-muted">
