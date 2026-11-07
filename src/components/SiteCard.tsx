@@ -39,7 +39,7 @@ export default function SiteCard({
     >
       {/* 大号幽灵序号：低透明度，只作版面纹理，不与内容抢读 */}
       <span
-        className="pointer-events-none absolute top-5 right-7 font-mono text-[40px] leading-none font-medium tracking-[-0.04em] text-white/[0.07] transition-colors duration-200 group-hover:text-white/[0.12]"
+        className="pointer-events-none absolute top-5 right-7 font-mono text-[40px] leading-none font-medium tracking-[-0.04em] text-text-primary/[0.07] transition-colors duration-200 group-hover:text-text-primary/[0.12]"
         aria-hidden="true"
       >
         {String(index).padStart(2, '0')}
@@ -76,7 +76,7 @@ export default function SiteCard({
         {site.tags.map((tag) => (
           <li
             key={tag}
-            className="rounded border border-border bg-white/[0.03] px-2.5 py-1 text-xs text-text-secondary"
+            className="rounded border border-border bg-text-primary/[0.03] px-2.5 py-1 text-xs text-text-secondary"
           >
             {tag}
           </li>

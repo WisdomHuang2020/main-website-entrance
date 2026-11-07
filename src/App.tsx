@@ -161,7 +161,7 @@ export default function App() {
                   **保留 font-mono**：「第一入口 · 公开」里的 U+00B7 位置随字体 fallback 漂移，
                   换字体家族会把 11-02 那轮调过的圆点问题重新引回来。 */}
               <div className="flex flex-col">
-                <span className="mb-6 block font-mono text-base font-medium tracking-[0.06em] text-white uppercase">
+                <span className="mb-6 block font-mono text-base font-medium tracking-[0.06em] text-text-primary uppercase">
                   第一入口 · 公开
                 </span>
 
@@ -242,7 +242,7 @@ export default function App() {
                   `/internal` —— Pages 子路径部署会 404（同 /tools 的教训）。
                   卡内 CTA 用 span 而非 a：外层已经是 a，嵌套链接是非法 HTML。 */}
               <div className="flex flex-col">
-                <span className="mb-6 block font-mono text-base font-medium tracking-[0.06em] text-white uppercase">
+                <span className="mb-6 block font-mono text-base font-medium tracking-[0.06em] text-text-primary uppercase">
                   第二入口 · 内网
                 </span>
 

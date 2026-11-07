@@ -1,5 +1,6 @@
 import { ArrowLeft, Github } from 'lucide-react'
 import BrandMark from './BrandMark'
+import ThemeSwitcher from './ThemeSwitcher'
 import { SECTION_LINKS, isInternalRoute, onHomeClick, onSectionClick } from '../lib/sectionRoute'
 
 export default function Header() {
@@ -69,6 +70,9 @@ export default function Header() {
               </a>
             ))
           )}
+          {/* 页面风格切换器：放在 GitHub 之前，与导航项同一视觉层级。
+              内网页也保留 —— 换肤是全站行为，不该因为进了第二层就消失。 */}
+          <ThemeSwitcher />
           <a
             href="https://github.com/WisdomHuang2020/main-website-entrance"
             target="_blank"
