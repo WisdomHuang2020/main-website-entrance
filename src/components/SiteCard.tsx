@@ -12,6 +12,7 @@ export default function SiteCard({
   index,
   version,
   live = false,
+  unread = 0,
   className = '',
 }: {
   site: Site
@@ -20,6 +21,8 @@ export default function SiteCard({
   version: string
   /** 该值是否来自实时端点（仅影响 tooltip 文案，便于日后排查"为什么这个数字没变"） */
   live?: boolean
+  /** 该站未读留言条数；0 时**不渲染任何角标**（用户 2026-11-07 明确要求不显示 0） */
+  unread?: number
   /** 网格跨度由调用方决定（见 App.tsx 的 6 列网格注释），卡片本身不关心排布 */
   className?: string
 }) {
@@ -43,10 +46,23 @@ export default function SiteCard({
       </span>
 
       <span
-        className="inline-flex h-12 w-12 items-center justify-center rounded-xl"
+        className="relative inline-flex h-12 w-12 items-center justify-center rounded-xl"
         style={{ backgroundColor: `${site.accent}1f`, color: site.accent }}
       >
         <Icon className="h-6 w-6" strokeWidth={1.7} />
+        {/* 未读角标贴在图标右上角：卡片右上角已被大号幽灵序号占用，放那里会叠成一团。
+            整张卡片本身是一个 <a>，角标不做第二层链接（嵌套 a 非法），只作提示。 */}
+        {unread > 0 && (
+          <span
+            className="absolute -top-1.5 -right-1.5 inline-flex min-w-[20px] items-center justify-center rounded-full px-1.5 py-[3px] font-mono text-[11px] leading-none font-semibold text-white ring-2 ring-bg"
+            style={{ backgroundColor: site.accent }}
+            role="status"
+            aria-label={`${unread} 条未读留言`}
+            title={`${unread} 条未读留言 · 留言内容在站内后台查看`}
+          >
+            {unread > 99 ? '99+' : unread}
+          </span>
+        )}
       </span>
 
       <h3 className="site-card-title mt-5 text-xl font-semibold tracking-tight text-text-primary transition-colors">

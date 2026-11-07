@@ -96,8 +96,9 @@ npm run check:versions -- --host 43.142.148.37 --key ~/.ssh/pfc_ci   # 子站版
 本站是纯静态门户，但**站群**自 2026-11-02 起不再全静态：五个工具/课程站各加了
 「读者留言」，留言的可见性必须在服务端判定，因此有一个自建 Node 服务。
 
-它放在本仓库，是因为入口站是站群的协调点（nginx 里的 `/api/version/<id>` 端点也在这里），
-而不是因为本站自己用到了它 —— **入口页自身不调用任何后端接口**。
+它放在本仓库，是因为入口站是站群的协调点（nginx 里的 `/api/version/<id>` 与
+`/api/unread` 端点都在这里），而不是因为本站自己用到了这套留言服务 ——
+入口页只取同源的静态端点（nginx `alias` 直读文件），不经过 8792 / 8791 两个 Node 服务。
 
 | 项 | 值 |
 |---|---|
@@ -111,6 +112,29 @@ npm run check:versions -- --host 43.142.148.37 --key ~/.ssh/pfc_ci   # 子站版
 
 ⚠️ 本仓库的 CI **只发布 `dist`**，不会部署 `/opt/feedback-api`。
 后端代码变更须按上述 README 手工同步到服务器，否则前端会报「留言服务尚未就绪」。
+
+## 站群未读留言角标（`server/unread-aggregator/`）
+
+2026-11-07 起，首页 6 张站点卡片在「该站有未读留言」时显示数字角标，
+**为 0 的站不显示 0**。数据链路与 `useLiveVersions` 同型：
+
+```
+两个留言库 ──只读统计(60s)──▶ /var/lib/entrance-unread/unread.json
+                                    │ nginx alias（同源、no-store）
+                                    ▼
+                           GET /api/unread ──▶ src/data/useUnread.ts ──▶ SiteCard 角标
+```
+
+| 项 | 口径 |
+|---|---|
+| 「未查看」定义 | 两个库统一的 `messages.status = 'new'`；在子站后台标记 `read` / `archived` 后 ≤60 秒角标自动消失 |
+| 6 站来源 | `feedback-api` 管 5 站（库带 `site` 列）+ `widget-api` 单站库 |
+| 清零机制 | **无第二套状态**，入口站不记 `lastSeen`，不支持「点一下消掉」 |
+| 隐私边界 | 🔴 **未读数量对全体访客公开**（不含留言正文、联系方式、任何一条记录内容）。首页文案已相应改为「留言内容仅本人可见，入口站只公开提示各站是否有新留言」 |
+| 降级 | 端点 404 / 返回 HTML / 聚合停摆超 10 分钟 → 静默隐藏全部角标。GitHub Pages 兜底通道无此端点，天然不显示 |
+
+部署与验收见 **`server/unread-aggregator/README.md`**；nginx 端点定义在
+`deploy/nginx-entrance.conf`。CI 只发 `dist`，这两处都须手工同步到服务器。
 
 ## 部署链路
 

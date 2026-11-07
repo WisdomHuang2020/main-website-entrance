@@ -1,0 +1,20 @@
+[Unit]
+Description=Aggregate unread feedback counts for the entrance portal
+Documentation=file:/opt/entrance-unread/README.md
+After=network.target
+
+[Service]
+Type=oneshot
+User=www-data
+Group=www-data
+ExecStart=/usr/bin/node /opt/entrance-unread/index.mjs
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+# 刻意用 full 而不是 strict：两个留言库是 WAL 模式，SQLite 的只读连接
+# 仍需可写的 -shm 共享内存文件。strict 会把 /var/lib 整个设成只读，
+# 只读打开会直接失败（表现为「聚合挂了但没人发现」）。
+# SQL 层的只读由 index.mjs 的 readOnly + PRAGMA query_only=ON 保证，
+# 本进程从头到尾只执行两条 SELECT。
+ProtectSystem=full
+ReadWritePaths=/var/lib/entrance-unread

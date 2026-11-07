@@ -14,7 +14,6 @@ import InternalPage from './components/InternalPage'
 import SiteCard from './components/SiteCard'
 import { INTERNAL_SITES, SITES } from './data/sites'
 import { useLiveVersions } from './data/useLiveVersions'
-import { useUnread } from './data/useUnread'
 import { isInternalRoute, onSectionClick, useSectionRoute } from './lib/sectionRoute'
 
 const REPO_URL = 'https://github.com/WisdomHuang2020/main-website-entrance'
@@ -54,7 +53,7 @@ const PRINCIPLES: { icon: LucideIcon; title: string; desc: string }[] = [
     // 否则要么撒谎（说无后端），要么连真话一起丢掉（说数据都上传）。
     // 仍需避免的表述：「断网后仍可使用」—— 字体走 Google Fonts CDN，断网体验无保证；
     // 「不留存」—— LLC 站会把设计参数写进 localStorage（实测 27 处）。
-    desc: '计算与设计全部在浏览器内完成，输入参数不回传服务器；各站只有留言一项经服务端落库，且留言内容仅作者可见。',
+    desc: '计算与设计全部在浏览器内完成，输入参数不回传服务器；各站只有留言一项经服务端落库，且仅作者可见。',
   },
   {
     icon: FunctionSquare,
@@ -81,10 +80,6 @@ export default function App() {
   // 站点版本的运行时覆盖层：取到实时值就覆盖静态值，取不到就静默用静态值。
   // 详见 src/data/useLiveVersions.ts 与 deploy/nginx-entrance.conf 的端点说明。
   const liveVersions = useLiveVersions()
-
-  // 各站未读留言计数：为 0 或端点不可用时返回空对象，卡片上一片安静。
-  // 详见 src/data/useUnread.ts 与 server/unread-aggregator/README.md。
-  const unread = useUnread()
 
   // 干净 URL（/tools、/engineers）的深链定位与前进后退处理。
   // 详见 src/lib/sectionRoute.ts。
@@ -204,8 +199,7 @@ export default function App() {
                   <div className="mt-5 text-[13px] leading-relaxed text-text-muted sm:mt-6 sm:text-sm">
                     <p>
                       工具都是纯前端应用 —— 打开即用、输入参数不出浏览器，公式与假设写在各自站内，
-                      结论可手工复核。发现哪里算错了，可直接在对应站点的「留言」里指出；
-                      留言内容仅本人可见，入口站只公开提示各站是否有新留言。
+                      结论可手工复核。发现哪里算错了，可直接在对应站点的「留言」里指出，留言只有本人能看到。
                     </p>
                     <a
                       href={REPO_URL}
@@ -362,7 +356,6 @@ export default function App() {
                   index={i + 1}
                   version={liveVer ?? site.version}
                   live={!!liveVer}
-                  unread={unread[site.id] ?? 0}
                   className={isWideTail ? 'xl:col-span-3' : 'xl:col-span-2'}
                 />
               )
