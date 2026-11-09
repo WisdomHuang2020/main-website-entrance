@@ -112,6 +112,22 @@
     "version": "1.0.0"
   },
   {
+    "id": "motor-lighting",
+    "name": "二轮车照明配光技术站",
+    "subtitle": "Motorcycles Illumination · Photometric Engineering",
+    "domain": "www.motor-lighting.power-knowledge.tech",
+    "url": "https://www.motor-lighting.power-knowledge.tech/",
+    "desc": "把 GB 19152-2025（25 m / cd）与 GB/T 31887.1-2019（10 m / lx）两套体系整理成可交互的配光知识站：标准表格逐表速查、SVG 配光屏点位、光型四态、cd↔lx 换算、设计全流程、测试照准、研发内控与 12 题自测。资料内部 6 处矛盾逐条并列，不做静默统一。",
+    "tags": [
+      "配光标准",
+      "交互配光屏",
+      "逐表速查"
+    ],
+    "accent": "#0f766e",
+    "icon": "lightbulb",
+    "version": "2.0.0"
+  },
+  {
     "id": "validation-test",
     "name": "评鉴测试报告系统",
     "subtitle": "LED 灯具评鉴测试报告填报与生成",
