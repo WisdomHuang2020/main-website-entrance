@@ -101,16 +101,16 @@
     "subtitle": "Power Electronics · Modeling & Control",
     "domain": "www.control-mode.power-knowledge.tech",
     "url": "https://www.control-mode.power-knowledge.tech/",
-    "desc": "从 43 本开关变换器与自动控制专著出发，把书里的公式变成可溯源的培训页与可复核的计算工具：19 阶「建模与控制手册」从零基础一路递进到 MPC，再往工程落地（磁性元件、输入滤波器、应力保护、测量、谐振、PFC、多相），另含 S→Z 七节推导与 Tustin 计算器。",
+    "desc": "从 43 本开关变换器与自动控制专著出发，把书里的公式变成可溯源的培训页与可复核的计算工具：18 阶「建模与控制手册」从零基础递进到 MPC，再补根轨迹、灵敏度、闭环性能、模型边界、饱和与前馈六个专题，另含 S→Z 七节推导与 Tustin 计算器。范围只到建模与控制。",
     "tags": [
-      "19 阶手册",
+      "建模与控制",
       "公式可溯源",
       "S→Z 离散化",
       "计算可复核"
     ],
     "accent": "#0f766e",
     "icon": "book",
-    "version": "1.3.0"
+    "version": "1.4.1"
   },
   {
     "id": "motor-lighting",
