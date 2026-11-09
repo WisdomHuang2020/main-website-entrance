@@ -3,6 +3,7 @@ import {
   BookOpen,
   Calculator,
   FileText,
+  LayoutGrid,
   Lightbulb,
   Waves,
   Zap,
@@ -40,6 +41,7 @@ export type SiteIconKey =
   | 'calculator'
   | 'book'
   | 'filetext'
+  | 'layout'
 
 export interface Site {
   /** 同时用作服务器 web 根目录名：/var/www/<id>（巡检脚本依赖此约定） */
@@ -58,7 +60,11 @@ export interface Site {
    *  2026-11-07 新增：validation-test 与 psu-model 两个团队内部系统接入门户。
    *  · 首页「工具与课程」只列公开站（SITES），内网站在 `/internal` 这一层单独列（INTERNAL_SITES）；
    *  · 这样首屏的「使用门槛 0 项」等表述仍然成立 —— 内网系统另有登录门禁，不混在公开工具里算。
-   *  · id 仍必须等于服务器 web 根目录名（/var/www/<id>），巡检脚本依赖此约定。 */
+   *  · id 对公开站必须等于服务器 web 根目录名（/var/www/<id>），巡检脚本依赖此约定；
+   *    内网站豁免这条 —— check-versions.mjs 直接跳过 internal，不会去 Lighthouse 上找 /var/www/<id>。
+   *  2026-11-09 追加：io（www.io.wx-seastar.cn，团队内部站群总入口）接入，成为第 3 个内网系统。
+   *    它跑在阿里云 47.82.x 那台，与本站群不同机、无 `.deployed-version` 哨兵，
+   *    version 只能人工维护（当前 1.0.0），改版时需手动同步这个数字。 */
   internal?: boolean
 }
 
@@ -70,6 +76,7 @@ export const ICONS: Record<SiteIconKey, LucideIcon> = {
   calculator: Calculator,
   book: BookOpen,
   filetext: FileText,
+  layout: LayoutGrid,
 }
 
 /** 全量清单（含内网）。sites.json 保持扁平数组 —— scripts/check-versions.mjs 直接按数组读。 */
