@@ -65,11 +65,11 @@ sites:
     # 裸名与 http 均 301 归一 www。故这里的 domain 直接写最终服务域，卡片不再多跳一次。
     domain: www.control-mode.power-knowledge.tech
     web_root: /var/www/control-mode
-    version: 1.0.0            # 哨兵由 deploy-lighthouse.yml / deploy.sh 写入，三段式不带 v
+    version: 1.1.0            # 哨兵由 deploy-lighthouse.yml / deploy.sh 写入，三段式不带 v
   - id: motor-lighting
     repo:   git@github.com:WisdomHuang2020/motorcycles-illumination.git
     # 对外只认 www：www.motor-lighting.* 是二级子域，通配符证书盖不到，单独签双名证书；
     # 裸名与 http 均 301 归一 www。故这里的 domain 直接写最终服务域，卡片不再多跳一次。
     domain: www.motor-lighting.power-knowledge.tech
     web_root: /var/www/motor-lighting
-    version: 2.0.0            # 哨兵由 .github/workflows/deploy.yml 随 dist 写入，三段式不带 v
+    version: 2.0.1            # 哨兵由 .github/workflows/deploy.yml 随 dist 写入，三段式不带 v
