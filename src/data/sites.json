@@ -1,21 +1,5 @@
 [
   {
-    "id": "io",
-    "name": "IO · 团队内部站点入口",
-    "subtitle": "Team Portal · One Login, All Internal Sites",
-    "domain": "www.io.wx-seastar.cn",
-    "url": "https://www.io.wx-seastar.cn/",
-    "desc": "团队内部站点的总入口：技能库、磁元件设计、LTspice 模型、变压器设计、MOS 损耗计算书等站点都收在这一页，多数站点从卡片点进去不用再输口令。需账号登录，仅团队内部使用。",
-    "tags": [
-      "站群总入口",
-      "卡片免密直达"
-    ],
-    "accent": "#0e7490",
-    "icon": "layout",
-    "version": "1.0.0",
-    "internal": true
-  },
-  {
     "id": "llc",
     "name": "LLC 谐振变换器设计工具",
     "subtitle": "LLC Resonant Converter Designer",
@@ -174,6 +158,22 @@
     "accent": "#0f766e",
     "icon": "calculator",
     "version": "1.2.1",
+    "internal": true
+  },
+  {
+    "id": "io",
+    "name": "IO · 团队内部站点入口",
+    "subtitle": "Team Portal · One Login, All Internal Sites",
+    "domain": "www.io.wx-seastar.cn",
+    "url": "https://www.io.wx-seastar.cn/",
+    "desc": "团队内部站点的总入口：技能库、磁元件设计、LTspice 模型、变压器设计、MOS 损耗计算书等站点都收在这一页，多数站点从卡片点进去不用再输口令。需账号登录，仅团队内部使用。",
+    "tags": [
+      "站群总入口",
+      "卡片免密直达"
+    ],
+    "accent": "#0e7490",
+    "icon": "layout",
+    "version": "1.0.0",
     "internal": true
   }
 ]

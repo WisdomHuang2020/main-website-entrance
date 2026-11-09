@@ -63,6 +63,8 @@ export interface Site {
    *  · id 对公开站必须等于服务器 web 根目录名（/var/www/<id>），巡检脚本依赖此约定；
    *    内网站豁免这条 —— check-versions.mjs 直接跳过 internal，不会去 Lighthouse 上找 /var/www/<id>。
    *  2026-11-09 追加：io（www.io.wx-seastar.cn，团队内部站群总入口）接入，成为第 3 个内网系统。
+   *    按用户要求，它排在内网清单**最后一位**（渲染顺序 = sites.json 数组顺序，无排序覆盖），
+   *    别因为「总入口应该在最前」把它挪回首位。
    *    它跑在阿里云 47.82.x 那台，与本站群不同机、无 `.deployed-version` 哨兵，
    *    version 只能人工维护（当前 1.0.0），改版时需手动同步这个数字。 */
   internal?: boolean
