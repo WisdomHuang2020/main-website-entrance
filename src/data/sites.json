@@ -96,6 +96,22 @@
     "version": "2.2.2"
   },
   {
+    "id": "control-mode",
+    "name": "开关变换器 · 建模与控制",
+    "subtitle": "Power Electronics · Modeling & Control",
+    "domain": "www.control-mode.power-knowledge.tech",
+    "url": "https://www.control-mode.power-knowledge.tech/",
+    "desc": "从 43 本开关变换器与自动控制专著出发，把书里的公式变成可溯源的培训页与可复核的计算工具：从 S 变换到 Z 变换的七节推导，以及 Tustin / 预畸变实时计算器。",
+    "tags": [
+      "公式可溯源",
+      "S→Z 离散化",
+      "计算可复核"
+    ],
+    "accent": "#0f766e",
+    "icon": "book",
+    "version": "1.0.0"
+  },
+  {
     "id": "validation-test",
     "name": "评鉴测试报告系统",
     "subtitle": "LED 灯具评鉴测试报告填报与生成",
