@@ -48,7 +48,15 @@ export interface Site {
   id: string
   name: string
   subtitle: string
+  /**
+   * 卡片上**显示**的域名，统一写成不带 `www.` 的裸名，保证站群观感一致。
+   * ⚠️ 它不必等于 `url` 的主机名：control-mode / motor-lighting / io 三站的
+   * **主域名是 www 变体**（裸域 301 跳到 www），所以 `url` 保留 www 以免多一跳，
+   * 只把 `domain` 的显示去掉 www。别为了"统一"去改 `url` —— 那会让每次点击
+   * 都多一次 301，而卡片上的字本来就是给人看的，不是给浏览器解析的。
+   */
   domain: string
+  /** 实际跳转地址，遵循各站的 www 规范化方向（不一定是裸域）。 */
   url: string
   desc: string
   tags: string[]

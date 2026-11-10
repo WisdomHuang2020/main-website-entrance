@@ -67,7 +67,7 @@
     "id": "motor-lighting",
     "name": "二轮车照明配光技术站",
     "subtitle": "Motorcycles Illumination · Photometric Engineering",
-    "domain": "www.motor-lighting.power-knowledge.tech",
+    "domain": "motor-lighting.power-knowledge.tech",
     "url": "https://www.motor-lighting.power-knowledge.tech/",
     "desc": "把 GB 19152-2025（25 m / cd）与 GB/T 31887.1-2019（10 m / lx）两套体系整理成可交互的配光知识站：标准表格逐表速查、SVG 配光屏点位、光型四态、cd↔lx 换算、设计全流程、测试照准、研发内控与 12 题自测。资料内部 6 处矛盾逐条并列，不做静默统一。",
     "tags": [
@@ -99,7 +99,7 @@
     "id": "control-mode",
     "name": "开关变换器 · 建模与控制",
     "subtitle": "Power Electronics · Modeling & Control",
-    "domain": "www.control-mode.power-knowledge.tech",
+    "domain": "control-mode.power-knowledge.tech",
     "url": "https://www.control-mode.power-knowledge.tech/",
     "desc": "从 43 份电源与控制资料（教材、专著、论文与厂商笔记）出发，把书里的公式变成可溯源的培训页与可复核的计算工具：18 阶「建模与控制手册」从零基础递进到 MPC，再补根轨迹、灵敏度、闭环性能、模型边界、饱和与前馈六个专题，另含 S→Z 七节推导与 Tustin 计算器。出处只标到节号，不标页码。范围只到建模与控制。",
     "tags": [
