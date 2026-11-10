@@ -1,0 +1,10 @@
+[Unit]
+Description=同步香港站(47.82.96.119) nginx 访问日志，供 analytics 统计
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/sync-remote-logs.sh
+# 日志量小，一次跑完即退出；失败下一轮会重试
+TimeoutStartSec=600

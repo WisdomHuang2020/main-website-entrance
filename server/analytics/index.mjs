@@ -34,7 +34,16 @@ import crypto from 'node:crypto'
 import { createInterface } from 'node:readline'
 
 const PORT = Number(process.env.PORT || 8793)
-const LOG_DIR = process.env.LOG_DIR || '/var/log/nginx'
+/**
+ * 日志目录（可多个，逗号分隔）。
+ * 第二个 /var/log/nginx-remote 是「香港站」(47.82.96.119) 的日志副本，
+ * 由 /usr/local/bin/sync-remote-logs.sh 定时拉取 —— 那台机器上跑着
+ * io / magnetics / pm / skills / spice / xsk / zxj 七个站，本机没有它们的日志。
+ */
+const LOG_DIRS = (process.env.LOG_DIRS || '/var/log/nginx,/var/log/nginx-remote')
+  .split(',')
+  .map((x) => x.trim())
+  .filter(Boolean)
 const DATA_DIR = process.env.DATA_DIR || '/etc/entrance-admin'
 const CRED_FILE = path.join(DATA_DIR, 'credentials.json')
 const SITES_FILE = process.env.SITES_FILE || path.join(DATA_DIR, 'sites.json')
@@ -73,17 +82,9 @@ function loadSites() {
     console.error('[analytics] 读取站点清单失败:', e.message)
   }
 
-  let names = []
-  try {
-    names = fs.readdirSync(LOG_DIR)
-  } catch (e) {
-    console.error('[analytics] 读取日志目录失败:', e.message)
-  }
-
   const seen = new Set(out.map((s) => s.id))
-  for (const n of names) {
-    const id = siteIdFromLog(n)
-    if (!id || seen.has(id)) continue
+  for (const { siteId: id } of scanLogFiles()) {
+    if (seen.has(id)) continue
     seen.add(id)
     out.push({
       id,
@@ -156,14 +157,24 @@ async function readLines(file, onLine) {
 }
 
 /**
- * 读取某个站某天的日志文件集合。
- * 当前日志名 `x.access.log`，历史是 `x.access.log.1` / `.2.gz` ……
+ * 扫描所有日志目录，返回 [{ siteId, file }]。
+ *
+ * 同一站点在两个目录都出现时不做特殊处理 —— 都是该站的日志，PV 相加是对的
+ * （真出现同名文件，说明该站有两个实例，合并统计反而更符合"这个站多少访问"）。
  */
-function logFilesFor(siteId, allNames) {
+function scanLogFiles() {
   const out = []
-  for (const name of allNames) {
-    if (siteIdFromLog(name) !== siteId) continue
-    out.push(path.join(LOG_DIR, name))
+  for (const dir of LOG_DIRS) {
+    let names = []
+    try {
+      names = fs.readdirSync(dir)
+    } catch {
+      continue // 目录还没建（比如远端日志尚未同步过）不算错误
+    }
+    for (const name of names) {
+      const id = siteIdFromLog(name)
+      if (id) out.push({ siteId: id, file: path.join(dir, name) })
+    }
   }
   return out
 }
@@ -179,7 +190,7 @@ async function collect(days) {
   }
 
   const sites = loadSites()
-  const names = fs.readdirSync(LOG_DIR).filter((n) => n.includes('access') && n.endsWith('.log') || /\.access\.log\.\d+(\.gz)?$/.test(n))
+  const allFiles = scanLogFiles()
 
   // 只保留最近 days 天
   const keep = new Set()
@@ -200,8 +211,7 @@ async function collect(days) {
   const allIps = new Set()
 
   for (const s of sites) {
-    const files = logFilesFor(s.id, names)
-    for (const file of files) {
+    for (const { file } of allFiles.filter((f) => f.siteId === s.id)) {
       let ok = true
       await readLines(file, (line) => {
         if (!ok) return
@@ -458,5 +468,5 @@ const server = http.createServer(async (req, res) => {
 fs.mkdirSync(DATA_DIR, { recursive: true })
 ensureCreds()
 server.listen(PORT, '127.0.0.1', () => {
-  console.log(`[analytics] listening on 127.0.0.1:${PORT}, logs=${LOG_DIR}, data=${DATA_DIR}`)
+  console.log(`[analytics] listening on 127.0.0.1:${PORT}, logs=${LOG_DIRS.join(',')}, data=${DATA_DIR}`)
 })

@@ -69,3 +69,34 @@ journalctl -u entrance-analytics -n 20   # 随机密码会打印在这里
   要统计它得在那台机器上另部署一份采集，再汇总过来。
 - 日志按天轮转，跨天边界（00:00 前后）的请求归属以日志行内的时间戳为准，不受轮转影响。
 - 单次全量解析约几百毫秒，结果缓存 5 分钟；`?days=` 变化会绕过缓存重算。
+
+## 多台服务器的日志汇总（香港站）
+
+`io` / `magnetics` / `pm` / `skills` / `spice` / `xsk` / `zxj` 跑在香港那台
+（`47.82.96.119`，实例名 `aliyun-wisdom`），本机没有它们的日志。
+
+**做法：主服务器主动拉过来，与本地日志合并统计**，不在那台另跑一套服务。
+
+```
+/usr/local/bin/sync-remote-logs.sh        # tar czf 流 → /var/log/nginx-remote/
+entrance-log-sync.{service,timer}         # 每 10 分钟
+```
+
+analytics 侧只需 `LOG_DIRS=/var/log/nginx,/var/log/nginx-remote`（默认值已含两者），
+`scanLogFiles()` 会扫所有目录，站点 id 仍由文件名决定。
+
+### 三个实测结论（别再走回头路）
+
+1. **不能用 rsync**：在这条链路上会卡在 generator 阶段并收到 SIGTERM / Broken pipe。
+   换 `tar czf - | tar xzf -` 一次就通。
+2. **必须 gzip**：该机带宽小，7.3 MB 原始日志传不完（4 分钟超时）；日志文本压缩比约 10:1，
+   压缩后 0.8 MB，40 秒完成。
+3. 只取 `*.access.log*`，**不取全局 `access.log`** —— 那是未匹配 Host 的兜底日志，不归属任何站。
+
+### 凭据
+
+私钥 `/root/.ssh/ymgd-io.pem`（600 root）。analytics 以 www-data 运行，读不到它 ——
+同步由 root 的 timer 执行，服务只读已落地的日志，权限隔离是有意的。
+
+> ⚠️ 原 `D:/AI Using\Web\IO\网站部署信息表.txt` 里明文贴着整段 RSA 私钥，
+> 已提醒用户删除。私钥只需存在主服务器与部署者本地的 pem 文件里。
