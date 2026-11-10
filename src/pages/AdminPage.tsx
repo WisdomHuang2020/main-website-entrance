@@ -302,21 +302,30 @@ function PasswordPanel() {
   const [open, setOpen] = useState(false)
   const [current, setCurrent] = useState('')
   const [next, setNext] = useState('')
+  // 二次输入：改密码是不可逆操作，打错一个字就得走「删凭据文件 + 重启」的重置流程，
+  // 代价远大于多填一栏。
+  const [confirm, setConfirm] = useState('')
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null)
   const [busy, setBusy] = useState(false)
 
   const hint = useMemo(() => (next && next.length < 8 ? '至少 8 位' : ''), [next])
+  const mismatch = confirm.length > 0 && next !== confirm
 
   async function submit(e: React.FormEvent) {
     e.preventDefault()
     if (busy) return
-    setBusy(true)
     setMsg(null)
+    if (next !== confirm) {
+      setMsg({ ok: false, text: '两次输入的新密码不一致' })
+      return
+    }
+    setBusy(true)
     try {
       await adminApi.changePassword(current, next)
       setMsg({ ok: true, text: '已修改。其它设备上的旧会话已失效。' })
       setCurrent('')
       setNext('')
+      setConfirm('')
     } catch (e2) {
       setMsg({ ok: false, text: e2 instanceof Error ? e2.message : '修改失败' })
     } finally {
@@ -349,13 +358,20 @@ function PasswordPanel() {
             value={next}
             onChange={setNext}
           />
+          <PasswordInput
+            placeholder="再次输入新密码"
+            autoComplete="new-password"
+            value={confirm}
+            onChange={setConfirm}
+          />
           {hint && <p className="text-xs text-text-muted">{hint}</p>}
+          {mismatch && <p className="text-xs text-danger">两次输入不一致</p>}
           {msg && (
             <p className={`text-xs ${msg.ok ? 'text-success' : 'text-danger'}`}>{msg.text}</p>
           )}
           <button
             type="submit"
-            disabled={busy || !current || next.length < 8}
+            disabled={busy || !current || next.length < 8 || next !== confirm}
             className="rounded-lg border border-border px-4 py-2 text-sm transition-colors hover:bg-surface-elevated disabled:opacity-50"
           >
             {busy ? '提交中…' : '确认修改'}
