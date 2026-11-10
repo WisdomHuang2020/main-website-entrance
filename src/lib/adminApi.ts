@@ -42,6 +42,12 @@ async function call<T>(path: string, init?: RequestInit): Promise<T> {
     const msg = (body as { error?: string } | null)?.error
     throw new Error(msg || `请求失败（HTTP ${res.status}）`)
   }
+  // 状态码 200 但内容不是 JSON —— 典型情况是 nginx 没配 /api/admin/ 反代，
+  // 请求被 SPA 的 try_files 兜成了 index.html。不拦的话 me() 会返回 null
+  // 被当作「已登录」，页面显示一个空仪表盘，比直接报错更难排查。
+  if (body === null) {
+    throw new Error('接口返回的不是 JSON，可能后端未部署或反向代理未配置')
+  }
   return body as T
 }
 

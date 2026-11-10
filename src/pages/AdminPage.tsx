@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { ArrowLeft, BarChart3, KeyRound, LogOut, RefreshCw, ShieldCheck } from 'lucide-react'
+import { ArrowLeft, BarChart3, Eye, EyeOff, KeyRound, LogOut, RefreshCw, ShieldCheck } from 'lucide-react'
 import { adminApi, type StatsResponse } from '../lib/adminApi'
 import TrendChart from '../components/admin/TrendChart'
 
@@ -274,13 +274,12 @@ function LoginCard({ onSuccess }: { onSuccess: () => void }) {
         </label>
         <label className="mt-3 block text-xs text-text-secondary">
           密码
-          <input
-            type="password"
+          <PasswordInput
+            className="mt-1.5"
             autoFocus
             autoComplete="current-password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="mt-1.5 w-full rounded-lg border border-border bg-bg px-3 py-2 font-mono text-sm text-text-primary outline-none focus:border-brand-light"
+            onChange={setPassword}
           />
         </label>
         {err && <p className="mt-3 text-xs text-danger">{err}</p>}
@@ -338,21 +337,17 @@ function PasswordPanel() {
       </button>
       {open && (
         <form onSubmit={submit} className="space-y-3 border-t border-border px-4 py-4">
-          <input
-            type="password"
+          <PasswordInput
             placeholder="当前密码"
             autoComplete="current-password"
             value={current}
-            onChange={(e) => setCurrent(e.target.value)}
-            className="w-full rounded-lg border border-border bg-bg px-3 py-2 font-mono text-sm outline-none focus:border-brand-light"
+            onChange={setCurrent}
           />
-          <input
-            type="password"
+          <PasswordInput
             placeholder="新密码（至少 8 位）"
             autoComplete="new-password"
             value={next}
-            onChange={(e) => setNext(e.target.value)}
-            className="w-full rounded-lg border border-border bg-bg px-3 py-2 font-mono text-sm outline-none focus:border-brand-light"
+            onChange={setNext}
           />
           {hint && <p className="text-xs text-text-muted">{hint}</p>}
           {msg && (
@@ -368,5 +363,60 @@ function PasswordPanel() {
         </form>
       )}
     </section>
+  )
+}
+
+/**
+ * 密码输入框 + 明码/密文切换（小眼睛）。
+ *
+ * ⚠️ 按钮必须写 `type="button"` —— 它被放在 `<form>` 里，浏览器默认把 button
+ * 当作 submit，漏写这一句的话，**点一下眼睛就直接提交登录表单**了。
+ *
+ * 图标只用颜色变化表示状态，不额外加"已显示"的文字 —— 放在输入框右侧，
+ * 说太多反而挤。可访问性靠 aria-label / aria-pressed 补齐。
+ */
+function PasswordInput({
+  value,
+  onChange,
+  placeholder,
+  autoComplete,
+  autoFocus,
+  className = '',
+}: {
+  value: string
+  onChange: (v: string) => void
+  placeholder?: string
+  autoComplete?: string
+  autoFocus?: boolean
+  className?: string
+}) {
+  const [show, setShow] = useState(false)
+  return (
+    <div className={`relative ${className}`}>
+      <input
+        type={show ? 'text' : 'password'}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        autoComplete={autoComplete}
+        autoFocus={autoFocus}
+        // pr-10 给右侧按钮留位，否则长密码会顶到眼睛图标下面
+        className="w-full rounded-lg border border-border bg-bg py-2 pr-10 pl-3 font-mono text-sm text-text-primary outline-none focus:border-brand-light"
+      />
+      <button
+        type="button"
+        onClick={() => setShow((v) => !v)}
+        aria-label={show ? '隐藏密码' : '显示密码'}
+        aria-pressed={show}
+        title={show ? '隐藏密码' : '显示密码'}
+        className="absolute top-1/2 right-1.5 -translate-y-1/2 rounded p-1.5 text-text-muted transition-colors hover:bg-surface-elevated hover:text-text-primary focus-visible:text-text-primary focus-visible:outline-none"
+      >
+        {show ? (
+          <EyeOff className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
+        ) : (
+          <Eye className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
+        )}
+      </button>
+    </div>
   )
 }
