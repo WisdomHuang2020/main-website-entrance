@@ -83,4 +83,4 @@ sites:
     # 裸名与 http 均 301 归一 www。故这里的 domain 直接写最终服务域，卡片不再多跳一次。
     domain: www.motor-lighting.power-knowledge.tech
     web_root: /var/www/motor-lighting
-    version: 3.0.0            # 哨兵由 .github/workflows/deploy.yml 随 dist 写入，三段式不带 v
+    version: 3.0.2            # 哨兵由 .github/workflows/deploy.yml 随 dist 写入，三段式不带 v
