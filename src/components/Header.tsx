@@ -1,4 +1,4 @@
-import { ArrowLeft, Github } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import BrandMark from './BrandMark'
 import ThemeSwitcher from './ThemeSwitcher'
 import { SECTION_LINKS, isInternalRoute, onHomeClick, onSectionClick } from '../lib/sectionRoute'
@@ -10,7 +10,8 @@ export default function Header() {
    * ① 看着像当前页的目录，点下去却是"离开本页 + 滚到首页某一段"；
    * ② 与页面里已有的「返回入口」语义打架，用户不知道哪个才是"上一级"。
    * 所以内网页只留一个明确的「返回总入口」（2026-11-07 按用户要求由「返回入口」改名，
-   * 强调回到的是站群总入口这一层，而不是随便某个上一级）。GitHub 图标两页都保留。
+   * 强调回到的是站群总入口这一层，而不是随便某个上一级）。
+   * 2026-11-10 按用户要求移除 GitHub 图标链接，首页与内网页都不再显示。
    * ⚠️ 进出内网页都是整页跳转（<a href>），Header 会重新挂载，渲染时读一次 pathname 即可。
    */
   const internal = isInternalRoute()
@@ -70,18 +71,10 @@ export default function Header() {
               </a>
             ))
           )}
-          {/* 页面风格切换器：放在 GitHub 之前，与导航项同一视觉层级。
-              内网页也保留 —— 换肤是全站行为，不该因为进了第二层就消失。 */}
+          {/* 页面风格切换器：与导航项同一视觉层级，放在导航末尾。
+              内网页也保留 —— 换肤是全站行为，不该因为进了第二层就消失。
+              2026-11-10 按用户要求去掉了原本紧跟其后的 GitHub 图标链接。 */}
           <ThemeSwitcher />
-          <a
-            href="https://github.com/WisdomHuang2020/main-website-entrance"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="本站源码仓库"
-            className="ml-1 rounded-md p-2 text-text-muted transition-colors hover:bg-surface-elevated hover:text-text-primary"
-          >
-            <Github className="h-4 w-4" />
-          </a>
         </nav>
       </div>
     </header>

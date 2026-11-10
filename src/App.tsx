@@ -3,7 +3,6 @@ import {
   ArrowRight,
   Cpu,
   FunctionSquare,
-  Github,
   Layers,
   ShieldCheck,
   type LucideIcon,
@@ -16,8 +15,6 @@ import { INTERNAL_SITES, SITES } from './data/sites'
 import { useLiveVersions } from './data/useLiveVersions'
 import { useUnread } from './data/useUnread'
 import { isInternalRoute, onSectionClick, useSectionRoute } from './lib/sectionRoute'
-
-const REPO_URL = 'https://github.com/WisdomHuang2020/main-website-entrance'
 
 /** 内网页判定见 src/lib/sectionRoute.ts 的 isInternalRoute ——
  *  页头也要用它切换导航，放在 lib 里两边共用一份，避免两处 pathname 解析各写一遍。 */
@@ -207,15 +204,6 @@ export default function App() {
                       结论可手工复核。发现哪里算错了，可直接在对应站点的「留言」里指出；
                       留言内容仅本人可见，入口站只公开提示各站是否有新留言。
                     </p>
-                    <a
-                      href={REPO_URL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-4 inline-flex items-center gap-1.5 text-text-secondary transition-colors hover:text-brand-light"
-                    >
-                      <Github className="h-3.5 w-3.5" strokeWidth={1.8} />
-                      源码仓库
-                    </a>
                   </div>
 
                   <div className="flex-1" aria-hidden="true" />
