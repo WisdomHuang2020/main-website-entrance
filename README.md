@@ -9,16 +9,23 @@
 
 | 站点 | 域名 | 主色 |
 |---|---|---|
+| 外贸英语 · 邮件英语学习站（第一入口首位） | `english.power-knowledge.tech` | `#0f766e` |
 | LLC 谐振变换器设计工具 | `llc.power-knowledge.tech` | `#115e59` |
 | 交错并联 Boost PFC 设计工具 | `interleavedpfc.power-knowledge.tech` | `#0f766e` |
 | AHB 不对称半桥反激设计工具 | `ahb.power-knowledge.tech` | `#0d9488` |
 | 光学概念和光学设计 | `optical.power-knowledge.tech` | `#14b8a6` |
 | 电源与照明工程计算器 | `widget.power-knowledge.tech` | `#2dd4bf` |
 | 网站建设实训课（课程，非计算工具） | `web-training.power-knowledge.tech` | `#0f766e` |
+| 开关变换器 · 建模与控制 | `www.control-mode.power-knowledge.tech` | `#0f766e` |
+| 二轮车照明配光技术站 | `www.motor-lighting.power-knowledge.tech` | `#0f766e` |
 
-主色列取各站自己的 `--color-primary`，即 `src/data/sites.json` 的 `accent`。
+主色列取各站自己的品牌主色（`--color-brand` 或 `--color-primary`），即 `src/data/sites.json` 的 `accent`。
 **本节曾在 2026-10-31 校正过一次**：此前表格里 interleavedpfc / ahb / widget 三行写的是
 `#2563eb` / `#0f766e` / `#0e7490`，与实际 `accent` 不一致（属文档漂移，改新行时一并修正）。
+
+**2026-11-10 再校正一次**：表格此前只列 6 行，而 `sites.json` 实有 8 个公开站
+（control-mode 与 motor-lighting 于 11-02 / 11-09 接入后没回填表格）；本次接入 english 后一并对齐为 9 行。
+english 排表格第一行，与 `sites.json` 数组首位一致 —— **渲染顺序就是数组顺序，无排序覆盖**。
 
 `web-training` 的对外写法与其余五行一致（`web-training.power-knowledge.tech`），
 但它的**实际服务域带 `www.` 前缀**（`www.web-training.power-knowledge.tech`），证书因此单独签发。
@@ -39,7 +46,7 @@
 
 这两个系统**需要账号与密码登录、不对公众开放**（未登录访问任一系统都会被拦到 `/login`），因此：
 
-- 首页「工具与课程」只列上面 6 个公开站（`SITES`），内网站只在 `/internal` 这一层列（`INTERNAL_SITES`）；
+- 首页「工具与课程」只列上面 9 个公开站（`SITES`），内网站只在 `/internal` 这一层列（`INTERNAL_SITES`）；
 - 首屏四条统计的口径限定为**公开站** —— 否则「使用门槛 0 项」会与内网系统的登录门禁自相矛盾；
 - 它们**没有** `.deployed-version` 哨兵，门户也**没有**给它们配 `/api/version/<id>` 端点，
   所以卡片显示的是 `sites.json` 里的静态版本值，`scripts/check-versions.mjs` 会显式跳过它们
@@ -48,6 +55,30 @@
 - `id` 仍等于服务器 web 根目录名（`/var/www/validation-test`、`/var/www/psu-model`），与公开站同一约定。
 - 2026-11-07 接入时，validation-test 尚未写哨兵；若日后给两个内网系统补上哨兵与门户端点，
   这里可以改回实时读取。
+
+## 外贸英语学习站（2026-11-10 接入，第一入口首位）
+
+`english.power-knowledge.tech` 是站群里第一个语言学习站，也是**唯一没有版本哨兵的公开站**。
+以下取值均为 2026-11-10 实测，不是推测：
+
+| 项 | 实测值 | 依据 |
+|---|---|---|
+| 跳转 | 裸名 301 → `www.english.power-knowledge.tech` | `curl -I https://english.power-knowledge.tech/` |
+| 版本 | `1.0.0`（三段式、不带 `v`） | 站内页脚 `<span class="app-version">v1.0.0</span>` |
+| 主色 | `#0f766e` | 站内 `assets/css/theme-vars.css` 的 `--color-brand` / `--color-primary` |
+| web 根 | `/var/www/english` ⇒ `id = english` | 服务器只读实测 |
+| 版本哨兵 | **不存在** | 服务器 `/var/www/english/.deployed-version` 无；该站 `deploy/update.sh` 不写哨兵 |
+
+由此产生的三个后果，排查时别误判成故障：
+
+1. 卡片显示的是 `sites.json` 的**静态版本**。`useLiveVersions` 请求 `/api/version/english`
+   得 404（门户 nginx 已按惯例配好精确端点，但 alias 目标文件不存在），静默降级，不显示假版本号。
+2. `scripts/check-versions.mjs` 会把它列成「读不到哨兵」告警。非 `--strict` 时不影响退出码，
+   属**已知且预期**；与内网系统「显式跳过」的处理不同，别把两者混为一谈。
+3. 该站发新版后**必须手工**同步 `sites.json` 的 `version`，否则卡片挂过期号 —— 和内网系统同一缺口。
+
+若要纳入实时版本体系，须在 english 站的 CI / `deploy/update.sh` 写出三段式哨兵，
+并把 `deploy/nginx-entrance.conf` **手工**同步到服务器（本仓库 CI 只发 `dist`，不部署 nginx）。
 
 ## 新增一个子站
 
@@ -115,7 +146,7 @@ npm run check:versions -- --host 43.142.148.37 --key ~/.ssh/pfc_ci   # 子站版
 
 ## 站群未读留言角标（`server/unread-aggregator/`）
 
-2026-11-07 起，首页 6 张站点卡片在「该站有未读留言」时显示数字角标，
+2026-11-07 起，首页 6 个**已接入留言板**的站点卡片在「该站有未读留言」时显示数字角标（公开站现为 9 个，其余 3 个未接留言板，不参与角标），
 **为 0 的站不显示 0**。数据链路与 `useLiveVersions` 同型：
 
 ```

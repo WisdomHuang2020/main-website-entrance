@@ -81,6 +81,23 @@ export const ICONS: Record<SiteIconKey, LucideIcon> = {
   layout: LayoutGrid,
 }
 
+/**
+ * 2026-11-10 接入 english（english.power-knowledge.tech，外贸英语学习站），
+ * 按用户要求放在**公开清单首位**：渲染顺序就是 sites.json 的数组顺序，
+ * 中间没有任何排序覆盖，所以「排第一」= 数组第一个元素。
+ *
+ * 该站与其余公开站有三处不同，改动前必须知道：
+ *  ① 它是纯静态 HTML 站，`deploy/update.sh` 不写 `.deployed-version`；
+ *     2026-11-10 服务器实测 `/var/www/english/` 下确无该哨兵文件。
+ *     ⇒ useLiveVersions 取不到实时值会静默退回 sites.json 的静态 1.0.0；
+ *       scripts/check-versions.mjs 会把它列成「读不到哨兵」（非 --strict 不影响退出码）。
+ *       该站发新版后须**手工**改 sites.json 的 version，没有自动同步。
+ *  ② `deploy/nginx-entrance.conf` 已按惯例加了 `/api/version/english` 精确端点，
+ *     但 alias 指向的哨兵尚未由子站 CI 生成，当前请求会得 404 并被前端静默降级；
+ *     日后子站补上哨兵即可直接生效，不必再改门户。**CI 只发 dist，nginx 改动须手工同步。**
+ *  ③ 裸名 301 跳到 `www.english.power-knowledge.tech`（2026-11-10 实测）。
+ *     卡片沿用裸名（29 字符，不会被 truncate），与 web-training 同构，点击多一跳。
+ */
 /** 全量清单（含内网）。sites.json 保持扁平数组 —— scripts/check-versions.mjs 直接按数组读。 */
 export const ALL_SITES = raw as unknown as Site[]
 

@@ -1,5 +1,21 @@
 [
   {
+    "id": "english",
+    "name": "外贸英语 · 邮件英语学习站",
+    "subtitle": "Trade English · Email Writing",
+    "domain": "english.power-knowledge.tech",
+    "url": "https://english.power-knowledge.tech/",
+    "desc": "把询盘、报价、订单、货款、出货、索赔这条主线上的外贸邮件拆成结构、句式、语气三层：16 封可填变量模板、90+ 分场景句式、20 组中式英语对照，另配 14 项发送前检查清单与 12 题自测。主题二至六（展会拜访、电话会议、开发信、合同条款、跨文化沟通）站内明确标注为筹备中。",
+    "tags": [
+      "邮件英语",
+      "可填变量模板",
+      "语气分寸"
+    ],
+    "accent": "#0f766e",
+    "icon": "book",
+    "version": "1.0.0"
+  },
+  {
     "id": "llc",
     "name": "LLC 谐振变换器设计工具",
     "subtitle": "LLC Resonant Converter Designer",

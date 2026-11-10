@@ -32,11 +32,14 @@ const WIDGET_DB = process.env.WIDGET_DB || '/var/lib/widget-api/data.db'
 const OUT = process.env.OUT || '/var/lib/entrance-unread/unread.json'
 
 /**
- * 站点清单必须与 src/data/sites.json 的 6 个公开站、以及
- * server/feedback-api/sites.mjs 的 SITE_TABLE 保持一致。
+ * 站点清单必须与 server/feedback-api/sites.mjs 的 SITE_TABLE 保持一致。
+ * ⚠️ 这里只列**已接入留言板**的 6 个公开站，不是 src/data/sites.json 的全部公开站：
+ *    后者现为 9 个，control-mode / motor-lighting / english 没有留言板，故不在此列。
+ *    2026-11-10 校正：旧注释写「与 6 个公开站保持一致」，在公开站增至 8 个后已失效，
+ *    照旧口径添加站点会让聚合器去查不存在的留言库。
  * 单独列在这里而不是 import：服务器上只部署本目录，不部署前端 src/，
  * 也不该让一个只读统计脚本依赖留言服务的启动期模块。
- * 新增公开站时三处一起改（见 README「新增一个站」）。
+ * 新增**接入留言板**的站时，本清单与 SITE_TABLE / 库初始化一起改（见 README）。
  */
 const SITE_IDS = [
   'llc',

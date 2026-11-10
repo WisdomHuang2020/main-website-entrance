@@ -23,8 +23,19 @@ entrance:
   dist:    dist
   build:   npm run build
 
-# 入口页所指向的 8 个公开子站（供巡检脚本按 /var/www/<id> 读 .deployed-version）
+# 入口页所指向的 9 个公开子站（供巡检脚本按 /var/www/<id> 读 .deployed-version）
 sites:
+  - id: english
+    # 2026-11-10 接入，公开清单首位。服务器 remote 实测为 HTTPS（该机出口到 github.com
+    # 的 HTTPS 拉取长期挂起，CI 改为主动 git push 到服务器，见该站 deploy/update.sh）。
+    repo:   https://github.com/WisdomHuang2020/english.git
+    # 对外用裸名（29 字符不截尾）；实际服务域带 www，裸名 301 一跳后落点 www。
+    domain: english.power-knowledge.tech
+    web_root: /var/www/english
+    # ⚠️ 该站是纯静态 HTML，deploy/update.sh **不写** .deployed-version，
+    #    2026-11-10 实测 /var/www/english/ 下无哨兵；这里的 1.0.0 取自站内页脚硬编码，
+    #    巡检脚本会报「读不到哨兵」，卡片显示 sites.json 的静态值，发新版须手工同步。
+    version: 1.0.0
   - id: llc
     repo:   git@github.com:WisdomHuang2020/LLC-Design-Tool.git
     domain: llc.power-knowledge.tech
