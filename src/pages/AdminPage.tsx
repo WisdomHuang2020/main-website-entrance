@@ -206,7 +206,8 @@ export default function AdminPage() {
 
         {stats && (
           <p className="text-center font-mono text-[10px] text-text-muted">
-            数据生成于 {new Date(stats.generatedAt).toLocaleString('zh-CN')} · 来源 nginx access log · 缓存 5 分钟
+            数据生成于 {new Date(stats.generatedAt).toLocaleString('zh-CN')} · 来源 nginx access log ·
+            UV 为期内 IP 去重 · 缓存 5 分钟
           </p>
         )}
       </div>

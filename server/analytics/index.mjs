@@ -45,14 +45,47 @@ const MAX_DAYS = 14 // 与 logrotate 的 rotate 14 对齐
 
 /* ── 站点清单：id 必须与日志文件名前缀一致 ───────────────────────────── */
 
+/**
+ * 统计范围 = 门户清单（sites.json）∪ 日志目录里实际存在的站。
+ *
+ * 为什么必须做并集：
+ *   ① 有些站**不在门户卡片里，但仍需要统计** —— mag-integ 就是这种情况，
+ *      用户明确要求包含它，而 sites.json 里没有这条；
+ *   ② 新站上线时容易忘改 sites.json，只统计清单会静默漏掉，
+ *      且页面上不会报错，只会看到一行 0 或者干脆没有这一行。
+ *
+ * 清单里没有的站用 id 当显示名 —— 不猜中文名，宁可难看也不要写错。
+ * 唯一例外是 entrance（门户首页本身，它有独立日志，但不是"子站"）。
+ */
 function loadSites() {
+  const out = []
   try {
     const raw = JSON.parse(fs.readFileSync(SITES_FILE, 'utf8'))
-    return raw.map((s) => ({ id: s.id, name: s.name, internal: !!s.internal }))
+    for (const s of raw) out.push({ id: s.id, name: s.name, internal: !!s.internal })
   } catch (e) {
-    console.error('[analytics] 读取站点清单失败，退回内置列表:', e.message)
-    return []
+    console.error('[analytics] 读取站点清单失败:', e.message)
   }
+
+  let names = []
+  try {
+    names = fs.readdirSync(LOG_DIR)
+  } catch (e) {
+    console.error('[analytics] 读取日志目录失败:', e.message)
+  }
+
+  const seen = new Set(out.map((s) => s.id))
+  for (const n of names) {
+    const id = siteIdFromLog(n)
+    if (!id || seen.has(id)) continue
+    seen.add(id)
+    out.push({
+      id,
+      name: id === 'entrance' ? '总入口 · 门户首页' : id,
+      internal: id === 'io',
+      unlisted: true,
+    })
+  }
+  return out
 }
 
 /**
@@ -152,6 +185,13 @@ async function collect(days) {
   const perSite = {}
   for (const s of sites) perSite[s.id] = {}
 
+  // 全期 IP 集合：单站一个、全局一个。
+  // ⚠️ 汇总 UV **不能**把各天的独立 IP 数相加 —— 同一个人连着来 7 天会被算 7 次，
+  // 同一人访问两个站也会各算一次。实测 7 天：累加得 2279，真实去重只有 1319。
+  // 所以这里保留集合求并集，UV 才有"多少人"的含义。
+  const siteIps = new Map()
+  const allIps = new Set()
+
   for (const s of sites) {
     const files = logFilesFor(s.id, names)
     for (const file of files) {
@@ -166,6 +206,10 @@ async function collect(days) {
         const bucket = (perSite[s.id][day] ||= { pv: 0, ips: new Set() })
         bucket.pv++
         bucket.ips.add(m[1])
+        let set = siteIps.get(s.id)
+        if (!set) siteIps.set(s.id, (set = new Set()))
+        set.add(m[1])
+        allIps.add(m[1])
       }).catch((e) => {
         // 单个日志坏掉不该让整体失败（比如正在被 logrotate 改名）
         console.error(`[analytics] 读取失败 ${file}: ${e.message}`)
@@ -190,8 +234,10 @@ async function collect(days) {
       id: s.id,
       name: s.name,
       internal: s.internal,
+      unlisted: !!s.unlisted,
       pv: series.reduce((a, x) => a + x.pv, 0),
-      uv: series.reduce((a, x) => a + x.uv, 0),
+      // UV 取全期 IP 并集，不是按天累加（见上面 siteIps 的注释）
+      uv: siteIps.get(s.id)?.size ?? 0,
       series,
     }
   })
@@ -209,7 +255,8 @@ async function collect(days) {
     totals,
     grand: {
       pv: siteRows.reduce((a, s) => a + s.pv, 0),
-      uv: siteRows.reduce((a, s) => a + s.uv, 0),
+      // 全站全期去重：同一个人访问多个站只算一次，这才是"多少人"
+      uv: allIps.size,
     },
   }
 
