@@ -41,6 +41,22 @@ export default function TrendChart({ points }: { points: DayPoint[] }) {
   // y 轴刻度：4 条
   const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => Math.round(max * t))
 
+  // x 轴要显示哪些日期：点多了隔一个显示；末尾那天必定显示 ——
+  // 但如果它和上一个标签挨得太近（14 天视图正好是这种情况，间距只有 6 个单位，
+  // 屏幕上就是「11-09 11-10」贴在一起），就把上一个挤掉，保留末尾那天。
+  const step = points.length > 1 ? innerW / (points.length - 1) : innerW
+  const labelIdx: number[] = []
+  points.forEach((_, i) => {
+    const wanted = points.length <= 8 || i % 2 === 0 || i === points.length - 1
+    if (!wanted) return
+    const prev = labelIdx[labelIdx.length - 1]
+    if (prev !== undefined && (i - prev) * step < 60) {
+      if (i !== points.length - 1) return
+      labelIdx.pop()
+    }
+    labelIdx.push(i)
+  })
+
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full" role="img" aria-label="访问趋势">
       {/* 网格与 y 轴刻度 */}
@@ -98,16 +114,18 @@ export default function TrendChart({ points }: { points: DayPoint[] }) {
         </g>
       ))}
 
-      {/* x 轴日期：点多了隔一个显示，避免挤在一起 */}
-      {points.map((p, i) => {
-        const show = points.length <= 8 || i % 2 === 0 || i === points.length - 1
-        if (!show) return null
+      {/* x 轴日期：首尾改用 start / end 对齐 —— 末点落在 x = W - PAD.right，
+          若仍 textAnchor="middle"，右半截会超出 viewBox 被裁掉（屏幕上就是「11-1」缺一截）。 */}
+      {labelIdx.map((i) => {
+        const p = points[i]
+        const anchor: 'start' | 'end' | 'middle' =
+          points.length === 1 ? 'middle' : i === 0 ? 'start' : i === points.length - 1 ? 'end' : 'middle'
         return (
           <text
             key={`x${p.day}`}
             x={x(i)}
             y={H - 8}
-            textAnchor="middle"
+            textAnchor={anchor}
             className="fill-text-muted font-mono"
             fontSize={10}
           >
