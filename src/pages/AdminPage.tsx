@@ -230,17 +230,20 @@ function Metric({ label, value, suffix, accent }: { label: string; value: number
 }
 
 function LoginCard({ onSuccess }: { onSuccess: () => void }) {
+  // 账号预填当前账号名（2026-11-10 由 admin 改为 power-admin）；仍可编辑 ——
+  // 万一以后改回别的名字，这里不用跟着改代码。
+  const [username, setUsername] = useState('power-admin')
   const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
 
   async function submit(e: React.FormEvent) {
     e.preventDefault()
-    if (!password || busy) return
+    if (!username || !password || busy) return
     setBusy(true)
     setErr('')
     try {
-      await adminApi.login(password)
+      await adminApi.login(username, password)
       onSuccess()
     } catch (e2) {
       setErr(e2 instanceof Error ? e2.message : '登录失败')
@@ -263,9 +266,10 @@ function LoginCard({ onSuccess }: { onSuccess: () => void }) {
           账号
           <input
             type="text"
-            value="admin"
-            readOnly
-            className="mt-1.5 w-full rounded-lg border border-border bg-surface-elevated px-3 py-2 font-mono text-sm text-text-secondary"
+            autoComplete="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="mt-1.5 w-full rounded-lg border border-border bg-bg px-3 py-2 font-mono text-sm text-text-primary outline-none focus:border-brand-light"
           />
         </label>
         <label className="mt-3 block text-xs text-text-secondary">

@@ -46,10 +46,10 @@ async function call<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const adminApi = {
-  login: (password: string) =>
+  login: (username: string, password: string) =>
     call<{ ok: true }>('/api/admin/login', {
       method: 'POST',
-      body: JSON.stringify({ password }),
+      body: JSON.stringify({ username, password }),
     }),
 
   logout: () => call<{ ok: true }>('/api/admin/logout', { method: 'POST' }),

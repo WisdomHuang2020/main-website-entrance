@@ -43,6 +43,13 @@ const COOKIE_NAME = 'pk_admin'
 const SESSION_TTL = 8 * 3600 // 8 小时
 const MAX_DAYS = 14 // 与 logrotate 的 rotate 14 对齐
 
+/**
+ * 后台账号名（2026-11-10 由 admin 改为 power-admin）。
+ * 单一账号，所以放在常量里；要支持多账号得把 credentials.json 改成「用户名 → 哈希」
+ * 的映射，并让会话 token 带上用户名（目前 token 只含过期时间）。
+ */
+const ADMIN_USER = process.env.ADMIN_USER || 'power-admin'
+
 /* ── 站点清单：id 必须与日志文件名前缀一致 ───────────────────────────── */
 
 /**
@@ -375,14 +382,16 @@ const server = http.createServer(async (req, res) => {
 
     // 登录
     if (p === '/api/admin/login' && req.method === 'POST') {
-      const { password } = await readBody(req)
-      if (typeof password !== 'string' || !password) {
-        return json(res, 400, { error: '密码不能为空' })
+      const { username, password } = await readBody(req)
+      if (typeof username !== 'string' || typeof password !== 'string' || !username || !password) {
+        return json(res, 400, { error: '账号和密码都不能为空' })
       }
-      if (!verifyPassword(password, creds)) {
+      // 账号与密码任一不符都返回同一句提示 —— 不告诉对方"账号对不对"，
+      // 免得被用来枚举用户名（虽然这里只有一个账号，习惯保持一致）。
+      if (username !== ADMIN_USER || !verifyPassword(password, creds)) {
         // 固定 300ms 延迟，抹平爆破速率
         await new Promise((r) => setTimeout(r, 300))
-        return json(res, 401, { error: '密码不对' })
+        return json(res, 401, { error: '账号或密码不对' })
       }
       const token = signToken(creds)
       return json(
@@ -407,7 +416,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (p === '/api/admin/me') {
-      return json(res, 200, { ok: true, user: 'admin' })
+      return json(res, 200, { ok: true, user: ADMIN_USER })
     }
 
     if (p === '/api/admin/password' && req.method === 'POST') {
