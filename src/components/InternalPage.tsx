@@ -51,7 +51,15 @@ export default function InternalPage() {
         未登录时打开任一系统，都会被拦到登录页。
       </p>
 
-      <div className="mt-12 grid gap-6 sm:grid-cols-2">
+      {/* 内网系统恰好 3 条：桌面宽度下 3 列收成一排，不再让第 3 张孤零零换行。
+          断点取 lg(≥1024)：比这更窄时每卡不足 300px，描述和域名会被压得难读，
+          故 640~1024 维持 2 列、移动端 1 列。与首页工具集的 6 列自适应跨度不同，
+          这里数量固定为 3，直接写 3 列即可；日后若新增第 4 个系统需另定排布。 */}
+      {/* 三列断点用 960（任意值）而不是现成的 lg(1024)：
+          1024 时很多 13 寸笔记本（浏览器可视宽度约 1000）仍显示两列，卡片底部留一大块空白；
+          而 md(768) 又太挤 —— 实测 820px 下三列时标题会断成「…入口 / 口」两行、描述蜷成一团。
+          960 是这两者之间能同时「排得下」和「读得动」的位置。 */}
+      <div className="internal-sites-grid mt-12 grid gap-6 sm:grid-cols-2">
         {INTERNAL_SITES.map((site, i) => (
           <SiteCard key={site.id} site={site} index={i + 1} version={site.version} />
         ))}
