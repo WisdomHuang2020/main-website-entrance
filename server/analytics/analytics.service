@@ -1,0 +1,34 @@
+[Unit]
+Description=站群访问量统计与后台认证服务 (power-knowledge.tech/admin)
+Documentation=https://power-knowledge.tech/admin
+After=network.target nginx.service
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/entrance-analytics
+ExecStart=/usr/bin/node /opt/entrance-analytics/index.mjs
+
+# 日志目录与数据目录都通过环境变量传，代码里不写死路径
+Environment=PORT=8793
+Environment=LOG_DIR=/var/log/nginx
+Environment=DATA_DIR=/etc/entrance-admin
+Environment=SITES_FILE=/etc/entrance-admin/sites.json
+
+# 首次启动用它生成凭据文件；一旦 /etc/entrance-admin/credentials.json 存在，
+# 这个环境变量就不再起作用（后面的改密码走后台，不依赖它）。
+# 部署完成后可以从本文件删掉这一行 —— 它只用于「从零初始化」。
+Environment=ADMIN_INIT_PASSWORD=__SET_AT_DEPLOY__
+
+# 与同机其它服务一致：降权到 www-data。注意 nginx 日志的属主就是 www-data，
+# 所以读日志不需要额外授权；/etc/entrance-admin 也要 chown 给它才能写凭据。
+User=www-data
+Group=www-data
+Restart=always
+RestartSec=3
+
+# 只需要读日志、写自己的数据目录
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

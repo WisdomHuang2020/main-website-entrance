@@ -61,6 +61,21 @@ export function isInternalRoute(): boolean {
 }
 
 /**
+ * 后台页（/admin）。
+ *
+ * 取**最后一段**而不是 `pathname === '/admin'` —— 与 isInternalRoute 同理，
+ * GitHub Pages 的兜底通道在子路径下（`/main-website-entrance/admin`），
+ * 绝对路径比对会永远不成立。
+ *
+ * 注意：这里只负责"显示哪个页面"，**鉴权在服务端**。前端这个判定不构成任何保护，
+ * 拿不到 cookie 时 AdminPage 自己会退回登录卡。
+ */
+export function isAdminRoute(): boolean {
+  const segs = window.location.pathname.split('/').filter(Boolean)
+  return segs[segs.length - 1] === 'admin'
+}
+
+/**
  * 滚动到指定区块。
  *
  * 用 scrollIntoView 而非 window.scrollTo —— 前者会**自动遵守区块上的

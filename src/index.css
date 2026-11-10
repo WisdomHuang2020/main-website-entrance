@@ -35,6 +35,16 @@
   --color-border: #404040;
   --color-border-light: #525252;
 
+  /* ── 语义色（2026-11-10 补，后台 /admin 需要）────────────────────────
+     原先只有 brand / internal 两组彩色，没有「成功 / 危险 / 强调」。
+     后台的失败提示、UV 折线要用它们，而 Tailwind 只有变量存在才会生成
+     text-danger / stroke-accent 这类类名 —— 缺变量时类名静默失效，
+     元素看起来"没样式"而不是报错，很容易误判成组件写错了。
+     八套主题块里都有同名覆盖，值取自 psu-model 的对应主题。 */
+  --color-accent: #f59e0b;
+  --color-success: #22c55e;
+  --color-danger: #ef4444;
+
   --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
 }
@@ -147,6 +157,9 @@ html[data-theme="blue"] {
   --color-brand: #0070c0;
   --color-brand-light: #0060b0;
   --color-brand-dark: #0050a0;
+  --color-accent: #a35c00;
+  --color-success: #1a7f3c;
+  --color-danger: #b42318;
 }
 
 /* 深墨 teal · 本站原色 */
@@ -162,6 +175,9 @@ html[data-theme="dark-teal"] {
   --color-brand: #0f766e;
   --color-brand-light: #14b8a6;
   --color-brand-dark: #134e4a;
+  --color-accent: #f59e0b;
+  --color-success: #22c55e;
+  --color-danger: #ef4444;
 }
 
 /* 深蓝科技 */
@@ -177,6 +193,9 @@ html[data-theme="navy-tech"] {
   --color-brand: #3aa0e8;
   --color-brand-light: #6bc4ff;
   --color-brand-dark: #2277b8;
+  --color-accent: #ffb454;
+  --color-success: #4ade80;
+  --color-danger: #ff7a7a;
 }
 
 /* 石墨灰 */
@@ -192,6 +211,9 @@ html[data-theme="graphite"] {
   --color-brand: #3f4855;
   --color-brand-light: #5b6675;
   --color-brand-dark: #2c333d;
+  --color-accent: #b45309;
+  --color-success: #15803d;
+  --color-danger: #b91c1c;
 }
 
 /* 米白手册 */
@@ -207,6 +229,9 @@ html[data-theme="warm-paper"] {
   --color-brand: #9a5b13;
   --color-brand-light: #b8761f;
   --color-brand-dark: #7a4710;
+  --color-accent: #2f6b62;
+  --color-success: #3f7a3f;
+  --color-danger: #a8362b;
 }
 
 /* 森林墨绿 */
@@ -222,6 +247,9 @@ html[data-theme="forest"] {
   --color-brand: #3fbf7f;
   --color-brand-light: #6ed8a2;
   --color-brand-dark: #2b9461;
+  --color-accent: #e9c46a;
+  --color-success: #6ee7a0;
+  --color-danger: #ff8f80;
 }
 
 /* 靛紫柔光 */
@@ -237,6 +265,9 @@ html[data-theme="indigo"] {
   --color-brand: #5b4bd6;
   --color-brand-light: #7869e8;
   --color-brand-dark: #4538ad;
+  --color-accent: #b2568a;
+  --color-success: #1a7f5a;
+  --color-danger: #c23b5b;
 }
 
 /* 海盐青 */
@@ -252,5 +283,8 @@ html[data-theme="sea-salt"] {
   --color-brand: #0e7490;
   --color-brand-light: #1294b0;
   --color-brand-dark: #0a566c;
+  --color-accent: #b2601f;
+  --color-success: #137a52;
+  --color-danger: #b23b3b;
 }
 

@@ -10,11 +10,12 @@ import {
 import Footer from './components/Footer'
 import Header from './components/Header'
 import InternalPage from './components/InternalPage'
+import AdminPage from './pages/AdminPage'
 import SiteCard from './components/SiteCard'
 import { INTERNAL_SITES, SITES } from './data/sites'
 import { useLiveVersions } from './data/useLiveVersions'
 import { useUnread } from './data/useUnread'
-import { isInternalRoute, onSectionClick, useSectionRoute } from './lib/sectionRoute'
+import { isAdminRoute, isInternalRoute, onSectionClick, useSectionRoute } from './lib/sectionRoute'
 
 /** 内网页判定见 src/lib/sectionRoute.ts 的 isInternalRoute ——
  *  页头也要用它切换导航，放在 lib 里两边共用一份，避免两处 pathname 解析各写一遍。 */
@@ -91,6 +92,13 @@ export default function App() {
   // 干净 URL（/tools、/engineers）的深链定位与前进后退处理。
   // 详见 src/lib/sectionRoute.ts。
   useSectionRoute()
+
+  // 后台（/admin）同样是独立一页，且自带完整布局（顶栏、退出、改密码），
+  // 不复用站点的 Header/Footer —— 后台不该出现「工具与课程」这类导航，
+  // 会让人误以为还在前台。
+  if (isAdminRoute()) {
+    return <AdminPage />
+  }
 
   // 第二入口（/internal）是独立一页：内网系统需要账号登录，不与公众首页混排。
   // 用提前返回而不是把首页整段包进三元条件 —— 后者会让 Home 那几十行集体缩进两级，
