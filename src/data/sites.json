@@ -1,21 +1,5 @@
 [
   {
-    "id": "english",
-    "name": "外贸英语 · 邮件英语学习站",
-    "subtitle": "Trade English · Email Writing",
-    "domain": "english.power-knowledge.tech",
-    "url": "https://english.power-knowledge.tech/",
-    "desc": "把询盘、报价、订单、货款、出货、索赔这条主线上的外贸邮件拆成结构、句式、语气三层：16 封可填变量模板、90+ 分场景句式、20 组中式英语对照，另配 14 项发送前检查清单与 12 题自测。主题二至六（展会拜访、电话会议、开发信、合同条款、跨文化沟通）站内明确标注为筹备中。",
-    "tags": [
-      "邮件英语",
-      "可填变量模板",
-      "语气分寸"
-    ],
-    "accent": "#0f766e",
-    "icon": "book",
-    "version": "1.0.0"
-  },
-  {
     "id": "llc",
     "name": "LLC 谐振变换器设计工具",
     "subtitle": "LLC Resonant Converter Designer",
@@ -80,20 +64,20 @@
     "version": "4.3.5"
   },
   {
-    "id": "widget",
-    "name": "电源与照明工程计算器",
-    "subtitle": "Power Widget · Engineering Calculators",
-    "domain": "widget.power-knowledge.tech",
-    "url": "https://widget.power-knowledge.tech/",
-    "desc": "面向 LED 驱动与锂电池应用的工程估算集合：切相调压后的电压有效值、锂电池综合续航与实际充电时间。每个工具都写明公式、假设与偏差方向。",
+    "id": "motor-lighting",
+    "name": "二轮车照明配光技术站",
+    "subtitle": "Motorcycles Illumination · Photometric Engineering",
+    "domain": "www.motor-lighting.power-knowledge.tech",
+    "url": "https://www.motor-lighting.power-knowledge.tech/",
+    "desc": "把 GB 19152-2025（25 m / cd）与 GB/T 31887.1-2019（10 m / lx）两套体系整理成可交互的配光知识站：标准表格逐表速查、SVG 配光屏点位、光型四态、cd↔lx 换算、设计全流程、测试照准、研发内控与 12 题自测。资料内部 6 处矛盾逐条并列，不做静默统一。",
     "tags": [
-      "切相调压",
-      "电池续航",
-      "公式可溯"
+      "配光标准",
+      "交互配光屏",
+      "逐表速查"
     ],
-    "accent": "#2dd4bf",
-    "icon": "calculator",
-    "version": "2.2.1"
+    "accent": "#0f766e",
+    "icon": "lightbulb",
+    "version": "3.0.3"
   },
   {
     "id": "web-training",
@@ -129,20 +113,36 @@
     "version": "1.4.2"
   },
   {
-    "id": "motor-lighting",
-    "name": "二轮车照明配光技术站",
-    "subtitle": "Motorcycles Illumination · Photometric Engineering",
-    "domain": "www.motor-lighting.power-knowledge.tech",
-    "url": "https://www.motor-lighting.power-knowledge.tech/",
-    "desc": "把 GB 19152-2025（25 m / cd）与 GB/T 31887.1-2019（10 m / lx）两套体系整理成可交互的配光知识站：标准表格逐表速查、SVG 配光屏点位、光型四态、cd↔lx 换算、设计全流程、测试照准、研发内控与 12 题自测。资料内部 6 处矛盾逐条并列，不做静默统一。",
+    "id": "widget",
+    "name": "电源与照明工程计算器",
+    "subtitle": "Power Widget · Engineering Calculators",
+    "domain": "widget.power-knowledge.tech",
+    "url": "https://widget.power-knowledge.tech/",
+    "desc": "面向 LED 驱动与锂电池应用的工程估算集合：切相调压后的电压有效值、锂电池综合续航与实际充电时间。每个工具都写明公式、假设与偏差方向。",
     "tags": [
-      "配光标准",
-      "交互配光屏",
-      "逐表速查"
+      "切相调压",
+      "电池续航",
+      "公式可溯"
+    ],
+    "accent": "#2dd4bf",
+    "icon": "calculator",
+    "version": "2.2.1"
+  },
+  {
+    "id": "english",
+    "name": "外贸英语 · 邮件英语学习站",
+    "subtitle": "Trade English · Email Writing",
+    "domain": "english.power-knowledge.tech",
+    "url": "https://english.power-knowledge.tech/",
+    "desc": "把询盘、报价、订单、货款、出货、索赔这条主线上的外贸邮件拆成结构、句式、语气三层：16 封可填变量模板、90+ 分场景句式、20 组中式英语对照，另配 14 项发送前检查清单与 12 题自测。主题二至六（展会拜访、电话会议、开发信、合同条款、跨文化沟通）站内明确标注为筹备中。",
+    "tags": [
+      "邮件英语",
+      "可填变量模板",
+      "语气分寸"
     ],
     "accent": "#0f766e",
-    "icon": "lightbulb",
-    "version": "3.0.3"
+    "icon": "book",
+    "version": "1.0.0"
   },
   {
     "id": "validation-test",

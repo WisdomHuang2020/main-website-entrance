@@ -23,19 +23,10 @@ entrance:
   dist:    dist
   build:   npm run build
 
+# 顺序 = src/data/sites.json 的公开站数组顺序 = 卡片序号（无排序覆盖）。
+# 2026-11-10 起：未特别注明按上线时间排序（新站追加末尾）；05/08 已按用户特别注明对调。
 # 入口页所指向的 9 个公开子站（供巡检脚本按 /var/www/<id> 读 .deployed-version）
 sites:
-  - id: english
-    # 2026-11-10 接入，公开清单首位。服务器 remote 实测为 HTTPS（该机出口到 github.com
-    # 的 HTTPS 拉取长期挂起，CI 改为主动 git push 到服务器，见该站 deploy/update.sh）。
-    repo:   https://github.com/WisdomHuang2020/english.git
-    # 对外用裸名（29 字符不截尾）；实际服务域带 www，裸名 301 一跳后落点 www。
-    domain: english.power-knowledge.tech
-    web_root: /var/www/english
-    # ⚠️ 该站是纯静态 HTML，deploy/update.sh **不写** .deployed-version，
-    #    2026-11-10 实测 /var/www/english/ 下无哨兵；这里的 1.0.0 取自站内页脚硬编码，
-    #    巡检脚本会报「读不到哨兵」，卡片显示 sites.json 的静态值，发新版须手工同步。
-    version: 1.0.0
   - id: llc
     repo:   git@github.com:WisdomHuang2020/LLC-Design-Tool.git
     domain: llc.power-knowledge.tech
@@ -56,11 +47,13 @@ sites:
     domain: optical.power-knowledge.tech
     web_root: /var/www/optical
     version: v3.11.9          # 注意：该站哨兵带 v 前缀，其余五站不带
-  - id: widget
-    repo:   git@github.com:WisdomHuang2020/widget.git
-    domain: widget.power-knowledge.tech
-    web_root: /var/www/widget
-    version: 1.4.4
+  - id: motor-lighting
+    repo:   git@github.com:WisdomHuang2020/motorcycles-illumination.git
+    # 对外只认 www：www.motor-lighting.* 是二级子域，通配符证书盖不到，单独签双名证书；
+    # 裸名与 http 均 301 归一 www。故这里的 domain 直接写最终服务域，卡片不再多跳一次。
+    domain: www.motor-lighting.power-knowledge.tech
+    web_root: /var/www/motor-lighting
+    version: 3.0.3            # 哨兵由 .github/workflows/deploy.yml 随 dist 写入，三段式不带 v
   - id: web-training
     repo:   git@github.com:WisdomHuang2020/web-training.git
     # 入口页与本站对外写法均为裸名（与其余五站一致）；但**实际服务域带 www**。
@@ -77,10 +70,19 @@ sites:
     domain: www.control-mode.power-knowledge.tech
     web_root: /var/www/control-mode
     version: 1.1.0            # 哨兵由 deploy-lighthouse.yml / deploy.sh 写入，三段式不带 v
-  - id: motor-lighting
-    repo:   git@github.com:WisdomHuang2020/motorcycles-illumination.git
-    # 对外只认 www：www.motor-lighting.* 是二级子域，通配符证书盖不到，单独签双名证书；
-    # 裸名与 http 均 301 归一 www。故这里的 domain 直接写最终服务域，卡片不再多跳一次。
-    domain: www.motor-lighting.power-knowledge.tech
-    web_root: /var/www/motor-lighting
-    version: 3.0.3            # 哨兵由 .github/workflows/deploy.yml 随 dist 写入，三段式不带 v
+  - id: widget
+    repo:   git@github.com:WisdomHuang2020/widget.git
+    domain: widget.power-knowledge.tech
+    web_root: /var/www/widget
+    version: 1.4.4
+  - id: english
+    # 2026-11-10 接入，按上线时间排公开清单末位（序号 09）。服务器 remote 实测为 HTTPS（该机出口到 github.com
+    # 的 HTTPS 拉取长期挂起，CI 改为主动 git push 到服务器，见该站 deploy/update.sh）。
+    repo:   https://github.com/WisdomHuang2020/english.git
+    # 对外用裸名（29 字符不截尾）；实际服务域带 www，裸名 301 一跳后落点 www。
+    domain: english.power-knowledge.tech
+    web_root: /var/www/english
+    # ⚠️ 该站是纯静态 HTML，deploy/update.sh **不写** .deployed-version，
+    #    2026-11-10 实测 /var/www/english/ 下无哨兵；这里的 1.0.0 取自站内页脚硬编码，
+    #    巡检脚本会报「读不到哨兵」，卡片显示 sites.json 的静态值，发新版须手工同步。
+    version: 1.0.0

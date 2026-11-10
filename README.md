@@ -7,17 +7,17 @@
 
 ## 收录的站点
 
-| 站点 | 域名 | 主色 |
-|---|---|---|
-| 外贸英语 · 邮件英语学习站（第一入口首位） | `english.power-knowledge.tech` | `#0f766e` |
-| LLC 谐振变换器设计工具 | `llc.power-knowledge.tech` | `#115e59` |
-| 交错并联 Boost PFC 设计工具 | `interleavedpfc.power-knowledge.tech` | `#0f766e` |
-| AHB 不对称半桥反激设计工具 | `ahb.power-knowledge.tech` | `#0d9488` |
-| 光学概念和光学设计 | `optical.power-knowledge.tech` | `#14b8a6` |
-| 电源与照明工程计算器 | `widget.power-knowledge.tech` | `#2dd4bf` |
-| 网站建设实训课（课程，非计算工具） | `web-training.power-knowledge.tech` | `#0f766e` |
-| 开关变换器 · 建模与控制 | `www.control-mode.power-knowledge.tech` | `#0f766e` |
-| 二轮车照明配光技术站 | `www.motor-lighting.power-knowledge.tech` | `#0f766e` |
+| 序号 | 站点 | 域名 | 主色 |
+|---|---|---|---|
+| 01 | LLC 谐振变换器设计工具 | `llc.power-knowledge.tech` | `#115e59` |
+| 02 | 交错并联 Boost PFC 设计工具 | `interleavedpfc.power-knowledge.tech` | `#0f766e` |
+| 03 | AHB 不对称半桥反激设计工具 | `ahb.power-knowledge.tech` | `#0d9488` |
+| 04 | 光学概念和光学设计 | `optical.power-knowledge.tech` | `#14b8a6` |
+| 05 | 二轮车照明配光技术站 | `www.motor-lighting.power-knowledge.tech` | `#0f766e` |
+| 06 | 网站建设实训课（课程，非计算工具） | `web-training.power-knowledge.tech` | `#0f766e` |
+| 07 | 开关变换器 · 建模与控制 | `www.control-mode.power-knowledge.tech` | `#0f766e` |
+| 08 | 电源与照明工程计算器 | `widget.power-knowledge.tech` | `#2dd4bf` |
+| 09 | 外贸英语 · 邮件英语学习站 | `english.power-knowledge.tech` | `#0f766e` |
 
 主色列取各站自己的品牌主色（`--color-brand` 或 `--color-primary`），即 `src/data/sites.json` 的 `accent`。
 **本节曾在 2026-10-31 校正过一次**：此前表格里 interleavedpfc / ahb / widget 三行写的是
@@ -25,7 +25,15 @@
 
 **2026-11-10 再校正一次**：表格此前只列 6 行，而 `sites.json` 实有 8 个公开站
 （control-mode 与 motor-lighting 于 11-02 / 11-09 接入后没回填表格）；本次接入 english 后一并对齐为 9 行。
-english 排表格第一行，与 `sites.json` 数组首位一致 —— **渲染顺序就是数组顺序，无排序覆盖**。
+现在表格带**序号列**：序号 = 卡片右上角幽灵数字 = 该站在 `SITES` 中的下标 + 1
+（渲染顺序就是数组顺序，中间无排序覆盖）。用序号讨论站点时以本表为准，
+避免「english 挪位后其余卡片整体前移一位」造成的口径歧义。
+
+⚠️ **排序约定（用户 2026-11-10 明确要求，长期生效）**：没有特别注明时**按上线时间排序**，
+新站追加到清单末尾。english 是当日最新上线的公开站，故排 09。
+同日用户另作**特别注明**：把调整后清单的 05 与 08 对调，即 `widget` ↔ `motor-lighting`，
+故当前 05 = 二轮车照明配光技术站、08 = 电源与照明工程计算器。
+这是显式指定的例外，**不要**按上线时间把它「纠正」回去。
 
 `web-training` 的对外写法与其余五行一致（`web-training.power-knowledge.tech`），
 但它的**实际服务域带 `www.` 前缀**（`www.web-training.power-knowledge.tech`），证书因此单独签发。
@@ -56,7 +64,7 @@ english 排表格第一行，与 `sites.json` 数组首位一致 —— **渲染
 - 2026-11-07 接入时，validation-test 尚未写哨兵；若日后给两个内网系统补上哨兵与门户端点，
   这里可以改回实时读取。
 
-## 外贸英语学习站（2026-11-10 接入，第一入口首位）
+## 外贸英语学习站（2026-11-10 接入，第一入口第 9 张卡片 · 序号 09）
 
 `english.power-knowledge.tech` 是站群里第一个语言学习站，也是**唯一没有版本哨兵的公开站**。
 以下取值均为 2026-11-10 实测，不是推测：
@@ -81,6 +89,12 @@ english 排表格第一行，与 `sites.json` 数组首位一致 —— **渲染
 并把 `deploy/nginx-entrance.conf` **手工**同步到服务器（本仓库 CI 只发 `dist`，不部署 nginx）。
 
 ## 新增一个子站
+
+> **排序约定（2026-11-10 起，长期生效）**：没有特别注明时，**按上线时间排序** ——
+> 新站追加到 `sites.json` 对应清单的末尾，不要插到前面。
+> 渲染顺序 = 数组顺序，卡片序号 = 下标 + 1，所以新站自然拿到当前最大序号。
+> 需要置顶、指定第 N 位或两站对调时，用户会明确注明；没注明就一律追加末尾。
+> 对调过的站点属于「已特别注明」的既成事实，不要按上线时间擅自复原。
 
 1. 改 **`src/data/sites.json`** —— 这是站点清单的单一数据源，卡片、数量统计、版本徽标都读它。
 2. 字段约定：
