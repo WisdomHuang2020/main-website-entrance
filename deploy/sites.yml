@@ -25,7 +25,8 @@ entrance:
   build:   npm run build
 
 # 顺序 = src/data/sites.json 的公开站数组顺序 = 卡片序号（无排序覆盖）。
-# 2026-11-10 起：未特别注明按上线时间排序（新站追加末尾）；05/08 已按用户特别注明对调。
+# 2026-11-10 起：未特别注明按上线时间排序（新站追加末尾）；
+# 当日用户两次特别注明对调：03<->07（control-mode / ahb）、05<->08（widget / motor-lighting）。
 # 入口页所指向的 9 个公开子站（供巡检脚本按 /var/www/<id> 读 .deployed-version）
 sites:
   - id: llc
@@ -38,23 +39,23 @@ sites:
     domain: interleavedpfc.power-knowledge.tech
     web_root: /var/www/interleavedpfc
     version: 1.3.0
-  - id: ahb
-    repo:   git@github.com:WisdomHuang2020/AHB.git
-    domain: ahb.power-knowledge.tech
-    web_root: /var/www/ahb
-    version: 2.3.1
+  - id: control-mode
+    repo:   git@github.com:WisdomHuang2020/control-mode.git
+    # 对外只认 www：www.control-mode.* 是二级子域，通配符证书盖不到，单独签双名证书；
+    # 裸名与 http 均 301 归一 www。故这里的 domain 直接写最终服务域，卡片不再多跳一次。
+    domain: www.control-mode.power-knowledge.tech
+    web_root: /var/www/control-mode
+    version: 1.4.3            # 哨兵由 deploy-lighthouse.yml / deploy.sh 写入，三段式不带 v
   - id: optical
     repo:   git@github.com:WisdomHuang2020/optical-calculator.git
     domain: optical.power-knowledge.tech
     web_root: /var/www/optical
     version: v4.6.0          # 注意：该站哨兵带 v 前缀，其余各站不带
-  - id: motor-lighting
-    repo:   git@github.com:WisdomHuang2020/motorcycles-illumination.git
-    # 对外只认 www：www.motor-lighting.* 是二级子域，通配符证书盖不到，单独签双名证书；
-    # 裸名与 http 均 301 归一 www。故这里的 domain 直接写最终服务域，卡片不再多跳一次。
-    domain: www.motor-lighting.power-knowledge.tech
-    web_root: /var/www/motor-lighting
-    version: 3.0.4            # 哨兵由 .github/workflows/deploy.yml 随 dist 写入，三段式不带 v
+  - id: widget
+    repo:   git@github.com:WisdomHuang2020/widget.git
+    domain: widget.power-knowledge.tech
+    web_root: /var/www/widget
+    version: 2.3.1
   - id: web-training
     repo:   git@github.com:WisdomHuang2020/web-training.git
     # 入口页与本站对外写法均为裸名（与其余各站一致）；但**实际服务域带 www**。
@@ -64,18 +65,18 @@ sites:
     serve_domain: www.web-training.power-knowledge.tech   # 实际服务的地址，裸名一跳后的落点
     web_root: /var/www/web-training
     version: 2.4.2            # 哨兵由该站 deploy/deploy.sh 在发布时写入，含三段式格式门禁
-  - id: control-mode
-    repo:   git@github.com:WisdomHuang2020/control-mode.git
-    # 对外只认 www：www.control-mode.* 是二级子域，通配符证书盖不到，单独签双名证书；
-    # 裸名与 http 均 301 归一 www。故这里的 domain 直接写最终服务域，卡片不再多跳一次。
-    domain: www.control-mode.power-knowledge.tech
-    web_root: /var/www/control-mode
-    version: 1.4.3            # 哨兵由 deploy-lighthouse.yml / deploy.sh 写入，三段式不带 v
-  - id: widget
-    repo:   git@github.com:WisdomHuang2020/widget.git
-    domain: widget.power-knowledge.tech
-    web_root: /var/www/widget
+  - id: ahb
+    repo:   git@github.com:WisdomHuang2020/AHB.git
+    domain: ahb.power-knowledge.tech
+    web_root: /var/www/ahb
     version: 2.3.1
+  - id: motor-lighting
+    repo:   git@github.com:WisdomHuang2020/motorcycles-illumination.git
+    # 对外只认 www：www.motor-lighting.* 是二级子域，通配符证书盖不到，单独签双名证书；
+    # 裸名与 http 均 301 归一 www。故这里的 domain 直接写最终服务域，卡片不再多跳一次。
+    domain: www.motor-lighting.power-knowledge.tech
+    web_root: /var/www/motor-lighting
+    version: 3.0.4            # 哨兵由 .github/workflows/deploy.yml 随 dist 写入，三段式不带 v
   - id: english
     # 2026-11-10 接入，按上线时间排公开清单末位（序号 09）。服务器 remote 实测为 HTTPS（该机出口到 github.com
     # 的 HTTPS 拉取长期挂起，CI 改为主动 git push 到服务器，见该站 deploy/update.sh）。

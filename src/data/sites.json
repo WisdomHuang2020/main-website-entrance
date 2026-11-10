@@ -32,20 +32,21 @@
     "version": "1.3.0"
   },
   {
-    "id": "ahb",
-    "name": "AHB 不对称半桥反激设计工具",
-    "subtitle": "Asymmetric Half-Bridge Flyback Designer",
-    "domain": "ahb.power-knowledge.tech",
-    "url": "https://ahb.power-knowledge.tech/",
-    "desc": "不对称半桥反激的原理拆解与设计计算：工作模态、公式推导、特性曲线，并可由设计条件算出参数、生成工程报告。",
+    "id": "control-mode",
+    "name": "开关变换器 · 建模与控制",
+    "subtitle": "Power Electronics · Modeling & Control",
+    "domain": "control-mode.power-knowledge.tech",
+    "url": "https://www.control-mode.power-knowledge.tech/",
+    "desc": "从 43 份电源与控制资料（教材、专著、论文与厂商笔记）出发，把书里的公式变成可溯源的培训页与可复核的计算工具：18 阶「建模与控制手册」从零基础递进到 MPC，再补根轨迹、灵敏度、闭环性能、模型边界、饱和与前馈六个专题，另含 S→Z 七节推导与 Tustin 计算器。出处只标到节号，不标页码。范围只到建模与控制。",
     "tags": [
-      "工作模态",
-      "公式推导",
-      "设计报告"
+      "建模与控制",
+      "公式可溯源",
+      "S→Z 离散化",
+      "计算可复核"
     ],
-    "accent": "#0d9488",
-    "icon": "zap",
-    "version": "2.3.1"
+    "accent": "#0f766e",
+    "icon": "book",
+    "version": "1.4.3"
   },
   {
     "id": "optical",
@@ -64,20 +65,20 @@
     "version": "4.6.0"
   },
   {
-    "id": "motor-lighting",
-    "name": "二轮车照明配光技术站",
-    "subtitle": "Motorcycles Illumination · Photometric Engineering",
-    "domain": "motor-lighting.power-knowledge.tech",
-    "url": "https://www.motor-lighting.power-knowledge.tech/",
-    "desc": "把 GB 19152-2025（25 m / cd）与 GB/T 31887.1-2019（10 m / lx）两套体系整理成可交互的配光知识站：标准表格逐表速查、SVG 配光屏点位、光型四态、cd↔lx 换算、设计全流程、测试照准、研发内控与 12 题自测。资料内部 6 处矛盾逐条并列，不做静默统一。",
+    "id": "widget",
+    "name": "电源与照明工程计算器",
+    "subtitle": "Power Widget · Engineering Calculators",
+    "domain": "widget.power-knowledge.tech",
+    "url": "https://widget.power-knowledge.tech/",
+    "desc": "面向 LED 驱动与锂电池应用的工程估算集合：切相调压后的电压有效值、锂电池综合续航与实际充电时间。每个工具都写明公式、假设与偏差方向。",
     "tags": [
-      "配光标准",
-      "交互配光屏",
-      "逐表速查"
+      "切相调压",
+      "电池续航",
+      "公式可溯"
     ],
-    "accent": "#0f766e",
-    "icon": "lightbulb",
-    "version": "3.0.4"
+    "accent": "#2dd4bf",
+    "icon": "calculator",
+    "version": "2.3.1"
   },
   {
     "id": "web-training",
@@ -96,37 +97,36 @@
     "version": "2.4.2"
   },
   {
-    "id": "control-mode",
-    "name": "开关变换器 · 建模与控制",
-    "subtitle": "Power Electronics · Modeling & Control",
-    "domain": "control-mode.power-knowledge.tech",
-    "url": "https://www.control-mode.power-knowledge.tech/",
-    "desc": "从 43 份电源与控制资料（教材、专著、论文与厂商笔记）出发，把书里的公式变成可溯源的培训页与可复核的计算工具：18 阶「建模与控制手册」从零基础递进到 MPC，再补根轨迹、灵敏度、闭环性能、模型边界、饱和与前馈六个专题，另含 S→Z 七节推导与 Tustin 计算器。出处只标到节号，不标页码。范围只到建模与控制。",
+    "id": "ahb",
+    "name": "AHB 不对称半桥反激设计工具",
+    "subtitle": "Asymmetric Half-Bridge Flyback Designer",
+    "domain": "ahb.power-knowledge.tech",
+    "url": "https://ahb.power-knowledge.tech/",
+    "desc": "不对称半桥反激的原理拆解与设计计算：工作模态、公式推导、特性曲线，并可由设计条件算出参数、生成工程报告。",
     "tags": [
-      "建模与控制",
-      "公式可溯源",
-      "S→Z 离散化",
-      "计算可复核"
+      "工作模态",
+      "公式推导",
+      "设计报告"
     ],
-    "accent": "#0f766e",
-    "icon": "book",
-    "version": "1.4.3"
+    "accent": "#0d9488",
+    "icon": "zap",
+    "version": "2.3.1"
   },
   {
-    "id": "widget",
-    "name": "电源与照明工程计算器",
-    "subtitle": "Power Widget · Engineering Calculators",
-    "domain": "widget.power-knowledge.tech",
-    "url": "https://widget.power-knowledge.tech/",
-    "desc": "面向 LED 驱动与锂电池应用的工程估算集合：切相调压后的电压有效值、锂电池综合续航与实际充电时间。每个工具都写明公式、假设与偏差方向。",
+    "id": "motor-lighting",
+    "name": "二轮车照明配光技术站",
+    "subtitle": "Motorcycles Illumination · Photometric Engineering",
+    "domain": "motor-lighting.power-knowledge.tech",
+    "url": "https://www.motor-lighting.power-knowledge.tech/",
+    "desc": "把 GB 19152-2025（25 m / cd）与 GB/T 31887.1-2019（10 m / lx）两套体系整理成可交互的配光知识站：标准表格逐表速查、SVG 配光屏点位、光型四态、cd↔lx 换算、设计全流程、测试照准、研发内控与 12 题自测。资料内部 6 处矛盾逐条并列，不做静默统一。",
     "tags": [
-      "切相调压",
-      "电池续航",
-      "公式可溯"
+      "配光标准",
+      "交互配光屏",
+      "逐表速查"
     ],
-    "accent": "#2dd4bf",
-    "icon": "calculator",
-    "version": "2.3.1"
+    "accent": "#0f766e",
+    "icon": "lightbulb",
+    "version": "3.0.4"
   },
   {
     "id": "english",

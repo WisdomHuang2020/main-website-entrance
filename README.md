@@ -11,12 +11,12 @@
 |---|---|---|---|
 | 01 | LLC 谐振变换器设计工具 | `llc.power-knowledge.tech` | `#115e59` |
 | 02 | 交错并联 Boost PFC 设计工具 | `interleavedpfc.power-knowledge.tech` | `#0f766e` |
-| 03 | AHB 不对称半桥反激设计工具 | `ahb.power-knowledge.tech` | `#0d9488` |
+| 03 | 开关变换器 · 建模与控制 | `www.control-mode.power-knowledge.tech` | `#0f766e` |
 | 04 | 光学概念和光学设计 | `optical.power-knowledge.tech` | `#14b8a6` |
-| 05 | 二轮车照明配光技术站 | `www.motor-lighting.power-knowledge.tech` | `#0f766e` |
+| 05 | 电源与照明工程计算器 | `widget.power-knowledge.tech` | `#2dd4bf` |
 | 06 | 网站建设实训课（课程，非计算工具） | `web-training.power-knowledge.tech` | `#0f766e` |
-| 07 | 开关变换器 · 建模与控制 | `www.control-mode.power-knowledge.tech` | `#0f766e` |
-| 08 | 电源与照明工程计算器 | `widget.power-knowledge.tech` | `#2dd4bf` |
+| 07 | AHB 不对称半桥反激设计工具 | `ahb.power-knowledge.tech` | `#0d9488` |
+| 08 | 二轮车照明配光技术站 | `www.motor-lighting.power-knowledge.tech` | `#0f766e` |
 | 09 | 外贸英语 · 邮件英语学习站 | `english.power-knowledge.tech` | `#0f766e` |
 
 主色列取各站自己的品牌主色（`--color-brand` 或 `--color-primary`），即 `src/data/sites.json` 的 `accent`。
@@ -31,9 +31,12 @@
 
 ⚠️ **排序约定（用户 2026-11-10 明确要求，长期生效）**：没有特别注明时**按上线时间排序**，
 新站追加到清单末尾。english 是当日最新上线的公开站，故排 09。
-同日用户另作**特别注明**：把调整后清单的 05 与 08 对调，即 `widget` ↔ `motor-lighting`，
-故当前 05 = 二轮车照明配光技术站、08 = 电源与照明工程计算器。
-这是显式指定的例外，**不要**按上线时间把它「纠正」回去。
+同日用户两次**特别注明**对调（均以当时的清单序号为准，用户已确认第二次按字面执行）：
+· 第一次：05 ↔ 08，即 `widget` ↔ `motor-lighting`；
+· 第二次：03 ↔ 07 与 05 ↔ 08 各对调一次，故 03 = 开关变换器 · 建模与控制、
+  07 = AHB 不对称半桥反激设计工具；05 / 08 同时换回 05 = 电源与照明工程计算器、
+  08 = 二轮车照明配光技术站。
+这些都是显式指定的既成事实，**不要**按上线时间擅自「纠正」回去；用序号讨论前先确认按哪份清单。
 
 `web-training` 的对外写法与其余八行一致（`web-training.power-knowledge.tech`），
 但它的**实际服务域带 `www.` 前缀**（`www.web-training.power-knowledge.tech`），证书因此单独签发。
