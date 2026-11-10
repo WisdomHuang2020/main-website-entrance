@@ -1,7 +1,7 @@
 {
   "name": "main-website-entrance",
   "private": true,
-  "version": "1.6.8",
+  "version": "1.6.9",
   "license": "MIT",
   "type": "module",
   "description": "power-knowledge.tech 站群入口门户",

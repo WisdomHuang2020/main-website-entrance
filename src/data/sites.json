@@ -32,6 +32,22 @@
     "version": "1.3.0"
   },
   {
+    "id": "ahb",
+    "name": "AHB 不对称半桥反激设计工具",
+    "subtitle": "Asymmetric Half-Bridge Flyback Designer",
+    "domain": "ahb.power-knowledge.tech",
+    "url": "https://ahb.power-knowledge.tech/",
+    "desc": "不对称半桥反激的原理拆解与设计计算：工作模态、公式推导、特性曲线，并可由设计条件算出参数、生成工程报告。",
+    "tags": [
+      "工作模态",
+      "公式推导",
+      "设计报告"
+    ],
+    "accent": "#0d9488",
+    "icon": "zap",
+    "version": "2.3.1"
+  },
+  {
     "id": "control-mode",
     "name": "开关变换器 · 建模与控制",
     "subtitle": "Power Electronics · Modeling & Control",
@@ -47,22 +63,6 @@
     "accent": "#0f766e",
     "icon": "book",
     "version": "1.4.3"
-  },
-  {
-    "id": "optical",
-    "name": "光学概念和光学设计",
-    "subtitle": "Optics & Illuminance Design",
-    "domain": "optical.power-knowledge.tech",
-    "url": "https://optical.power-knowledge.tech/",
-    "desc": "照度推算、立体角可视化、棱镜板参数化设计与最优设计方法，配套公式推导、棱镜原理与材料参考。",
-    "tags": [
-      "照度计算",
-      "立体角",
-      "棱镜设计"
-    ],
-    "accent": "#14b8a6",
-    "icon": "lightbulb",
-    "version": "4.6.0"
   },
   {
     "id": "widget",
@@ -97,20 +97,20 @@
     "version": "2.4.2"
   },
   {
-    "id": "ahb",
-    "name": "AHB 不对称半桥反激设计工具",
-    "subtitle": "Asymmetric Half-Bridge Flyback Designer",
-    "domain": "ahb.power-knowledge.tech",
-    "url": "https://ahb.power-knowledge.tech/",
-    "desc": "不对称半桥反激的原理拆解与设计计算：工作模态、公式推导、特性曲线，并可由设计条件算出参数、生成工程报告。",
+    "id": "optical",
+    "name": "光学概念和光学设计",
+    "subtitle": "Optics & Illuminance Design",
+    "domain": "optical.power-knowledge.tech",
+    "url": "https://optical.power-knowledge.tech/",
+    "desc": "照度推算、立体角可视化、棱镜板参数化设计与最优设计方法，配套公式推导、棱镜原理与材料参考。",
     "tags": [
-      "工作模态",
-      "公式推导",
-      "设计报告"
+      "照度计算",
+      "立体角",
+      "棱镜设计"
     ],
-    "accent": "#0d9488",
-    "icon": "zap",
-    "version": "2.3.1"
+    "accent": "#14b8a6",
+    "icon": "lightbulb",
+    "version": "4.6.0"
   },
   {
     "id": "motor-lighting",
