@@ -54,7 +54,7 @@
 |---|---|---|---|---|
 | 评鉴测试报告系统 | `validation.power-knowledge.tech` | `#0070c0` | **1.16.1** | 服务器 `/var/www/validation-test/app/package.json`（与仓库 tag `v1.16.1` 一致） |
 | 电源型号编码生成器 | `psu-model.power-knowledge.tech` | `#0f766e` | **1.2.1** | 服务器 `/var/www/psu-model/index.html` 内嵌版本 + 仓库 `VERSION` 文件 |
-| IO · 团队内部站点入口 | `www.io.wx-seastar.cn` | `#0e7490` | **1.0.0** | `sites.json` 静态记录；2026-11-09 接入，无哨兵 |
+| IO · 团队内部站点入口 | `io.wx-seastar.cn` | `#0e7490` | **1.0.0** | `sites.json` 静态记录；2026-11-09 接入，无哨兵 |
 
 > 表格此前只列 2 行，实际内网清单是 **3 个系统**（`io` 于 11-09 接入后没回填）。2026-11-10 一并补齐。
 
