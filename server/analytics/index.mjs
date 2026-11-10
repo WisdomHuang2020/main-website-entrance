@@ -61,12 +61,33 @@ const MAX_DAYS = 14 // 与 logrotate 的 rotate 14 对齐
  *   掉到 0（两次同步之间日志里没有新记录），看起来像集体掉线。
  *   取 10 分钟对齐同步周期，代价是对本机站点略微放宽了"在线"的判定。
  *
- * 口径：窗口内有过**文档请求**的独立 IP 数（与 PV/UV 同一套过滤规则），
- * 不是"正打开着页面的人"。真要后者只能上前端心跳，那得改 10 个子站。
+ * 口径：窗口内有过**文档请求**的独立 IP 数（与 PV/UV 同一套过滤规则）。
+ *
+ * ⚠️ 这个口径只能当兜底。它数的是「最近来过」，不是「现在还在」：
+ *    页面开着不动就不再产生文档请求，日志里永远看不见人，门户那一行就长期显示 0
+ *    （2026-11-10 用户报的「明明我自己就打开在这里」正是这个原因）。
+ *    所以有会话服务的站（io / magnetics / spice / skills）改用**前端心跳**的
+ *    实时会话数，见 readSessionOnline()；日志推算只留给没有登录态的站。
  */
 const ONLINE_WINDOW_MIN = 10
 const ONLINE_CACHE_MS = 15_000
 const TAIL_BYTES = 512 * 1024
+
+/**
+ * 各站「会话在线数」快照。
+ *
+ * 由 /usr/local/bin/pull-station-online.sh（root，60 秒一次）从香港站
+ * (47.82.96.119) 拉四个会话鉴权服务的 /health 写进来 —— 逐站字段为
+ * `{ online, max }`，online 是「最近 3 分钟有心跳的会话数」。
+ *
+ * 为什么是文件而不是本服务自己去 SSH：
+ *   entrance-analytics.service 以 www-data 运行且开了 NoNewPrivileges，
+ *   读不到 /root/.ssh 里的私钥。为一个数字给公网 web 服务提权（或加 sudoers）
+ *   都不划算，所以拆成「root 拉、服务只读」。
+ */
+const ONLINE_FILE = process.env.ONLINE_FILE || '/var/lib/entrance-analytics/online.json'
+/** 快照超过这个年龄就当没有 —— 拉取任务挂掉时不能一直显示旧数字。 */
+const ONLINE_FILE_MAX_AGE = Number(process.env.ONLINE_FILE_MAX_AGE || 300_000) // 5 分钟
 
 /**
  * 后台账号名（2026-11-10 由 admin 改为 power-admin）。
@@ -350,9 +371,52 @@ async function collect(days) {
 let onlineCache = { at: 0, data: null }
 
 /**
- * 最近 ONLINE_WINDOW_MIN 分钟内有文档请求的独立 IP，按站统计。
+ * 读会话在线数快照，返回 `{ 站点id: { online, max } }`。
  *
- * 只读**当前**日志（\*.access.log）的尾部：轮转文件里的必然是旧数据，扫了也没用。
+ * 读失败（文件还没生成）、内容过期、单站 online 为 null（该站鉴权服务挂了）
+ * 都只是「这一站没数据」—— 调用方会退回日志推算。三种情况都不抛异常：
+ * 在线数是页面上一个小绿点，不该因为它让整个接口 500。
+ */
+function readSessionOnline() {
+  const out = {}
+  let raw
+  try {
+    raw = JSON.parse(fs.readFileSync(ONLINE_FILE, 'utf8'))
+  } catch (e) {
+    // ENOENT = 拉取任务还没装好，属正常情况，不刷日志
+    if (e.code !== 'ENOENT') console.warn('[analytics] 读取在线快照失败:', e.message)
+    return out
+  }
+
+  // 快照里的 at 是秒级时间戳；时钟偏差算出来会是负数，同样当作新鲜
+  const age = Date.now() - Number(raw.at || 0) * 1000
+  if (!Number.isFinite(age) || age > ONLINE_FILE_MAX_AGE) {
+    console.warn(`[analytics] 在线快照已过期 ${Math.round(age / 1000)}s，退回日志推算`)
+    return out
+  }
+
+  for (const [id, rec] of Object.entries(raw.sites || {})) {
+    if (!rec || !Number.isFinite(rec.online)) continue // 该站服务异常，交给日志兜底
+    out[id] = {
+      online: rec.online,
+      max: Number.isFinite(rec.max) ? rec.max : null,
+    }
+  }
+  return out
+}
+
+/**
+ * 当前在线，按站统计。
+ *
+ * 两套口径并存，逐站择一：
+ *   · 有会话服务的站 → 前端心跳算出的在线**会话**数（source: 'session'）；
+ *   · 其余站（pm / xsk / zxj / entrance 等无登录态）→ 日志窗口内的独立 IP（source: 'log'）。
+ * 前端据此把会话站显示成「N / 上限」。
+ *
+ * total 是**各站相加**，不做跨站去重：目的是「总共占了几个在线位」，
+ * 不是「去重后多少人」。旧版用全站 IP 并集求 total，那个数无法由会话数推出。
+ *
+ * 日志部分只读**当前**日志（\*.access.log）的尾部：轮转文件里必然是旧数据。
  * 这里是同步 IO —— 14 个文件各读 512 KB，约几十毫秒，而接口有 15 秒缓存、
  * 后台又只有一个人用，不值得为它引入流式复杂度。
  */
@@ -360,7 +424,6 @@ function collectOnline() {
   const now = Date.now()
   const from = now - ONLINE_WINDOW_MIN * 60_000
   const perSite = new Map()
-  const allIps = new Set()
 
   for (const { siteId, file } of scanLogFiles()) {
     if (!/\.access\.log$/.test(path.basename(file))) continue
@@ -373,21 +436,29 @@ function collectOnline() {
       let set = perSite.get(siteId)
       if (!set) perSite.set(siteId, (set = new Set()))
       set.add(m[1])
-      allIps.add(m[1])
     }
   }
 
-  return {
-    windowMin: ONLINE_WINDOW_MIN,
-    generatedAt: new Date().toISOString(),
-    total: allIps.size,
-    sites: loadSites().map((s) => ({
+  const sessions = readSessionOnline()
+  const sites = loadSites().map((s) => {
+    const base = {
       id: s.id,
       name: s.name,
       internal: s.internal,
       unlisted: !!s.unlisted,
-      online: perSite.get(s.id)?.size ?? 0,
-    })),
+    }
+    const live = sessions[s.id]
+    if (live) return { ...base, online: live.online, max: live.max, source: 'session' }
+    return { ...base, online: perSite.get(s.id)?.size ?? 0, source: 'log' }
+  })
+
+  return {
+    windowMin: ONLINE_WINDOW_MIN,
+    generatedAt: new Date().toISOString(),
+    total: sites.reduce((a, s) => a + s.online, 0),
+    // 前端拿它决定要不要显示「/ 上限」，也方便排查「为什么这一站是日志口径」
+    sessionSites: sites.filter((s) => s.source === 'session').map((s) => s.id),
+    sites,
   }
 }
 

@@ -73,10 +73,28 @@ export const adminApi = {
     }),
 }
 
-/** 「当前在线」：最近 windowMin 分钟内有文档请求的独立 IP，按站统计 */
+/**
+ * 「当前在线」，按站统计。
+ *
+ * 两套口径逐站择一，看 `source`：
+ *   · `session` —— 有登录态的站，读会话服务的前端心跳，是「现在几个会话开着页面」，
+ *                  `max` 为该站同时在线上限（目前 20）。
+ *   · `log`     —— 无登录态的站，退回最近 `windowMin` 分钟内有文档请求的独立 IP。
+ * `total` 是各站相加，不跨站去重（口径是「占了多少在线位」，不是「多少人」）。
+ */
 export type OnlineResponse = {
   windowMin: number
   generatedAt: string
   total: number
-  sites: { id: string; name: string; internal: boolean; unlisted: boolean; online: number }[]
+  sessionSites: string[]
+  sites: {
+    id: string
+    name: string
+    internal: boolean
+    unlisted: boolean
+    online: number
+    /** 仅 source='session' 的站有值 */
+    max?: number | null
+    source: 'session' | 'log'
+  }[]
 }

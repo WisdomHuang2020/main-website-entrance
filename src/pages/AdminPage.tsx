@@ -80,7 +80,7 @@ export default function AdminPage() {
   }, [authed])
 
   const onlineMap = useMemo(
-    () => new Map((online?.sites ?? []).map((x) => [x.id, x.online])),
+    () => new Map((online?.sites ?? []).map((x) => [x.id, x])),
     [online],
   )
 
@@ -147,7 +147,7 @@ export default function AdminPage() {
 
         {/* 总览数字 */}
         <section className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-          <Metric label={`当前在线 · 近 ${online?.windowMin ?? 10} 分钟`} value={online?.total ?? 0} live />
+          <Metric label="当前在线 · 各站相加" value={online?.total ?? 0} live />
           <Metric label="总浏览量 PV" value={stats?.grand.pv ?? 0} accent />
           <Metric label="独立访客 UV" value={stats?.grand.uv ?? 0} />
           <Metric label="站点数" value={stats?.sites.length ?? 0} />
@@ -206,11 +206,7 @@ export default function AdminPage() {
                         内网
                       </span>
                     )}
-                    {(onlineMap.get(s.id) ?? 0) > 0 && (
-                      <span className="shrink-0 rounded border border-success/40 px-1.5 py-px font-mono text-[10px] text-success">
-                        ● {onlineMap.get(s.id)} 在线
-                      </span>
-                    )}
+                    <OnlineBadge item={onlineMap.get(s.id)} windowMin={online?.windowMin ?? 10} />
                   </span>
                   {/* 占比条：以最高站的 PV 为 100% */}
                   <span className="mt-1.5 block h-1 w-full overflow-hidden rounded-full bg-surface-elevated">
@@ -238,12 +234,46 @@ export default function AdminPage() {
 
         {stats && (
           <p className="text-center font-mono text-[10px] text-text-muted">
-            数据生成于 {new Date(stats.generatedAt).toLocaleString('zh-CN')} · 来源 nginx access log ·
-            UV 为期内 IP 去重 · 缓存 5 分钟
+            数据生成于 {new Date(stats.generatedAt).toLocaleString('zh-CN')} · 来源 nginx access log +
+            会话心跳 · UV 为期内 IP 去重 · 缓存 5 分钟
           </p>
         )}
       </div>
     </main>
+  )
+}
+
+/**
+ * 站名行尾的「● N 在线」。
+ *
+ * 两套口径在这里合并显示：
+ *   · 会话口径（source='session'）→ `● N/20 在线`，数字是「打开页面的会话数」，
+ *     来自前端 60 秒一次的心跳，所以页面开着就一定看得见；
+ *   · 日志口径（source='log'）→ `● N 在线`，数字是窗口内有请求的独立 IP，
+ *     页面开着不动就数不到，只能当兜底。
+ * 0 的时候不渲染 —— 一排「● 0 在线」既吵又没有信息量。
+ */
+function OnlineBadge({
+  item,
+  windowMin,
+}: {
+  item?: OnlineResponse['sites'][number]
+  windowMin: number
+}) {
+  if (!item || item.online <= 0) return null
+  const session = item.source === 'session'
+  return (
+    <span
+      className="shrink-0 rounded border border-success/40 px-1.5 py-px font-mono text-[10px] text-success"
+      title={
+        session
+          ? `会话口径：最近 3 分钟内有心跳的会话数（页面开着即算），本站同时上限 ${item.max ?? '—'} 个`
+          : `日志口径：最近 ${windowMin} 分钟内有页面请求的独立 IP 数`
+      }
+    >
+      ● {item.online}
+      {session && item.max ? `/${item.max}` : ''} 在线
+    </span>
   )
 }
 
