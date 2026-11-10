@@ -45,6 +45,28 @@ export const SITE_TABLE = {
     adminPath: '/admin/',
     feedbackPath: '/feedback/',
   },
+  // ── 2026-11-10 补接入的三个公开站 ──────────────────────────────────
+  // 这三个站上线时没接留言板，导致门户里有卡片、站内却没有留言入口，
+  // 后台也看不到它们的留言。补齐后站群 8 个公开站全部具备留言能力。
+  'control-mode': {
+    name: '开关变换器 · 建模与控制',
+    hosts: ['www.control-mode.power-knowledge.tech', 'control-mode.power-knowledge.tech'],
+    adminPath: '/admin',
+    feedbackPath: '/feedback',
+  },
+  'motor-lighting': {
+    name: '二轮车照明配光技术站',
+    hosts: ['www.motor-lighting.power-knowledge.tech', 'motor-lighting.power-knowledge.tech'],
+    adminPath: '/admin',
+    feedbackPath: '/feedback',
+  },
+  // english 是纯静态多页站（非 SPA），沿用 optical 的 .html 后缀约定
+  english: {
+    name: '外贸英语 · 邮件英语学习站',
+    hosts: ['www.english.power-knowledge.tech', 'english.power-knowledge.tech'],
+    adminPath: '/admin.html',
+    feedbackPath: '/feedback.html',
+  },
 }
 
 export const SITES = new Map(Object.entries(SITE_TABLE))
