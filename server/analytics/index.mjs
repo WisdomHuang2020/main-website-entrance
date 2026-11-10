@@ -53,6 +53,22 @@ const SESSION_TTL = 8 * 3600 // 8 小时
 const MAX_DAYS = 14 // 与 logrotate 的 rotate 14 对齐
 
 /**
+ * 「当前在线」的时间窗（分钟）。
+ *
+ * 为什么取 10 而不是 5：
+ *   香港站（47.82.96.119）的日志由 timer 每 10 分钟拉一次，本地看到的永远是
+ *   「最多 10 分钟前」的快照。窗口小于 10 分钟的话，那 7 个站的在线数会周期性
+ *   掉到 0（两次同步之间日志里没有新记录），看起来像集体掉线。
+ *   取 10 分钟对齐同步周期，代价是对本机站点略微放宽了"在线"的判定。
+ *
+ * 口径：窗口内有过**文档请求**的独立 IP 数（与 PV/UV 同一套过滤规则），
+ * 不是"正打开着页面的人"。真要后者只能上前端心跳，那得改 10 个子站。
+ */
+const ONLINE_WINDOW_MIN = 10
+const ONLINE_CACHE_MS = 15_000
+const TAIL_BYTES = 512 * 1024
+
+/**
  * 后台账号名（2026-11-10 由 admin 改为 power-admin）。
  * 单一账号，所以放在常量里；要支持多账号得把 credentials.json 改成「用户名 → 哈希」
  * 的映射，并让会话 token 带上用户名（目前 token 只含过期时间）。
@@ -143,6 +159,54 @@ function dayFromStamp(stamp) {
   if (!m) return null
   const mm = MONTHS[m[2]]
   return mm ? `${m[3]}-${mm}-${m[1]}` : null
+}
+
+/**
+ * `10/Nov/2026:17:40:59 +0800` → 毫秒时间戳。
+ *
+ * 必须带时区一起算：日志里的时间戳自带 +0800，而服务器可能跑在 UTC。
+ * 只取时分秒再与 Date.now() 比会差 8 小时，在线数会一直是 0。
+ */
+function stampToMs(stamp) {
+  const m = stamp.match(/^(\d{2})\/([A-Za-z]{3})\/(\d{4}):(\d{2}):(\d{2}):(\d{2}) ([+-]\d{4})$/)
+  if (!m) return null
+  const mon = MONTHS[m[2]]
+  if (!mon) return null
+  const tz = `${m[7].slice(0, 3)}:${m[7].slice(3)}`
+  const ms = Date.parse(`${m[3]}-${mon}-${m[1]}T${m[4]}:${m[5]}:${m[6]}${tz}`)
+  return Number.isFinite(ms) ? ms : null
+}
+
+/**
+ * 只读文件尾部若干字节并按行切分。
+ *
+ * 「当前在线」只需要最近十几分钟的记录，日志动辄上 MB 时全量扫描太慢。
+ * 从中间开始读的第一行多半是残缺的，直接丢掉。
+ */
+function readTailLines(file, maxBytes = TAIL_BYTES) {
+  let size = 0
+  try {
+    size = fs.statSync(file).size
+  } catch {
+    return []
+  }
+  if (!size) return []
+
+  const start = Math.max(0, size - maxBytes)
+  const buf = Buffer.alloc(size - start)
+  let fd
+  try {
+    fd = fs.openSync(file, 'r')
+    fs.readSync(fd, buf, 0, buf.length, start)
+  } catch {
+    return []
+  } finally {
+    if (fd !== undefined) fs.closeSync(fd)
+  }
+
+  const lines = buf.toString('utf8').split('\n')
+  if (start > 0) lines.shift() // 首行残缺
+  return lines.filter(Boolean)
 }
 
 /** 逐行读普通文件或 .gz，回调 (line) */
@@ -279,6 +343,52 @@ async function collect(days) {
 
   cache = { at: now, days, data }
   return data
+}
+
+/* ── 当前在线 ───────────────────────────────────────────────────────── */
+
+let onlineCache = { at: 0, data: null }
+
+/**
+ * 最近 ONLINE_WINDOW_MIN 分钟内有文档请求的独立 IP，按站统计。
+ *
+ * 只读**当前**日志（\*.access.log）的尾部：轮转文件里的必然是旧数据，扫了也没用。
+ * 这里是同步 IO —— 14 个文件各读 512 KB，约几十毫秒，而接口有 15 秒缓存、
+ * 后台又只有一个人用，不值得为它引入流式复杂度。
+ */
+function collectOnline() {
+  const now = Date.now()
+  const from = now - ONLINE_WINDOW_MIN * 60_000
+  const perSite = new Map()
+  const allIps = new Set()
+
+  for (const { siteId, file } of scanLogFiles()) {
+    if (!/\.access\.log$/.test(path.basename(file))) continue
+    for (const line of readTailLines(file)) {
+      const m = LINE_RE.exec(line)
+      if (!m) continue
+      const ts = stampToMs(m[2])
+      if (ts === null || ts < from) continue
+      if (!isDocumentHit(m[3], m[4], m[5], m[7])) continue
+      let set = perSite.get(siteId)
+      if (!set) perSite.set(siteId, (set = new Set()))
+      set.add(m[1])
+      allIps.add(m[1])
+    }
+  }
+
+  return {
+    windowMin: ONLINE_WINDOW_MIN,
+    generatedAt: new Date().toISOString(),
+    total: allIps.size,
+    sites: loadSites().map((s) => ({
+      id: s.id,
+      name: s.name,
+      internal: s.internal,
+      unlisted: !!s.unlisted,
+      online: perSite.get(s.id)?.size ?? 0,
+    })),
+  }
 }
 
 /* ── 凭据与会话 ─────────────────────────────────────────────────────── */
@@ -450,6 +560,14 @@ const server = http.createServer(async (req, res) => {
       return json(res, 200, { ok: true }, {
         'Set-Cookie': `${COOKIE_NAME}=${encodeURIComponent(token)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${SESSION_TTL}`,
       })
+    }
+
+    if (p === '/api/admin/online') {
+      const now = Date.now()
+      if (!onlineCache.data || now - onlineCache.at > ONLINE_CACHE_MS) {
+        onlineCache = { at: now, data: collectOnline() }
+      }
+      return json(res, 200, onlineCache.data)
     }
 
     if (p === '/api/admin/stats') {

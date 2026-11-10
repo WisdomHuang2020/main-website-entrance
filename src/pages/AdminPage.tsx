@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ArrowLeft, BarChart3, Eye, EyeOff, KeyRound, LogOut, RefreshCw, ShieldCheck } from 'lucide-react'
-import { adminApi, type StatsResponse } from '../lib/adminApi'
+import { adminApi, type OnlineResponse, type StatsResponse } from '../lib/adminApi'
 import TrendChart from '../components/admin/TrendChart'
 
 /**
@@ -21,6 +21,7 @@ export default function AdminPage() {
   const [authed, setAuthed] = useState<boolean | null>(null)
   const [days, setDays] = useState(7)
   const [stats, setStats] = useState<StatsResponse | null>(null)
+  const [online, setOnline] = useState<OnlineResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [err, setErr] = useState('')
 
@@ -57,6 +58,31 @@ export default function AdminPage() {
   useEffect(() => {
     if (authed) void load(days)
   }, [authed, days, load])
+
+  // 「当前在线」单独走一个轻接口，30 秒轮询一次。
+  // 不并进 stats：stats 要扫 14 天日志（几百毫秒），在线只需要尾部几分钟的数据，
+  // 混在一起会让刷新频率被前者拖住。失败静默 —— 轮询噪声不该打断看报表。
+  useEffect(() => {
+    if (!authed) return
+    let alive = true
+    const tick = () => {
+      adminApi
+        .online()
+        .then((o) => alive && setOnline(o))
+        .catch(() => {})
+    }
+    tick()
+    const id = window.setInterval(tick, 30_000)
+    return () => {
+      alive = false
+      window.clearInterval(id)
+    }
+  }, [authed])
+
+  const onlineMap = useMemo(
+    () => new Map((online?.sites ?? []).map((x) => [x.id, x.online])),
+    [online],
+  )
 
   if (authed === null) {
     return (
@@ -120,7 +146,8 @@ export default function AdminPage() {
         )}
 
         {/* 总览数字 */}
-        <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <section className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+          <Metric label={`当前在线 · 近 ${online?.windowMin ?? 10} 分钟`} value={online?.total ?? 0} live />
           <Metric label="总浏览量 PV" value={stats?.grand.pv ?? 0} accent />
           <Metric label="独立访客 UV" value={stats?.grand.uv ?? 0} />
           <Metric label="站点数" value={stats?.sites.length ?? 0} />
@@ -179,6 +206,11 @@ export default function AdminPage() {
                         内网
                       </span>
                     )}
+                    {(onlineMap.get(s.id) ?? 0) > 0 && (
+                      <span className="shrink-0 rounded border border-success/40 px-1.5 py-px font-mono text-[10px] text-success">
+                        ● {onlineMap.get(s.id)} 在线
+                      </span>
+                    )}
                   </span>
                   {/* 占比条：以最高站的 PV 为 100% */}
                   <span className="mt-1.5 block h-1 w-full overflow-hidden rounded-full bg-surface-elevated">
@@ -215,13 +247,34 @@ export default function AdminPage() {
   )
 }
 
-function Metric({ label, value, suffix, accent }: { label: string; value: number; suffix?: string; accent?: boolean }) {
+function Metric({
+  label,
+  value,
+  suffix,
+  accent,
+  live,
+}: {
+  label: string
+  value: number
+  suffix?: string
+  accent?: boolean
+  /** 在线数：前面加一个呼吸中的绿点，与静态指标区分开 */
+  live?: boolean
+}) {
   return (
     <div className="rounded-xl border border-border bg-surface/60 px-4 py-3">
       <p className="text-[11px] text-text-muted">{label}</p>
       <p
-        className={`mt-1 font-mono text-2xl tabular-nums ${accent ? 'text-brand-light' : 'text-text-primary'}`}
+        className={`mt-1 flex items-center font-mono text-2xl tabular-nums ${
+          live ? 'text-success' : accent ? 'text-brand-light' : 'text-text-primary'
+        }`}
       >
+        {live && (
+          <span
+            className="mr-2 inline-block h-2 w-2 shrink-0 animate-pulse rounded-full bg-success"
+            aria-hidden="true"
+          />
+        )}
         {value.toLocaleString('zh-CN')}
         {suffix && <span className="ml-1 text-xs text-text-muted">{suffix}</span>}
       </p>

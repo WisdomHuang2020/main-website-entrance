@@ -64,9 +64,19 @@ export const adminApi = {
 
   stats: (days: number) => call<StatsResponse>(`/api/admin/stats?days=${days}`),
 
+  online: () => call<OnlineResponse>('/api/admin/online'),
+
   changePassword: (current: string, next: string) =>
     call<{ ok: true }>('/api/admin/password', {
       method: 'POST',
       body: JSON.stringify({ current, next }),
     }),
+}
+
+/** 「当前在线」：最近 windowMin 分钟内有文档请求的独立 IP，按站统计 */
+export type OnlineResponse = {
+  windowMin: number
+  generatedAt: string
+  total: number
+  sites: { id: string; name: string; internal: boolean; unlisted: boolean; online: number }[]
 }
