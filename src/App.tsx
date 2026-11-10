@@ -33,7 +33,9 @@ import { isInternalRoute, onSectionClick, useSectionRoute } from './lib/sectionR
  *    文案的可信度靠的是每条都经得起核对，不是数字好看。
  *  ④ 2026-11-07 接入两个内网系统（validation-test / psu-model）后，口径收窄到**公开站**：
  *    它们需要账号登录，若继续用「在线站点 6」笼统说法，就和「使用门槛 0 项」当场打架。
- *    故四条全部限定在公开站范围内，标签也写明「公开」。 */
+ *    故四条全部限定在公开站范围内，标签也写明「公开」。
+ *  ⑤ 2026-11-10 接入 english（第 9 站）后站点/域名数自动变 9，这里无需改；
+ *    该站免注册、也没有计算输入，所以后两条「0 项」口径仍然成立。 */
 const STATS = [
   { value: String(SITES.length), unit: '个', label: '公开站点' },
   { value: String(SITES.length), unit: '个', label: '公开域名' },
@@ -51,17 +53,20 @@ const PRINCIPLES: { icon: LucideIcon; title: string; desc: string }[] = [
     // 否则要么撒谎（说无后端），要么连真话一起丢掉（说数据都上传）。
     // 仍需避免的表述：「断网后仍可使用」—— 字体走 Google Fonts CDN，断网体验无保证；
     // 「不留存」—— LLC 站会把设计参数写进 localStorage（实测 27 处）。
-    desc: '计算与设计全部在浏览器内完成，输入参数不回传服务器；各站只有留言一项经服务端落库，且留言内容仅作者可见。',
+    // 2026-11-10 站群加入外贸英语学习站后，四条口径必须区分「计算类工具」与「内容站」：
+    // english 是纯静态内容页，既没有计算也没有公式，硬套「计算在本地」「公式可溯」就是当场说谎。
+    // 故前两条限定主语，后两条（独立发布 / 免注册）对九站都成立，只把「构建产物」放宽为「发布」。
+    desc: '计算类工具的输入参数只在浏览器内参与运算，不回传服务器；各站只有留言一项经服务端落库，且留言内容仅作者可见。',
   },
   {
     icon: FunctionSquare,
     title: '公式可溯',
-    desc: '每个工具都写明所用公式、假设与适用边界，结果可以手工复核，不做黑箱估算。',
+    desc: '每个计算工具都写明公式、假设与适用边界，结果可手工复核；课程与语言学习站标注内容出处与筹备进度。',
   },
   {
     icon: Layers,
     title: '独立部署',
-    desc: '每个工具是独立仓库、独立域名、独立构建产物，可单独迭代与回滚，互不牵连。',
+    desc: '每个站点是独立仓库、独立域名、独立发布，可单独迭代与回滚，互不牵连。',
   },
   {
     icon: ShieldCheck,
@@ -133,7 +138,7 @@ export default function App() {
 
           <div className="shell relative px-5 py-24 sm:px-8 sm:py-32 lg:px-10 lg:py-40">
             {/* 首屏改为**左右两个入口各占一半**（2026-11-07）。
-                左边是第一入口（公开的工具与课程），右边是第二入口（内网系统，点进 /internal 这一层）。
+                左边是第一入口（公开的工具与学习站），右边是第二入口（内网系统，点进 /internal 这一层）。
                 原先右侧只有一片空底 + 放大六边形水印，宽屏上很空；现在两边各司其职。
                 内网卡只做"入口"，不直接列内网站 —— 那些系统需要账号，不该出现在公众首屏。
                 配套判断见 src/data/sites.ts：首页卡片墙只列 SITES，内网站在 /internal 列 INTERNAL_SITES。 */}
@@ -157,7 +162,7 @@ export default function App() {
                   字距从 0.16em 收到 0.06em —— 大字配大字距会散。
                   **保留 font-mono**：「第一入口 · 公开」里的 U+00B7 位置随字体 fallback 漂移，
                   换字体家族会把 11-02 那轮调过的圆点问题重新引回来。 */}
-              <div className="flex flex-col">
+              <div className="flex min-w-0 flex-col">
                 <span className="mb-6 block font-mono text-base font-medium tracking-[0.06em] text-text-primary uppercase">
                   第一入口 · 公开
                 </span>
@@ -166,8 +171,20 @@ export default function App() {
                     U+00B7 的位置由字体决定，本站字体走 Google Fonts CDN，加载失败回退到系统字体时
                     点的位置会变；渲染圆点由 items-center 决定，与字体无关。
                     与右侧药丸逐字同构：脉冲点 → 词组（词 + 后置圆点）→ 末词。
-                    ⚠️ 代价：复制这段文字只会得到「电源光学信息技术」，装饰性眉标可接受。 */}
-                <span className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1 self-start rounded-full border border-brand/30 bg-brand/10 px-5 py-2 text-2xl font-bold text-brand-light">
+                    2026-11-10 接入外贸英语学习站后补第四个领域「商务英语」——
+                    原先只写「电源 · 光学 · 信息技术」，会把站群里第一个语言学习站排除在外。
+                    用「商务英语」而非泛称「英语」：该站范围是外贸询盘/报价/订单/索赔邮件，
+                    不是通用英语教学；与「信息技术」同为四字，药丸读起来也齐整。
+                    ⚠️ 四词比原来三词宽约 80px：药丸是 `align-self: flex-start` 的 inline-flex，
+                    宽度按内容最大值算，**不受父容器约束**；390px 窄屏下会把整栏撑破、
+                    连页头和卡片一起横向溢出（2026-11-10 headless 实测）。故两处药丸都
+                    加 `max-w-full` 兜底让 flex-wrap 真的能换行，两栏容器加 `min-w-0`
+                    防止 grid 轨道被内容撑宽。
+                    <640px 收字号到 text-base、组间距收到 gap-x-1：CDP 实测只收字号到
+                    text-lg 时 360/390 仍会折成两行（pillH=78），再收一档才稳定单行（pillH≈46）。
+                    右侧内网药丸同步改，维持「双卡逐层同款」。
+                    ⚠️ 代价：复制这段文字只会得到「电源光学信息技术商务英语」，装饰性眉标可接受。 */}
+                <span className="inline-flex max-w-full flex-wrap items-center justify-center gap-x-1 gap-y-1 self-start rounded-full border border-brand/30 bg-brand/10 px-5 py-2 text-base font-bold text-brand-light sm:gap-x-2 sm:text-2xl">
                   <span className="h-2.5 w-2.5 shrink-0 animate-pulse rounded-full bg-brand-light" />
                   <span className="inline-flex items-center gap-[8px] whitespace-nowrap">
                     <span>电源</span>
@@ -177,31 +194,39 @@ export default function App() {
                     <span>光学</span>
                     <span className="h-[4px] w-[4px] shrink-0 rounded-full bg-brand-light" aria-hidden="true" />
                   </span>
-                  <span className="whitespace-nowrap">信息技术</span>
+                  <span className="inline-flex items-center gap-[8px] whitespace-nowrap">
+                    <span>信息技术</span>
+                    <span className="h-[4px] w-[4px] shrink-0 rounded-full bg-brand-light" aria-hidden="true" />
+                  </span>
+                  <span className="whitespace-nowrap">商务英语</span>
                 </span>
 
                 {/* 标题按卡片内宽重算（2026-11-07「更大气」整体放大一档）：
                     xl 每栏 568px，减 p-10×2=80 → 488px 可用；
-                    「直达全部工程工具与课程」11 字在 40px 时约 440px，单行放得下（余量 48px）。
+                    2026-11-10 文案改为「直达全部工具与学习站」10 字，40px 时约 400px，
+                    比原来的「直达全部工程工具与课程」11 字更短，单行余量反而更大。
+                    去掉「工程」是因为 english 是语言学习站，不是工程工具；用「学习站」
+                    统称课程、培训页与英语站，与「工具」合起来正好覆盖当前 9 个公开站。
                     lg(1024) 每栏 444px、内容宽 364px，40px 会折行 ⇒ 该档仍用 text-3xl(30px)。
                     <br> 必须**始终生效**：原先写 hidden sm:block，窄屏把两句连成 16 字，
-                    390px 下会断出「与课程」孤儿行（实测）。窄屏 text-xl + 卡片 p-6，
-                    11 字 × 20px ≈ 220px < 232px 可用宽（320px 视口），仍是整齐两行。 */}
+                    390px 下会断出孤儿行（实测）。窄屏 text-xl + 卡片 p-6，
+                    10 字 × 20px ≈ 200px < 232px 可用宽（320px 视口），仍是整齐两行。 */}
                 <div className="group mt-7 flex flex-1 flex-col rounded-2xl border border-brand/30 bg-surface/70 p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand/50 hover:bg-surface sm:p-10">
                   <h1 className="text-xl leading-[1.12] font-bold tracking-[-0.03em] sm:text-3xl xl:text-[2.5rem]">
                     一个入口
                     <br />
-                    直达全部工程工具与课程
+                    直达全部工具与学习站
                   </h1>
 
                   <p className="mt-5 text-[15px] leading-relaxed text-text-secondary sm:text-base">
-                    这里汇集本人开发的电源与光学在线工具，外加一套把站点从本机推到线上的信息技术实训课。
+                    这里汇集本人开发的电源与光学计算工具、建模与控制培训页、把站点从本机推到线上的信息技术实训课，以及一座外贸邮件英语学习站。
                   </p>
 
                   <div className="mt-5 text-[13px] leading-relaxed text-text-muted sm:mt-6 sm:text-sm">
                     <p>
-                      工具都是纯前端应用 —— 打开即用、输入参数不出浏览器，公式与假设写在各自站内，
-                      结论可手工复核。发现哪里算错了，可直接在对应站点的「留言」里指出；
+                      计算类工具都是纯前端应用 —— 打开即用、输入参数不出浏览器，公式与假设写在各自站内，
+                      结论可手工复核；课程与语言学习站则按站内说明标注出处与筹备进度。
+                      发现哪里写错了，可直接在对应站点的「留言」里指出；
                       留言内容仅本人可见，入口站只公开提示各站是否有新留言。
                     </p>
                   </div>
@@ -217,7 +242,7 @@ export default function App() {
                       onClick={(e) => onSectionClick(e, 'tools')}
                       className="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-brand px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-brand-light sm:w-auto"
                     >
-                      查看全部工具与课程
+                      查看全部工具与学习站
                       <ArrowDown className="h-4 w-4" strokeWidth={1.8} />
                     </a>
                   </div>
@@ -229,12 +254,12 @@ export default function App() {
                   整块是一个 <a>，点任意位置进 /internal；相对路径 `./internal` 不能写成
                   `/internal` —— Pages 子路径部署会 404（同 /tools 的教训）。
                   卡内 CTA 用 span 而非 a：外层已经是 a，嵌套链接是非法 HTML。 */}
-              <div className="flex flex-col">
+              <div className="flex min-w-0 flex-col">
                 <span className="mb-6 block font-mono text-base font-medium tracking-[0.06em] text-text-primary uppercase">
                   第二入口 · 内网
                 </span>
 
-                <span className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1 self-start rounded-full border border-internal/35 bg-internal/10 px-5 py-2 text-2xl font-bold text-internal-light">
+                <span className="inline-flex max-w-full flex-wrap items-center justify-center gap-x-1 gap-y-1 self-start rounded-full border border-internal/35 bg-internal/10 px-5 py-2 text-base font-bold text-internal-light sm:gap-x-2 sm:text-2xl">
                   <span className="h-2.5 w-2.5 shrink-0 animate-pulse rounded-full bg-internal-light" />
                   <span className="inline-flex items-center gap-[8px] whitespace-nowrap">
                     <span>内网</span>
@@ -324,9 +349,10 @@ export default function App() {
         >
           <div className="mb-12 flex flex-wrap items-end justify-between gap-4">
             <div>
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">工具与课程</h2>
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">工具与学习站</h2>
               <p className="mt-3 text-base text-text-muted">
-                点击卡片将在新标签页打开对应站点；需要账号登录的内部系统在首屏「第二入口」里
+                工程计算工具、实训课程与外贸英语学习站都收在这里，点击卡片将在新标签页打开对应站点；
+                需要账号登录的内部系统在首屏「第二入口」里
               </p>
             </div>
             <span className="font-mono text-sm text-text-muted">
@@ -337,8 +363,8 @@ export default function App() {
           {/* 6 列网格，跨度按站点数自适应：
               数量 % 3 === 2 时（如 5 站）首 3 张各占 2 列、末 2 张各占 3 列，
               否则末行会空出一格、看着像"少了一个"；
-              数量能被 3 整除时（2026-10-31 加入 web-training 后为 6 站）全部各占 2 列，
-              正好两行各 3 张 —— 早先注释里预留的"加到 6 个站自动退回两行各 3 张"已生效。 */}
+              数量能被 3 整除时全部各占 2 列、每 3 张一行 —— 2026-10-31 加入 web-training
+              后为 6 站（两行），2026-11-10 加入 english 后为 9 站（三行），都命中这条分支。 */}
           <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-6">
             {SITES.map((site, i) => {
               const isWideTail = SITES.length % 3 === 2 && i >= SITES.length - 2
@@ -365,7 +391,8 @@ export default function App() {
           <div className="shell px-5 py-20 sm:px-8 sm:py-28 lg:px-10">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">共同的工程口径</h2>
             <p className="mt-3 max-w-3xl text-base text-text-muted">
-              这些工具面向工程估算，因此对「结果是怎么来的」和「在什么条件下不成立」有统一要求。
+              计算类工具面向工程估算，对「结果是怎么来的」和「在什么条件下不成立」有统一要求；
+              课程与语言学习站按站内说明标注出处与筹备进度。九站的发布与开放方式一致。
             </p>
 
             <div className="mt-14 grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">

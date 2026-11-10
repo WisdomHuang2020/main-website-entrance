@@ -28,9 +28,9 @@ export interface SectionLink {
 }
 
 export const SECTION_LINKS: SectionLink[] = [
-  // label 随收录内容放宽（2026-10-31 加入课程站）；path 与 id 保持 tools 不变 ——
-  // 它们是已对外发布的深链地址 /tools，改掉会让旧链接 404。
-  { path: './tools', id: 'tools', label: '工具与课程' },
+  // label 随收录内容放宽（2026-10-31 加入课程站 → 2026-11-10 加入外贸英语学习站）；
+  // path 与 id 仍保持 tools 不变 —— 它们是已对外发布的深链地址 /tools，改掉会让旧链接 404。
+  { path: './tools', id: 'tools', label: '工具与学习站' },
   { path: './engineers', id: 'principles', label: '工程口径' },
 ]
 
@@ -52,7 +52,7 @@ export function sectionIdFromLocation(): string | null {
  * （`/main-website-entrance/internal` 的最后一段仍是 `internal`）。
  *
  * 页头据此切换导航（2026-11-07）：内网页显示「返回入口」而不是首页那两项区块目录 ——
- * 「工具与课程」「工程口径」都是**首页的锚点**，挂在第二层页面上会让人误以为
+ * 「工具与学习站」「工程口径」都是**首页的锚点**，挂在第二层页面上会让人误以为
  * 还在首页、点下去却是"跳走 + 滚到某一段"，语义对不上当前所在层级。
  */
 export function isInternalRoute(): boolean {
