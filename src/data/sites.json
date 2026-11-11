@@ -189,7 +189,7 @@
       "方案生成"
     ],
     "accent": "#2563eb",
-    "icon": "calculator",
+    "icon": "led-bin",
     "version": "0.3.0",
     "internal": true
   },

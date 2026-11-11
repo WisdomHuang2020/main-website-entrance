@@ -9,6 +9,7 @@ import {
   Zap,
   type LucideIcon,
 } from 'lucide-react'
+import LedBinIcon from '../components/LedBinIcon'
 import raw from './sites.json'
 
 /**
@@ -42,6 +43,8 @@ export type SiteIconKey =
   | 'book'
   | 'filetext'
   | 'layout'
+  /** 自定义 SVG（贴片 LED + 封装内分档，见 components/LedBinIcon.tsx），不是 lucide 图标 */
+  | 'led-bin'
 
 export interface Site {
   /** 同时用作服务器 web 根目录名：/var/www/<id>（巡检脚本依赖此约定） */
@@ -99,6 +102,7 @@ export const ICONS: Record<SiteIconKey, LucideIcon> = {
   book: BookOpen,
   filetext: FileText,
   layout: LayoutGrid,
+  'led-bin': LedBinIcon,
 }
 
 /**
