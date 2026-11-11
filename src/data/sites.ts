@@ -81,8 +81,11 @@ export interface Site {
    *    它跑在阿里云 47.82.x 那台，与本站群不同机、无 `.deployed-version` 哨兵，
    *    version 只能人工维护（当前 1.0.0），改版时需手动同步这个数字。
    *  2026-11-11 追加：smartbin（smartbin.power-knowledge.tech，LED 光色电平衡配比系统）。
-   *    Node 应用反代、需账号登录；服务器 /var/www/smartbin/.deployed-version 实测 0.2.2，
+   *    Node 应用反代、需账号登录；服务器 /var/www/smartbin/.deployed-version 接入时实测 0.2.2，
+   *    当日 16:47 又发到 0.3.0，sites.json 静态值已同步（Pages 兜底通道靠它）。
    *    门户 nginx 已配 /api/version/smartbin 实时端点（CI 只发 dist，nginx 须手工同步）。
+   *    ⚠️ 1.8.10 起 InternalPage 才真正消费 liveVersions；此前内网页只读静态值，
+   *    端点配了也不生效（2026-11-11 线上实测确认）。
    *    裸域是主域（www 301 → 裸域），故 domain 与 url 都写裸名，不要反过来加 www。 */
   internal?: boolean
 }

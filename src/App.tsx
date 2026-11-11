@@ -109,7 +109,7 @@ export default function App() {
       <div id="top" className="flex min-h-screen flex-col bg-bg">
         <Header />
         <main className="flex-1">
-          <InternalPage />
+          <InternalPage liveVersions={liveVersions} />
         </main>
         <Footer />
       </div>

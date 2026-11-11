@@ -15,7 +15,14 @@ import { INTERNAL_SITES } from '../data/sites'
  *   与 /tools、/engineers 同一套兜底，见 src/lib/sectionRoute.ts 的说明。
  *   路径全部用**相对形式**（`./`），Pages 子路径部署才不会 404。
  */
-export default function InternalPage() {
+/**
+ * 2026-11-11 修正（版本 1.8.10）：本页原先直接把 `site.version`（sites.json 静态值）传给
+ * SiteCard，而 useLiveVersions 的结果只在 App.tsx 的首页公开站卡片墙被消费 ⇒
+ * 内网系统即便配了 /api/version/<id> 端点也读不到，卡片会一直挂着旧版本号。
+ * 实测证据：当日 16:47 smartbin 哨兵发到 0.3.0，线上 /internal 仍显示 0.2.2。
+ * 现在由 App 把 liveVersions 传进来，三站与公开站一样走「实时优先、静态兜底」。
+ */
+export default function InternalPage({ liveVersions }: { liveVersions: Record<string, string> }) {
   return (
     <div className="shell px-5 py-16 sm:px-8 sm:py-20 lg:px-10">
       {/* 「返回入口」已移到**页头导航**（2026-11-07）：页头是吸顶的，比页面内链接始终可见；
@@ -57,9 +64,18 @@ export default function InternalPage() {
           （原注释实测 820px 三列时标题已断成「…入口 / 口」两行），故改为 2×2。
           排布沿革与断点实测记录见 src/index.css 末尾。 */}
       <div className="mt-12 grid gap-6 sm:grid-cols-2">
-        {INTERNAL_SITES.map((site, i) => (
-          <SiteCard key={site.id} site={site} index={i + 1} version={site.version} />
-        ))}
+        {INTERNAL_SITES.map((site, i) => {
+          const liveVer = liveVersions[site.id]
+          return (
+            <SiteCard
+              key={site.id}
+              site={site}
+              index={i + 1}
+              version={liveVer ?? site.version}
+              live={!!liveVer}
+            />
+          )
+        })}
       </div>
     </div>
   )

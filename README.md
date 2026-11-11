@@ -54,7 +54,7 @@
 |---|---|---|---|---|
 | 评鉴测试报告系统 | `validation.power-knowledge.tech` | `#0070c0` | **1.23.1** | 服务器 `.deployed-version`，门户 `/api/version/validation-test` 实时读取（2026-11-11 实测） |
 | 电源型号编码生成器 | `psu-model.power-knowledge.tech` | `#0f766e` | **1.15.0** | 服务器 `.deployed-version`，门户 `/api/version/psu-model` 实时读取（2026-11-11 实测） |
-| LED光色电平衡配比系统 | `smartbin.power-knowledge.tech` | `#2563eb` | **0.2.2** | 服务器 `/var/www/smartbin/.deployed-version`，门户 `/api/version/smartbin`（2026-11-11 接入） |
+| LED光色电平衡配比系统 | `smartbin.power-knowledge.tech` | `#2563eb` | **0.3.0** | 服务器 `/var/www/smartbin/.deployed-version`，门户 `/api/version/smartbin`（2026-11-11 接入时为 0.2.2，当日 16:47 发到 0.3.0，静态快照已同步） |
 | IO · 团队内部站点入口 | `io.wx-seastar.cn` | `#0e7490` | **1.0.0** | `sites.json` 静态记录；无哨兵、无端点，人工维护 |
 
 > 表格此前只列 2 行，2026-11-10 补齐为 3 行；2026-11-11 接入 smartbin 后再补第 4 行。
@@ -70,6 +70,10 @@
 - 首屏四条统计的口径限定为**公开站** —— 否则「使用门槛 0 项」会与内网系统的登录门禁自相矛盾；
 - `smartbin` / `validation-test` / `psu-model` 三站已有 `.deployed-version` 哨兵与门户
   `/api/version/<id>` 端点，卡片运行时读实时值；`io` 两者都没有，显示 `sites.json` 静态值。
+  ⚠️ **v1.8.10 才真正接通内网页**：此前 `useLiveVersions` 只在首页公开站卡片墙被消费，
+     `/internal` 的 `InternalPage` 直接传 `site.version`，端点形同虚设。2026-11-11
+     smartbin 16:47 发版 0.3.0、线上 `/internal` 仍显示 0.2.2，实测暴露后改由 App
+     把 `liveVersions` 传入 InternalPage。别再把这行改回静态值。
   `scripts/check-versions.mjs` 仍显式跳过**全部** internal 站点，不与公开站混在同一套漂移巡检里
   （跳过是为了不制造「未找到哨兵」的假告警，见该脚本注释）。
   ⚠️ **`io` 发新版后要手动改 `sites.json` 的 `version`** —— 没有自动同步，这是已知缺口。
