@@ -12,9 +12,17 @@ import { ALL_SITES } from './sites'
  *      实测五个站一律 403；
  *   ② 就算不封，跨子域读响应体需要目标站发 CORS 头，五个子站都没有。
  *
- * 做法：由**门户自己的 nginx** 以同源端点 `/api/version/<id>` 把哨兵文件转出来
+ * 做法：由**门户自己的 nginx** 以同源端点 `/api/version/<id>` 把子站版本转出来
  * （见 deploy/nginx-entrance.conf 的「子站版本实时端点」段）。同源 ⇒ 无 CORS 问题，
  * 也绕开了子站的隐藏文件封禁。
+ *
+ * 端点有两种响应契约，本 hook 都认：
+ *   ① 哨兵纯文本：alias 到 /var/www/<id>/.deployed-version，响应就是 x.y.z 一行
+ *      （绝大多数站点，含 validation-test / psu-model）；
+ *   ② 运行时 JSON：smartbin 例外，proxy_pass 到 127.0.0.1:3311/api/health，
+ *      响应 {"ok":true,"version":"x.y.z","at":...}。2026-11-11 起改用它 ——
+ *      smartbin 的发版流程从不写哨兵，静态文件必然漂移（0.5.0 发版后哨兵
+ *      仍停在 0.3.1，门户就一直显示旧号）。
  *
  * 降级策略（重要）：
  *   静态值（sites.json）始终作为首屏渲染值与兜底值。端点不可达时（本地 `npm run dev`、
@@ -48,6 +56,22 @@ export function useLiveVersions(): Record<string, string> {
           //   ① 拒绝 HTML；② 限长；③ 整串锚定匹配。
           if (ctype.indexOf('text/html') >= 0) return null
           const raw = (await res.text()).trim()
+          // 运行时健康接口（目前仅 smartbin）返回 JSON，长度会超过下面 24 字符的
+          // 哨兵限长，必须先按 JSON 分支解析。只认顶层 version 字段且整串锚定，
+          // 避免从任意 JSON 里捞到无关数字（如时间戳、依赖版本号）。
+          if (raw.startsWith('{')) {
+            try {
+              const body: unknown = JSON.parse(raw)
+              const v =
+                body && typeof body === 'object' && 'version' in body
+                  ? (body as { version?: unknown }).version
+                  : undefined
+              const jm = typeof v === 'string' ? v.trim().match(/^v?(\d+\.\d+\.\d+)$/) : null
+              return jm ? ([site.id, jm[1]] as const) : null
+            } catch {
+              return null
+            }
+          }
           if (raw.length === 0 || raw.length > 24) return null
           const m = raw.match(/^v?(\d+\.\d+\.\d+)$/)
           return m ? ([site.id, m[1]] as const) : null

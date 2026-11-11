@@ -54,7 +54,7 @@
 |---|---|---|---|---|
 | 评鉴测试报告系统 | `validation.power-knowledge.tech` | `#0070c0` | **1.23.1** | 服务器 `.deployed-version`，门户 `/api/version/validation-test` 实时读取（2026-11-11 实测） |
 | 电源型号编码生成器 | `psu-model.power-knowledge.tech` | `#0f766e` | **1.15.0** | 服务器 `.deployed-version`，门户 `/api/version/psu-model` 实时读取（2026-11-11 实测） |
-| LED光色电平衡配比系统 | `smartbin.power-knowledge.tech` | `#2563eb` | **0.3.0** | 服务器 `/var/www/smartbin/.deployed-version`，门户 `/api/version/smartbin`（2026-11-11 接入时为 0.2.2，当日 16:47 发到 0.3.0，静态快照已同步） |
+| LED光色电平衡配比系统 | `smartbin.power-knowledge.tech` | `#2563eb` | **0.5.0** | 子站运行时 `/api/health`，门户 `/api/version/smartbin` 同源代理后实时读取（2026-11-11 19:10 实测）；静态快照同步为 0.5.0 供 Pages 兜底 |
 | IO · 团队内部站点入口 | `io.wx-seastar.cn` | `#0e7490` | **1.0.0** | `sites.json` 静态记录；无哨兵、无端点，人工维护 |
 
 > 表格此前只列 2 行，2026-11-10 补齐为 3 行；2026-11-11 接入 smartbin 后再补第 4 行。
@@ -68,8 +68,15 @@
 
 - 首页「工具与学习站」只列上面 9 个公开站（`SITES`），内网站只在 `/internal` 这一层列（`INTERNAL_SITES`）；
 - 首屏四条统计的口径限定为**公开站** —— 否则「使用门槛 0 项」会与内网系统的登录门禁自相矛盾；
-- `smartbin` / `validation-test` / `psu-model` 三站已有 `.deployed-version` 哨兵与门户
-  `/api/version/<id>` 端点，卡片运行时读实时值；`io` 两者都没有，显示 `sites.json` 静态值。
+- `validation-test` / `psu-model` 走 `.deployed-version` 哨兵、`smartbin` 走运行时
+  健康接口，三站都有门户 `/api/version/<id>` 端点，卡片运行时读实时值；`io` 没有端点，
+  显示 `sites.json` 静态值。
+  ⚠️ **smartbin 是端点契约的例外**（2026-11-11 19:10 起）：它的 `deploy/push.sh`
+    不写哨兵、`deploy/audit-version-sync.py` 也不检查哨兵，当日 19:02 发到 0.5.0 后
+    哨兵仍停在 17:06 手工写的 0.3.1，门户便一直显示旧号。改为 nginx `proxy_pass`
+    到 `127.0.0.1:3311/api/health`，`useLiveVersions` 兼容 `{ version }` JSON 响应，
+    数据源是运行中的应用本身，子站发版后门户自动跟上；服务重启瞬间端点可能 502，
+    前端静默回退静态值。其余各站仍是哨兵纯文本，别把这条改回 `alias` 哨兵。
   ⚠️ **v1.8.10 才真正接通内网页**：此前 `useLiveVersions` 只在首页公开站卡片墙被消费，
      `/internal` 的 `InternalPage` 直接传 `site.version`，端点形同虚设。2026-11-11
      smartbin 16:47 发版 0.3.0、线上 `/internal` 仍显示 0.2.2，实测暴露后改由 App
@@ -81,7 +88,8 @@
      新增/修改端点必须手工同步到服务器，否则线上仍是 200 + HTML、前端静默降级到静态值。
 - 前三站的 `id` 等于服务器 web 根目录名（`/var/www/validation-test`、`/var/www/psu-model`、
   `/var/www/smartbin`），与公开站同一约定；`io` 是挂独立域名的团队门户，不走站群 web 根。
-- 2026-11-07 接入时，validation-test 尚未写哨兵；2026-11-11 起三站已全部接入实时端点。
+- 2026-11-07 接入时，validation-test 尚未写哨兵；2026-11-11 起三站已全部接入实时端点
+  （其中 smartbin 走运行时健康接口，不依赖哨兵文件）。
 
 ## 外贸英语学习站（2026-11-10 接入，第一入口第 9 张卡片 · 序号 09）
 
