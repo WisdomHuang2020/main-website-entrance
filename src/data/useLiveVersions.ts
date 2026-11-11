@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { SITES } from './sites'
+import { ALL_SITES } from './sites'
 
 /**
  * 站点版本的**运行时覆盖层**。
@@ -30,7 +30,10 @@ export function useLiveVersions(): Record<string, string> {
     let cancelled = false
 
     Promise.all(
-      SITES.map(async (site) => {
+      // 用 ALL_SITES 而不是 SITES：后者只含公开站，内网站（psu-model / validation-test）
+      // 就永远不会去取实时版本，卡片上一直挂着 sites.json 里的旧值。
+      // io 在内网清单里但没有本机端点，请求会 404 —— 下面的 catch 静默退回静态值，无害。
+      ALL_SITES.map(async (site) => {
         try {
           // 相对路径：根路径部署时为 /api/version/<id>，
           // Pages 子路径部署时为 /main-website-entrance/api/version/<id>（那里没有端点，静默失败）
