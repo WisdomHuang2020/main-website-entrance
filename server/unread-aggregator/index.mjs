@@ -40,14 +40,22 @@ const OUT = process.env.OUT || '/var/lib/entrance-unread/unread.json'
  * 单独列在这里而不是 import：服务器上只部署本目录，不部署前端 src/，
  * 也不该让一个只读统计脚本依赖留言服务的启动期模块。
  * 新增**接入留言板**的站时，本清单与 SITE_TABLE / 库初始化一起改（见 README）。
+ *
+ * ⚠️ 漏改这里的后果不是「该站未读不显示」，而是**整个聚合任务 throw 退出** ——
+ *    连旧站的未读都不再更新。2026-11-10 接三个新站时忘了改，服务每分钟失败一次
+ *    跑了整夜，直到 11-11 用户反馈才暴露。这个严格校验是有意为之。
  */
 const SITE_IDS = [
+  // 顺序与 src/data/sites.json 一致（顺序不影响结果，只为便于人工对照）
   'llc',
   'interleavedpfc',
   'ahb',
-  'optical',
-  'web-training',
+  'control-mode',
   'widget',
+  'web-training',
+  'optical',
+  'motor-lighting',
+  'english',
 ]
 
 /** 只读打开。readOnly + query_only 双保险：本进程永远不该产生一次写。 */
