@@ -67,7 +67,7 @@ export const SITE_TABLE = {
     // 2026-11-11 起后台地址去掉 .html 后缀（nginx 内部重写到 admin.html，
     // 旧地址仍然可用）。这里写不带后缀的形式，运维提示才不会给错链接。
     adminPath: '/admin',
-    feedbackPath: '/feedback.html',
+    feedbackPath: '/feedback',
   },
 }
 
