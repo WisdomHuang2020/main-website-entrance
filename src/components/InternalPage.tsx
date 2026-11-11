@@ -64,13 +64,6 @@ export default function InternalPage() {
           <SiteCard key={site.id} site={site} index={i + 1} version={site.version} />
         ))}
       </div>
-
-      {/* 原来这里写的是「版本哨兵端点 / 门户读不到实时值」—— 那是维护说明，
-          访客看了一头雾水（本项目的既定口径：实现细节写 README，不上门户页面）。
-          改成一句人话，保留"这个数字可能不准"这个真正对读者有用的信息。 */}
-      <p className="mt-10 max-w-2xl border-t border-internal/30 pt-6 text-sm leading-relaxed text-text-muted">
-        版本号由门户手动记录，可能与系统内实际版本不一致。
-      </p>
     </div>
   )
 }
