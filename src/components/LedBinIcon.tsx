@@ -2,16 +2,24 @@ import { forwardRef } from 'react'
 import type { LucideProps } from 'lucide-react'
 
 /**
- * 贴片 LED + 封装内分档（E4 风格），2026-11-11 用户从四种草稿中选定。
+ * 2835 SMD LED 正视（F2 阴极倒角风格），2026-11-11 用户从四种 2835 草案中选定。
  *
  * 为什么是自定义 SVG：已装的 lucide-react 没有 LED / diode 实物图标，
  * 最接近的 lightbulb / microchip 都不是灯珠本体。
  * 本组件实现 LucideIcon 的完整契约（forwardRef + LucideProps + currentColor），
  * 因此可直接注册进 sites.ts 的 ICONS，不需要放宽 ICONS 的类型。
  *
- * 图形语义：外框 = SMD 封装；内框 = 荧光胶区；2×2 网格 + 一个实心点 = 分 BIN 档位；
- * 封装左右短横线 = 焊盘；底部三点 = 电压/色度/亮度三个分档维度；顶部竖线 = 发光。
+ * 前一版（E4「贴片 LED + 封装内 2×2 分档」）在 24px 下把封装、网格、实心点、
+ * 焊盘、发光射线、底部三点共八组元素叠在一起，实拍缩到实际尺寸后像芯片点阵，
+ * 用户判定「还是不太好看」。本版按真实 2835 灯珠收敛到四组：
+ *   ① 外框 = 2.8×3.5mm 矩形封装，左上角切斜角 = 2835 常见的阴极倒角标记；
+ *   ② 内框 = 中央一整块高透荧光胶 / 发光面（低透明度填充，不切网格）；
+ *   ③ 实心小圆点 = 阴极印点；
+ *   ④ 封装左右各一条实心短条 = 两端镀锡焊盘 / 电极。
+ * 刻意不再加发光射线与分档点阵——24×24 里元素越少越像实物。
+ *
  * 24×24 线性笔触、strokeWidth 1.7、圆角端点，与站内其余 lucide 图标同款。
+ * sites.json 的 icon key 仍沿用 'led-bin'（历史沿用，避免无谓改动数据层）。
  */
 const LedBinIcon = forwardRef<SVGSVGElement, LucideProps>(
   ({ color = 'currentColor', size = 24, strokeWidth = 1.7, ...rest }, ref) => (
@@ -27,15 +35,11 @@ const LedBinIcon = forwardRef<SVGSVGElement, LucideProps>(
       strokeLinejoin="round"
       {...rest}
     >
-      <rect x="3.5" y="6" width="17" height="10" rx="2" />
-      <rect x="8" y="8" width="8" height="6" rx="1" />
-      <path d="M12 8 v6 M8 11 h8" />
-      <circle cx="10" cy="9.5" r="0.9" fill="currentColor" stroke="none" />
-      <path d="M2 9 h1.5 M2 13 h1.5 M20.5 9 h1.5 M20.5 13 h1.5" />
-      <path d="M12 2 v1.8" />
-      <circle cx="7" cy="20" r="0.9" fill="currentColor" stroke="none" />
-      <circle cx="12" cy="20" r="1.2" fill="currentColor" stroke="none" />
-      <circle cx="17" cy="20" r="0.9" fill="currentColor" stroke="none" />
+      <path d="M6 5 H18.6 A2.2 2.2 0 0 1 20.8 7.2 V16.8 A2.2 2.2 0 0 1 18.6 19 H5.4 A2.2 2.2 0 0 1 3.2 16.8 V8.2 Z" />
+      <rect x="7.2" y="7.6" width="9.6" height="8.8" rx="2" fill={color} fillOpacity={0.16} />
+      <circle cx="5.3" cy="9" r="0.95" fill={color} stroke="none" />
+      <rect x="1.2" y="9.6" width="1.9" height="4.8" rx="0.7" fill={color} stroke="none" />
+      <rect x="20.9" y="9.6" width="1.9" height="4.8" rx="0.7" fill={color} stroke="none" />
     </svg>
   ),
 )
