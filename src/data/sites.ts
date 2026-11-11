@@ -70,13 +70,20 @@ export interface Site {
    *  · 这样首屏的「使用门槛 0 项」等表述仍然成立 —— 内网系统另有登录门禁，不混在公开工具里算。
    *  · id 对公开站必须等于服务器 web 根目录名（/var/www/<id>），巡检脚本依赖此约定；
    *    内网站豁免这条 —— check-versions.mjs 直接跳过 internal，不会去 Lighthouse 上找 /var/www/<id>。
-   *  2026-11-09 追加：io（服务域 www.io.wx-seastar.cn，团队内部站群总入口）接入，成为第 3 个内网系统。
+   *  2026-11-09 追加：io（服务域 www.io.wx-seastar.cn，团队内部站群总入口）接入，当时是第 3 个内网系统。
    *    2026-11-10 按用户要求，卡片 domain 显示改为裸名 io.wx-seastar.cn（去掉截图里的 www.）；
    *    实测裸域 301 跳 www，故 url 仍保留 www，避免每次点击多一跳（与 control-mode / motor-lighting 同构）。
    *    按用户要求，它排在内网清单**最后一位**（渲染顺序 = sites.json 数组顺序，无排序覆盖），
    *    别因为「总入口应该在最前」把它挪回首位。
+   *    ⚠️ 2026-11-11 用户再次确认：新增第 4 个内网站时**仍保留 io 压轴**，
+   *    所以 smartbin 插在 io **之前**，而不是按「新站追加末尾」排到 io 之后。
+   *    这是 README 那条通用排序约定的显式例外，别按上线时间把它复原回末尾。
    *    它跑在阿里云 47.82.x 那台，与本站群不同机、无 `.deployed-version` 哨兵，
-   *    version 只能人工维护（当前 1.0.0），改版时需手动同步这个数字。 */
+   *    version 只能人工维护（当前 1.0.0），改版时需手动同步这个数字。
+   *  2026-11-11 追加：smartbin（smartbin.power-knowledge.tech，LED 光色电平衡配比系统）。
+   *    Node 应用反代、需账号登录；服务器 /var/www/smartbin/.deployed-version 实测 0.2.2，
+   *    门户 nginx 已配 /api/version/smartbin 实时端点（CI 只发 dist，nginx 须手工同步）。
+   *    裸域是主域（www 301 → 裸域），故 domain 与 url 都写裸名，不要反过来加 www。 */
   internal?: boolean
 }
 

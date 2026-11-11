@@ -177,6 +177,23 @@
     "internal": true
   },
   {
+    "id": "smartbin",
+    "name": "LED光色电平衡配比系统",
+    "subtitle": "LED 来料分 BIN · 光色电平衡配比",
+    "domain": "smartbin.power-knowledge.tech",
+    "url": "https://smartbin.power-knowledge.tech/",
+    "desc": "LED 光源来料分 BIN 的电压/色度/亮度平衡配比与方案生成系统。需账号登录，仅团队内部使用。",
+    "tags": [
+      "来料分 BIN",
+      "光色电配比",
+      "方案生成"
+    ],
+    "accent": "#2563eb",
+    "icon": "calculator",
+    "version": "0.2.2",
+    "internal": true
+  },
+  {
     "id": "io",
     "name": "IO · 团队内部站点入口",
     "subtitle": "Team Portal · One Login, All Internal Sites",

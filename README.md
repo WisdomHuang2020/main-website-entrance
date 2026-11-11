@@ -52,24 +52,32 @@
 
 | 系统 | 域名 | 主色 | 版本 | 版本的核实依据 |
 |---|---|---|---|---|
-| 评鉴测试报告系统 | `validation.power-knowledge.tech` | `#0070c0` | **1.16.1** | 服务器 `/var/www/validation-test/app/package.json`（与仓库 tag `v1.16.1` 一致） |
-| 电源型号编码生成器 | `psu-model.power-knowledge.tech` | `#0f766e` | **1.2.1** | 服务器 `/var/www/psu-model/index.html` 内嵌版本 + 仓库 `VERSION` 文件 |
-| IO · 团队内部站点入口 | `io.wx-seastar.cn` | `#0e7490` | **1.0.0** | `sites.json` 静态记录；2026-11-09 接入，无哨兵 |
+| 评鉴测试报告系统 | `validation.power-knowledge.tech` | `#0070c0` | **1.23.1** | 服务器 `.deployed-version`，门户 `/api/version/validation-test` 实时读取（2026-11-11 实测） |
+| 电源型号编码生成器 | `psu-model.power-knowledge.tech` | `#0f766e` | **1.15.0** | 服务器 `.deployed-version`，门户 `/api/version/psu-model` 实时读取（2026-11-11 实测） |
+| LED光色电平衡配比系统 | `smartbin.power-knowledge.tech` | `#2563eb` | **0.2.2** | 服务器 `/var/www/smartbin/.deployed-version`，门户 `/api/version/smartbin`（2026-11-11 接入） |
+| IO · 团队内部站点入口 | `io.wx-seastar.cn` | `#0e7490` | **1.0.0** | `sites.json` 静态记录；无哨兵、无端点，人工维护 |
 
-> 表格此前只列 2 行，实际内网清单是 **3 个系统**（`io` 于 11-09 接入后没回填）。2026-11-10 一并补齐。
+> 表格此前只列 2 行，2026-11-10 补齐为 3 行；2026-11-11 接入 smartbin 后再补第 4 行。
+> 按用户 11-11 确认，`io` 仍是内网清单**最后一位**，smartbin 排在它之前（排序约定的显式例外）。
+> 版本列的两个旧值（1.16.1 / 1.2.1）是 11-11 之前的静态快照，现已改走实时端点，一并校正。
+> `smartbin` 是 Next.js 站，没有自定义 `--color-primary`；登录页主色为 slate-900 `#0f172a`，
+> 实测在门户深色主题下卡片图标几乎不可辨（2026-11-11 截图确认），故 `accent` 取门户内网蓝
+> `#2563eb` —— 属门户侧取值，不是从子站读来的主色，别按「accent 必须等于子站主色」改回去。
 
-这三个系统**需要账号与密码登录、不对公众开放**（未登录访问任一系统都会被拦到 `/login`），因此：
+这四个系统**需要账号与密码登录、不对公众开放**（未登录访问任一系统都会被拦到 `/login`），因此：
 
 - 首页「工具与学习站」只列上面 9 个公开站（`SITES`），内网站只在 `/internal` 这一层列（`INTERNAL_SITES`）；
 - 首屏四条统计的口径限定为**公开站** —— 否则「使用门槛 0 项」会与内网系统的登录门禁自相矛盾；
-- 它们**没有** `.deployed-version` 哨兵，门户也**没有**给它们配 `/api/version/<id>` 端点，
-  所以卡片显示的是 `sites.json` 里的静态版本值，`scripts/check-versions.mjs` 会显式跳过它们
+- `smartbin` / `validation-test` / `psu-model` 三站已有 `.deployed-version` 哨兵与门户
+  `/api/version/<id>` 端点，卡片运行时读实时值；`io` 两者都没有，显示 `sites.json` 静态值。
+  `scripts/check-versions.mjs` 仍显式跳过**全部** internal 站点，不与公开站混在同一套漂移巡检里
   （跳过是为了不制造「未找到哨兵」的假告警，见该脚本注释）。
-  ⚠️ **内网系统发新版后要手动改 `sites.json` 的 `version`** —— 没有自动同步，这是已知缺口。
-- 前两个系统的 `id` 仍等于服务器 web 根目录名（`/var/www/validation-test`、`/var/www/psu-model`），
-  与公开站同一约定；`io` 是挂独立域名的团队门户，不走站群 web 根。
-- 2026-11-07 接入时，validation-test 尚未写哨兵；若日后给这三个内网系统补上哨兵与门户端点，
-  这里可以改回实时读取。
+  ⚠️ **`io` 发新版后要手动改 `sites.json` 的 `version`** —— 没有自动同步，这是已知缺口。
+  ⚠️ 门户 nginx 的端点定义在本仓库 `deploy/nginx-entrance.conf`，但 **CI 只发 `dist`**，
+     新增/修改端点必须手工同步到服务器，否则线上仍是 200 + HTML、前端静默降级到静态值。
+- 前三站的 `id` 等于服务器 web 根目录名（`/var/www/validation-test`、`/var/www/psu-model`、
+  `/var/www/smartbin`），与公开站同一约定；`io` 是挂独立域名的团队门户，不走站群 web 根。
+- 2026-11-07 接入时，validation-test 尚未写哨兵；2026-11-11 起三站已全部接入实时端点。
 
 ## 外贸英语学习站（2026-11-10 接入，第一入口第 9 张卡片 · 序号 09）
 
