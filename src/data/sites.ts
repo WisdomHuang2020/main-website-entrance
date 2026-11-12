@@ -43,7 +43,7 @@ export type SiteIconKey =
   | 'book'
   | 'filetext'
   | 'layout'
-  /** 自定义 SVG（2835 SMD LED 正视 + 阴极倒角，见 components/LedBinIcon.tsx），不是 lucide 图标 */
+  /** 自定义 SVG（2835 SMD LED 正视 + 阴极倒角 + 放大发光面，见 components/LedBinIcon.tsx），不是 lucide 图标 */
   | 'led-bin'
 
 export interface Site {
