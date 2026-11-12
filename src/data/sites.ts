@@ -10,6 +10,9 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import LedBinIcon from '../components/LedBinIcon'
+import SquareWaveIcon from '../components/SquareWaveIcon'
+import DipSwitchIcon from '../components/DipSwitchIcon'
+import RotarySwitchIcon from '../components/RotarySwitchIcon'
 import raw from './sites.json'
 
 /**
@@ -43,8 +46,16 @@ export type SiteIconKey =
   | 'book'
   | 'filetext'
   | 'layout'
-  /** 自定义 SVG（LED 二极管电路符号 + 双发光箭头，见 components/LedBinIcon.tsx），不是 lucide 图标 */
+  /** 以下四个是自定义 SVG，不是 lucide 图标；全部是标准工程/电路图的线框符号，
+   *  与用户 2026-11-12 选定的「smartbin H1 风格」成套。见 components/ 下各文件。 */
+  /** LED 二极管电路符号 + 双发光箭头（smartbin），见 components/LedBinIcon.tsx */
   | 'led-bin'
+  /** 示波方波（validation-test），见 components/SquareWaveIcon.tsx */
+  | 'square-wave'
+  /** DIP 拨码开关（psu-model），见 components/DipSwitchIcon.tsx */
+  | 'dip-switch'
+  /** 多路旋转开关（io），见 components/RotarySwitchIcon.tsx */
+  | 'rotary-switch'
 
 export interface Site {
   /** 同时用作服务器 web 根目录名：/var/www/<id>（巡检脚本依赖此约定） */
@@ -67,8 +78,11 @@ export interface Site {
   accent: string
   icon: SiteIconKey
   /** 图标底板改用实心品牌色 + 白色符号（不设 / false 时是 accent 12% 半透明底 + accent 色符号）。
-   *  2026-11-12 用户要求，目前仅 smartbin 开启；只影响 SiteCard 的图标底板，
-   *  不改 accent 本身，也不影响卡片其它点缀色，其余 12 张卡保持原样。 */
+   *  2026-11-12 用户要求：四张内网卡全部开启，统一「smartbin 风格」，
+   *  各自仍用自己的 accent 作底色（#0070c0 / #0f766e / #2563eb / #0e7490），
+   *  并未统一换成 smartbin 蓝 —— accent 同时被 .site-card 的 hover 点缀消费，
+   *  改它会牵动卡片其它颜色。首页 9 张公开卡仍保持半透明底，这是用户明确接受的取舍。
+   *  只影响 SiteCard 的图标底板，不改 accent 本身。 */
   iconSolid?: boolean
   version: string
   /** 是否为内网系统（需账号登录、不对公众开放）。
@@ -107,6 +121,9 @@ export const ICONS: Record<SiteIconKey, LucideIcon> = {
   filetext: FileText,
   layout: LayoutGrid,
   'led-bin': LedBinIcon,
+  'square-wave': SquareWaveIcon,
+  'dip-switch': DipSwitchIcon,
+  'rotary-switch': RotarySwitchIcon,
 }
 
 /**

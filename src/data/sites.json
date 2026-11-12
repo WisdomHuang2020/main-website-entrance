@@ -156,7 +156,8 @@
       "报告生成"
     ],
     "accent": "#0070c0",
-    "icon": "filetext",
+    "icon": "square-wave",
+    "iconSolid": true,
     "version": "1.23.1",
     "internal": true
   },
@@ -172,7 +173,8 @@
       "规则生成"
     ],
     "accent": "#0f766e",
-    "icon": "calculator",
+    "icon": "dip-switch",
+    "iconSolid": true,
     "version": "1.15.0",
     "internal": true
   },
@@ -206,7 +208,8 @@
       "卡片免密直达"
     ],
     "accent": "#0e7490",
-    "icon": "layout",
+    "icon": "rotary-switch",
+    "iconSolid": true,
     "version": "1.0.0",
     "internal": true
   }
