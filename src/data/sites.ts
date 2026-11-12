@@ -43,7 +43,7 @@ export type SiteIconKey =
   | 'book'
   | 'filetext'
   | 'layout'
-  /** 自定义 SVG（2835 SMD LED 正视 + 阴极倒角 + 等比放大双层线框，见 components/LedBinIcon.tsx），不是 lucide 图标 */
+  /** 自定义 SVG（LED 二极管电路符号 + 双发光箭头，见 components/LedBinIcon.tsx），不是 lucide 图标 */
   | 'led-bin'
 
 export interface Site {
@@ -66,6 +66,10 @@ export interface Site {
   /** 该子站自己的主色，用于卡片点缀，取自各站 src/index.css 的 --color-primary */
   accent: string
   icon: SiteIconKey
+  /** 图标底板改用实心品牌色 + 白色符号（不设 / false 时是 accent 12% 半透明底 + accent 色符号）。
+   *  2026-11-12 用户要求，目前仅 smartbin 开启；只影响 SiteCard 的图标底板，
+   *  不改 accent 本身，也不影响卡片其它点缀色，其余 12 张卡保持原样。 */
+  iconSolid?: boolean
   version: string
   /** 是否为内网系统（需账号登录、不对公众开放）。
    *  2026-11-07 新增：validation-test 与 psu-model 两个团队内部系统接入门户。

@@ -190,6 +190,7 @@
     ],
     "accent": "#2563eb",
     "icon": "led-bin",
+    "iconSolid": true,
     "version": "0.5.0",
     "internal": true
   },

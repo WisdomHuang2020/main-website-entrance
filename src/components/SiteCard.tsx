@@ -47,7 +47,11 @@ export default function SiteCard({
 
       <span
         className="relative inline-flex h-12 w-12 items-center justify-center rounded-xl"
-        style={{ backgroundColor: `${site.accent}1f`, color: site.accent }}
+        style={
+          site.iconSolid
+            ? { backgroundColor: site.accent, color: '#ffffff' }
+            : { backgroundColor: `${site.accent}1f`, color: site.accent }
+        }
       >
         <Icon className="h-6 w-6" strokeWidth={1.7} />
         {/* 未读角标贴在图标右上角：卡片右上角已被大号幽灵序号占用，放那里会叠成一团。
