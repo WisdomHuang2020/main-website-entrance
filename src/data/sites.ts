@@ -57,7 +57,8 @@ export type SiteIconKey =
   | 'dip-switch'
   /** 多路旋转开关（io），见 components/RotarySwitchIcon.tsx */
   | 'rotary-switch'
-  /** 项目台账表格（pm / 项目主数据管理系统），见 components/ProjectLedgerIcon.tsx */
+  /** 项目主数据图标（pm / 项目主数据管理系统）。组件名沿用 project-ledger，
+   *  但当前图形是附件 A「数据库层叠」，见 components/ProjectLedgerIcon.tsx */
   | 'project-ledger'
 
 export interface Site {
@@ -83,11 +84,12 @@ export interface Site {
   /** 图标底板改用实心品牌色 + 白色符号（不设 / false 时是 accent 12% 半透明底 + accent 色符号）。
    *  2026-11-12 用户要求四张内网卡统一「smartbin 风格」，2026-11-18 新增第 5 张时沿用，
    *  现为五张全部开启；各自仍用自己的 accent 作底色
-   *  （#0070c0 / #0f766e / #2563eb / #0e7490 / #0369a1），
+   *  （#0070c0 / #0f766e / #2563eb / #0e7490 / #4338ca），
    *  并未统一换成 smartbin 蓝 —— accent 同时被 .site-card 的 hover 点缀消费，
    *  改它会牵动卡片其它颜色。首页 9 张公开卡仍保持半透明底，这是用户明确接受的取舍。
-   *  ⚠️ pm 站的 #0369a1 不是从子站读来的主色：其原始主色 #0070c0 与 01 评鉴测试卡
-   *  完全相同，用户 2026-11-18 明确要求换邻近蓝以便两张卡一眼可分。
+   *  ⚠️ pm 站的 #4338ca 不是从子站读来的主色：其原始主色 #0070c0 与 01 评鉴测试卡
+   *  完全相同，用户 2026-11-18 先选邻近蓝 #0369a1，同日又改选靛蓝 #4338ca
+   *  （五卡中唯一偏紫、最醒目），以便与 01 一眼可分。
    *  只影响 SiteCard 的图标底板，不改 accent 本身。 */
   iconSolid?: boolean
   version: string
