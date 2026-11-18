@@ -58,11 +58,11 @@ export default function InternalPage({ liveVersions }: { liveVersions: Record<st
         未登录时打开任一系统，都会被拦到登录页。
       </p>
 
-      {/* 内网系统 2026-11-11 起为 4 条 → 桌面 2 列 × 2 行，移动端 1 列。
-          3 条时期曾用自定义 .internal-sites-grid 在 ≥960px 强制 3 列收成一排；
-          数量变 4 后 3 列会留下孤零零的第 4 张，而 4 列在 960px 下每卡不足 240px
-          （原注释实测 820px 三列时标题已断成「…入口 / 口」两行），故改为 2×2。
-          排布沿革与断点实测记录见 src/index.css 末尾。 */}
+      {/* 内网系统 2026-11-11 起为 4 条 → 桌面 2 列 × 2 行，移动端 1 列；
+          2026-11-18 增至 5 条，保持 sm:grid-cols-2 → 桌面 2 列 × 3 行（末行 1 张），
+          移动端仍 1 列。未改 3 列的原因：既有实测注释记录 820px 三列时标题已断成
+          「…入口 / 口」两行，且 3 列 × 5 条仍会在末行留 1 个空格，不解决孤卡问题，
+          反而牺牲卡片宽度。排列沿革见 src/index.css 末尾。 */}
       <div className="mt-12 grid gap-6 sm:grid-cols-2">
         {INTERNAL_SITES.map((site, i) => {
           const liveVer = liveVersions[site.id]

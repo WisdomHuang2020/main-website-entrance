@@ -13,6 +13,7 @@ import LedBinIcon from '../components/LedBinIcon'
 import SquareWaveIcon from '../components/SquareWaveIcon'
 import DipSwitchIcon from '../components/DipSwitchIcon'
 import RotarySwitchIcon from '../components/RotarySwitchIcon'
+import ProjectLedgerIcon from '../components/ProjectLedgerIcon'
 import raw from './sites.json'
 
 /**
@@ -56,6 +57,8 @@ export type SiteIconKey =
   | 'dip-switch'
   /** 多路旋转开关（io），见 components/RotarySwitchIcon.tsx */
   | 'rotary-switch'
+  /** 项目台账表格（pm / 项目主数据管理系统），见 components/ProjectLedgerIcon.tsx */
+  | 'project-ledger'
 
 export interface Site {
   /** 同时用作服务器 web 根目录名：/var/www/<id>（巡检脚本依赖此约定） */
@@ -78,10 +81,13 @@ export interface Site {
   accent: string
   icon: SiteIconKey
   /** 图标底板改用实心品牌色 + 白色符号（不设 / false 时是 accent 12% 半透明底 + accent 色符号）。
-   *  2026-11-12 用户要求：四张内网卡全部开启，统一「smartbin 风格」，
-   *  各自仍用自己的 accent 作底色（#0070c0 / #0f766e / #2563eb / #0e7490），
+   *  2026-11-12 用户要求四张内网卡统一「smartbin 风格」，2026-11-18 新增第 5 张时沿用，
+   *  现为五张全部开启；各自仍用自己的 accent 作底色
+   *  （#0070c0 / #0f766e / #2563eb / #0e7490 / #0369a1），
    *  并未统一换成 smartbin 蓝 —— accent 同时被 .site-card 的 hover 点缀消费，
    *  改它会牵动卡片其它颜色。首页 9 张公开卡仍保持半透明底，这是用户明确接受的取舍。
+   *  ⚠️ pm 站的 #0369a1 不是从子站读来的主色：其原始主色 #0070c0 与 01 评鉴测试卡
+   *  完全相同，用户 2026-11-18 明确要求换邻近蓝以便两张卡一眼可分。
    *  只影响 SiteCard 的图标底板，不改 accent 本身。 */
   iconSolid?: boolean
   version: string
@@ -99,6 +105,9 @@ export interface Site {
    *    ⚠️ 2026-11-11 用户再次确认：新增第 4 个内网站时**仍保留 io 压轴**，
    *    所以 smartbin 插在 io **之前**，而不是按「新站追加末尾」排到 io 之后。
    *    这是 README 那条通用排序约定的显式例外，别按上线时间把它复原回末尾。
+   *    2026-11-18 新增第 5 站（pm / 项目主数据管理系统）时用户再次选「保留 io 压轴」：
+   *    pm 插在 io 之前成为第 04 张，io 顺延为第 05 张并继续压轴。
+   *    ⚠️ 两次都是显式插队，不要按上线时间把 pm 挪到 io 之后。
    *    它跑在阿里云 47.82.x 那台，与本站群不同机、无 `.deployed-version` 哨兵，
    *    version 只能人工维护（当前 1.0.0），改版时需手动同步这个数字。
    *  2026-11-11 追加：smartbin（smartbin.power-knowledge.tech，LED 光色电平衡配比系统）。
@@ -107,7 +116,13 @@ export interface Site {
    *    门户 nginx 已配 /api/version/smartbin 实时端点（CI 只发 dist，nginx 须手工同步）。
    *    ⚠️ 1.8.10 起 InternalPage 才真正消费 liveVersions；此前内网页只读静态值，
    *    端点配了也不生效（2026-11-11 线上实测确认）。
-   *    裸域是主域（www 301 → 裸域），故 domain 与 url 都写裸名，不要反过来加 www。 */
+   *    裸域是主域（www 301 → 裸域），故 domain 与 url 都写裸名，不要反过来加 www。
+   *  2026-11-18 追加：pm（www.pm.wx-seastar.cn，项目主数据管理系统，Next.js 站）。
+   *    实测 `/` 307 → `/login` 有登录门禁，裸域 301 → www，故 domain 写裸名、
+   *    url 保留 www 以免每次点击多跳（与 io / control-mode / motor-lighting 同构）。
+   *    /api/health 返回 { ok, version, at }，线上实测 0.3.6；本地 pm 仓库当时是 0.4.1
+   *    （领先线上），按「version 权威取线上」的口径填 0.3.6，别改成仓库里的值。
+   *    io 同构：门户没有 /api/version/pm 端点，静态值人工维护，发新版后须手改。 */
   internal?: boolean
 }
 
@@ -124,6 +139,7 @@ export const ICONS: Record<SiteIconKey, LucideIcon> = {
   'square-wave': SquareWaveIcon,
   'dip-switch': DipSwitchIcon,
   'rotary-switch': RotarySwitchIcon,
+  'project-ledger': ProjectLedgerIcon,
 }
 
 /**
