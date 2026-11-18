@@ -127,12 +127,14 @@ export interface Site {
    *    「domain 是显示文字、url 是实际跳转」的既有约定：domain 写裸名、
    *    url 保留 www。代价是用户把显示文字复制到浏览器（默认 https）会打不开 ——
    *    点击卡片不受影响。要彻底消除这个代价，须给服务器补裸域证书。
-   *    /api/health 实测 0.4.1（同日旧域名也报 0.4.1，与本地 pm 仓库一致），
-   *    按「version 权威取线上」填 0.4.1。
+   *    /api/health 实测 0.4.4（2026-11-18 20:17；同日旧域名也同步升级），
+   *    静态值随线上同步，仅作 Pages 兜底与端点故障时的回退。
+   *    2026-11-18 20:2x 已补门户实时端点：entrance nginx 的
+   *    `= /api/version/pm` → `127.0.0.1:3300/api/health`（pm.service 的 PORT=3300），
+   *    与 smartbin 同构，前端 useLiveVersions 零改动。**不要写成 3000** ——
+   *    那是同机另一个应用，health 报 1.0.0，接错会把假版本送上卡片。
    *    ⚠️ 早期注释写的「pm 跑在香港机」已过时：新域名解析到 43.142.148.37，
-   *    该机确有 /var/www/pm 与 pm.service；但 127.0.0.1:3000 的 health 报 1.0.0，
-   *    与公网 0.4.1 不一致，未能确认公网真正的上游 ⇒ 暂不接 /api/version/pm
-   *    实时端点，静态值人工维护，发新版后须手改。 */
+   *    该机有 /var/www/pm 与 pm.service。 */
   internal?: boolean
 }
 

@@ -55,7 +55,7 @@
 | 评鉴测试报告系统 | `validation.power-knowledge.tech` | `#0070c0` | **1.23.1** | 服务器 `.deployed-version`，门户 `/api/version/validation-test` 实时读取（2026-11-11 实测） |
 | 电源型号编码生成器 | `psu-model.power-knowledge.tech` | `#0f766e` | **1.15.0** | 服务器 `.deployed-version`，门户 `/api/version/psu-model` 实时读取（2026-11-11 实测） |
 | LED光色电平衡配比系统 | `smartbin.power-knowledge.tech` | `#2563eb` | **0.5.0** | 子站运行时 `/api/health`，门户 `/api/version/smartbin` 同源代理后实时读取（2026-11-11 19:10 实测）；静态快照同步为 0.5.0 供 Pages 兜底 |
-| 项目主数据管理系统 | `pm.power-knowledge.tech` | `#4338ca` | **0.4.1** | 子站 `/api/health` 实测值，门户无端点，`sites.json` 静态人工维护（2026-11-18 域名迁至 power-knowledge.tech） |
+| 项目主数据管理系统 | `pm.power-knowledge.tech` | `#4338ca` | **0.4.4** | 子站运行时 `/api/health`（pm.service，PORT=3300），门户 `/api/version/pm` 同源代理后实时读取（2026-11-18 20:17 补） |
 | IO · 团队内部站点入口 | `io.wx-seastar.cn` | `#0e7490` | **1.0.0** | `sites.json` 静态记录；无哨兵、无端点，人工维护 |
 
 > 表格此前只列 2 行，2026-11-10 补齐为 3 行；2026-11-11 接入 smartbin 补第 4 行，
@@ -87,13 +87,13 @@
 
 - 首页「工具与学习站」只列上面 9 个公开站（`SITES`），内网站只在 `/internal` 这一层列（`INTERNAL_SITES`）；
 - 首屏四条统计的口径限定为**公开站** —— 否则「使用门槛 0 项」会与内网系统的登录门禁自相矛盾；
-- `validation-test` / `psu-model` 走 `.deployed-version` 哨兵、`smartbin` 走运行时
-  健康接口，三站都有门户 `/api/version/<id>` 端点，卡片运行时读实时值；
-  `io` 与 `pm` 没有端点，显示 `sites.json` 静态值。
-  ⚠️ `pm` 的子站自身有 `/api/health`（返回 `{ ok, version, at }`，2026-11-18 实测
-  `0.3.6`），但它在香港机、门户所在机没有回环可达的服务；为该数字新建跨机拉取链路
-  不划算，暂按 `io` 同构静态人工维护。要改成实时同步时，可在门户 nginx 加
-  `/api/version/pm` 同源端点（前端 `useLiveVersions` 已兼容该 JSON 契约）。
+- `validation-test` / `psu-model` 走 `.deployed-version` 哨兵，`smartbin` 与 `pm`
+  走运行时健康接口，四站都有门户 `/api/version/<id>` 端点，卡片运行时读实时值；
+  只剩 `io` 没有端点，显示 `sites.json` 静态值。
+  ⚠️ `pm` 的端点（2026-11-18 20:17 补）代理到 `127.0.0.1:3300/api/health`，
+  与 `smartbin` 同构。**不要写成 3000**：同机 3000 是另一个应用，health 报
+  `1.0.0`，接错会把假版本送上卡片。补端点前线上已到 0.4.4 而卡片停在 0.4.1，
+  是用户实测指出「版本没有跟随」后修掉的。
   ⚠️ **smartbin 是端点契约的例外**（2026-11-11 19:10 起）：它的 `deploy/push.sh`
     不写哨兵、`deploy/audit-version-sync.py` 也不检查哨兵，当日 19:02 发到 0.5.0 后
     哨兵仍停在 17:06 手工写的 0.3.1，门户便一直显示旧号。改为 nginx `proxy_pass`
@@ -106,15 +106,16 @@
      把 `liveVersions` 传入 InternalPage。别再把这行改回静态值。
   `scripts/check-versions.mjs` 仍显式跳过**全部** internal 站点，不与公开站混在同一套漂移巡检里
   （跳过是为了不制造「未找到哨兵」的假告警，见该脚本注释）。
-  ⚠️ **`io` / `pm` 发新版后要手动改 `sites.json` 的 `version`** —— 没有自动同步，这是已知缺口。
+  ⚠️ **`io` 发新版后要手动改 `sites.json` 的 `version`** —— 没有自动同步，这是已知缺口；
+  `pm` 自 2026-11-18 起已接实时端点，不再需要手工同步（静态值仅作兜底）。
   ⚠️ 门户 nginx 的端点定义在本仓库 `deploy/nginx-entrance.conf`，但 **CI 只发 `dist`**，
      新增/修改端点必须手工同步到服务器，否则线上仍是 200 + HTML、前端静默降级到静态值。
 - 前三站的 `id` 等于服务器 web 根目录名（`/var/www/validation-test`、`/var/www/psu-model`、
   `/var/www/smartbin`），与公开站同一约定；`io` 与 `pm` 是挂独立域名的团队系统，
   不走站群 web 根。
   ⚠️ pm 已不在香港机：2026-11-18 新域名 `www.pm.power-knowledge.tech` 解析到
-  43.142.148.37，该机有 `/var/www/pm` 与 `pm.service`。但本机 `127.0.0.1:3000`
-  的 health 报 `1.0.0`、公网报 `0.4.1`，未能确认公网上游，故仍未接实时端点。
+  43.142.148.37，该机有 `/var/www/pm` 与 `pm.service`（Next.js，`PORT=3300`，
+  勿与同机 3000 端口的另一应用混淆）。门户已接 `/api/version/pm` 实时端点。
   ⚠️ pm 的裸域 `pm.power-knowledge.tech` **没有 443 证书**（SNI `unrecognized name`，
   仅 80 端口 301 到 www）。2026-11-18 用户仍要求卡片显示去掉 www，故按
   「`domain` 是显示文字、`url` 是实际跳转」的既有约定：`domain` 写裸名、
