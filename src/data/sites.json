@@ -200,7 +200,7 @@
     "id": "pm",
     "name": "项目主数据管理系统",
     "subtitle": "Project Master Data · 项目台账",
-    "domain": "www.pm.power-knowledge.tech",
+    "domain": "pm.power-knowledge.tech",
     "url": "https://www.pm.power-knowledge.tech/",
     "desc": "统一建立项目编号、正式名称、别名、机种系列与代表示意图的项目主数据台账。需账号登录，仅团队内部使用。",
     "tags": [

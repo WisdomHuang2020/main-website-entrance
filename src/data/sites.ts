@@ -123,8 +123,10 @@ export interface Site {
    *    当日用户要求域名由 www.pm.wx-seastar.cn 换成 www.pm.power-knowledge.tech。
    *    实测 `/` 307 → `/login` 有登录门禁；**裸域 pm.power-knowledge.tech 只在 80 端口
    *    301 到 www，443 没有该名字的证书（SNI 报 unrecognized name）**，https 直连裸域
-   *    会握手失败 ⇒ domain 必须显示带 www 的全名，这是「卡片统一裸名」约定的例外，
-   *    可访问性优先；url 同样用 www。
+   *    会握手失败。用户 2026-11-18 仍明确要求卡片显示去掉 www，故按
+   *    「domain 是显示文字、url 是实际跳转」的既有约定：domain 写裸名、
+   *    url 保留 www。代价是用户把显示文字复制到浏览器（默认 https）会打不开 ——
+   *    点击卡片不受影响。要彻底消除这个代价，须给服务器补裸域证书。
    *    /api/health 实测 0.4.1（同日旧域名也报 0.4.1，与本地 pm 仓库一致），
    *    按「version 权威取线上」填 0.4.1。
    *    ⚠️ 早期注释写的「pm 跑在香港机」已过时：新域名解析到 43.142.148.37，
