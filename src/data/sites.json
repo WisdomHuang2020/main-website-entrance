@@ -200,8 +200,8 @@
     "id": "pm",
     "name": "项目主数据管理系统",
     "subtitle": "Project Master Data · 项目台账",
-    "domain": "pm.wx-seastar.cn",
-    "url": "https://www.pm.wx-seastar.cn/",
+    "domain": "www.pm.power-knowledge.tech",
+    "url": "https://www.pm.power-knowledge.tech/",
     "desc": "统一建立项目编号、正式名称、别名、机种系列与代表示意图的项目主数据台账。需账号登录，仅团队内部使用。",
     "tags": [
       "项目编号",
@@ -211,7 +211,7 @@
     "accent": "#4338ca",
     "icon": "project-ledger",
     "iconSolid": true,
-    "version": "0.3.6",
+    "version": "0.4.1",
     "internal": true
   },
   {

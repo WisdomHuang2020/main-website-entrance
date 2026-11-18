@@ -55,7 +55,7 @@
 | 评鉴测试报告系统 | `validation.power-knowledge.tech` | `#0070c0` | **1.23.1** | 服务器 `.deployed-version`，门户 `/api/version/validation-test` 实时读取（2026-11-11 实测） |
 | 电源型号编码生成器 | `psu-model.power-knowledge.tech` | `#0f766e` | **1.15.0** | 服务器 `.deployed-version`，门户 `/api/version/psu-model` 实时读取（2026-11-11 实测） |
 | LED光色电平衡配比系统 | `smartbin.power-knowledge.tech` | `#2563eb` | **0.5.0** | 子站运行时 `/api/health`，门户 `/api/version/smartbin` 同源代理后实时读取（2026-11-11 19:10 实测）；静态快照同步为 0.5.0 供 Pages 兜底 |
-| 项目主数据管理系统 | `pm.wx-seastar.cn` | `#4338ca` | **0.3.6** | 子站 `/api/health` 实测值，门户无端点，`sites.json` 静态人工维护（2026-11-18 接入） |
+| 项目主数据管理系统 | `www.pm.power-knowledge.tech` | `#4338ca` | **0.4.1** | 子站 `/api/health` 实测值，门户无端点，`sites.json` 静态人工维护（2026-11-18 域名迁至 power-knowledge.tech） |
 | IO · 团队内部站点入口 | `io.wx-seastar.cn` | `#0e7490` | **1.0.0** | `sites.json` 静态记录；无哨兵、无端点，人工维护 |
 
 > 表格此前只列 2 行，2026-11-10 补齐为 3 行；2026-11-11 接入 smartbin 补第 4 行，
@@ -111,7 +111,13 @@
      新增/修改端点必须手工同步到服务器，否则线上仍是 200 + HTML、前端静默降级到静态值。
 - 前三站的 `id` 等于服务器 web 根目录名（`/var/www/validation-test`、`/var/www/psu-model`、
   `/var/www/smartbin`），与公开站同一约定；`io` 与 `pm` 是挂独立域名的团队系统，
-  不走站群 web 根（`pm` 跑在香港机，见上）。
+  不走站群 web 根。
+  ⚠️ pm 已不在香港机：2026-11-18 新域名 `www.pm.power-knowledge.tech` 解析到
+  43.142.148.37，该机有 `/var/www/pm` 与 `pm.service`。但本机 `127.0.0.1:3000`
+  的 health 报 `1.0.0`、公网报 `0.4.1`，未能确认公网上游，故仍未接实时端点。
+  ⚠️ pm 的裸域 `pm.power-knowledge.tech` **没有 443 证书**（SNI `unrecognized name`，
+  仅 80 端口 301 到 www），所以卡片 `domain` 破例显示带 www 的全名，
+  别按「统一裸名」把它改回裸域 —— 那样用户复制到浏览器会打不开。
 - 2026-11-07 接入时，validation-test 尚未写哨兵；2026-11-11 起三站已全部接入实时端点
   （其中 smartbin 走运行时健康接口，不依赖哨兵文件）。
 

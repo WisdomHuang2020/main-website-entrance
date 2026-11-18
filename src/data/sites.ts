@@ -119,12 +119,18 @@ export interface Site {
    *    ⚠️ 1.8.10 起 InternalPage 才真正消费 liveVersions；此前内网页只读静态值，
    *    端点配了也不生效（2026-11-11 线上实测确认）。
    *    裸域是主域（www 301 → 裸域），故 domain 与 url 都写裸名，不要反过来加 www。
-   *  2026-11-18 追加：pm（www.pm.wx-seastar.cn，项目主数据管理系统，Next.js 站）。
-   *    实测 `/` 307 → `/login` 有登录门禁，裸域 301 → www，故 domain 写裸名、
-   *    url 保留 www 以免每次点击多跳（与 io / control-mode / motor-lighting 同构）。
-   *    /api/health 返回 { ok, version, at }，线上实测 0.3.6；本地 pm 仓库当时是 0.4.1
-   *    （领先线上），按「version 权威取线上」的口径填 0.3.6，别改成仓库里的值。
-   *    io 同构：门户没有 /api/version/pm 端点，静态值人工维护，发新版后须手改。 */
+   *  2026-11-18 追加：pm（项目主数据管理系统，Next.js 站）。
+   *    当日用户要求域名由 www.pm.wx-seastar.cn 换成 www.pm.power-knowledge.tech。
+   *    实测 `/` 307 → `/login` 有登录门禁；**裸域 pm.power-knowledge.tech 只在 80 端口
+   *    301 到 www，443 没有该名字的证书（SNI 报 unrecognized name）**，https 直连裸域
+   *    会握手失败 ⇒ domain 必须显示带 www 的全名，这是「卡片统一裸名」约定的例外，
+   *    可访问性优先；url 同样用 www。
+   *    /api/health 实测 0.4.1（同日旧域名也报 0.4.1，与本地 pm 仓库一致），
+   *    按「version 权威取线上」填 0.4.1。
+   *    ⚠️ 早期注释写的「pm 跑在香港机」已过时：新域名解析到 43.142.148.37，
+   *    该机确有 /var/www/pm 与 pm.service；但 127.0.0.1:3000 的 health 报 1.0.0，
+   *    与公网 0.4.1 不一致，未能确认公网真正的上游 ⇒ 暂不接 /api/version/pm
+   *    实时端点，静态值人工维护，发新版后须手改。 */
   internal?: boolean
 }
 
