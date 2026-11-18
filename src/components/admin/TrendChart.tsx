@@ -1,3 +1,4 @@
+import { useState, type MouseEvent } from 'react'
 import type { DayPoint } from '../../lib/adminApi'
 
 /**
@@ -25,6 +26,7 @@ function niceMax(v: number): number {
 }
 
 export default function TrendChart({ points }: { points: DayPoint[] }) {
+  const [hover, setHover] = useState<number | null>(null)
   if (!points.length) return null
 
   const max = niceMax(Math.max(...points.map((p) => Math.max(p.pv, p.uv)), 1))
@@ -34,6 +36,30 @@ export default function TrendChart({ points }: { points: DayPoint[] }) {
   const x = (i: number) =>
     PAD.left + (points.length === 1 ? innerW / 2 : (i / (points.length - 1)) * innerW)
   const y = (v: number) => PAD.top + innerH - (v / max) * innerH
+
+  // 鼠标在图上移动：按水平位置吸附到最近的数据点，悬停显示当天 PV / UV
+  const onMove = (e: MouseEvent<SVGSVGElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const sx = ((e.clientX - rect.left) / rect.width) * W
+    let best = 0
+    let bestD = Infinity
+    points.forEach((_, i) => {
+      const d = Math.abs(x(i) - sx)
+      if (d < bestD) {
+        bestD = d
+        best = i
+      }
+    })
+    setHover(best)
+  }
+
+  // 悬停卡片几何：靠右侧时向左翻，避免超出 viewBox；顶部固定放置
+  const hp = hover !== null ? points[hover] : null
+  const hx = hover !== null ? x(hover) : 0
+  const CARD_W = 118
+  const CARD_H = 56
+  const cardX = hx > W - PAD.right - CARD_W - 16 ? hx - CARD_W - 12 : hx + 12
+  const cardY = PAD.top + 4
 
   const line = (pick: (p: DayPoint) => number) =>
     points.map((p, i) => `${i === 0 ? 'M' : 'L'}${x(i).toFixed(1)},${y(pick(p)).toFixed(1)}`).join(' ')
@@ -58,7 +84,14 @@ export default function TrendChart({ points }: { points: DayPoint[] }) {
   })
 
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full" role="img" aria-label="访问趋势">
+    <svg
+      viewBox={`0 0 ${W} ${H}`}
+      className="h-auto w-full cursor-crosshair"
+      role="img"
+      aria-label="访问趋势"
+      onMouseMove={onMove}
+      onMouseLeave={() => setHover(null)}
+    >
       {/* 网格与 y 轴刻度 */}
       {ticks.map((t) => (
         <g key={t}>
@@ -102,17 +135,48 @@ export default function TrendChart({ points }: { points: DayPoint[] }) {
         strokeLinecap="round"
       />
 
-      {/* 数据点 */}
+      {/* 数据点：被悬停的点放大，数值由自定义卡片展示（不用原生 title，避免延迟重复弹出） */}
       {points.map((p, i) => (
         <g key={p.day}>
-          <circle cx={x(i)} cy={y(p.pv)} r={2.6} className="fill-brand-light">
-            <title>{`${p.day}  PV ${p.pv}`}</title>
-          </circle>
-          <circle cx={x(i)} cy={y(p.uv)} r={2.2} className="fill-accent">
-            <title>{`${p.day}  UV ${p.uv}`}</title>
-          </circle>
+          <circle cx={x(i)} cy={y(p.pv)} r={i === hover ? 4 : 2.6} className="fill-brand-light" />
+          <circle cx={x(i)} cy={y(p.uv)} r={i === hover ? 3.4 : 2.2} className="fill-accent" />
         </g>
       ))}
+
+      {/* 悬停提示：竖参考线 + 当天 PV / UV 数值卡片 */}
+      {hp && (
+        <g pointerEvents="none">
+          <line
+            x1={hx}
+            x2={hx}
+            y1={PAD.top}
+            y2={H - PAD.bottom}
+            className="stroke-border"
+            strokeWidth={1}
+            strokeDasharray="3 3"
+          />
+          <rect
+            x={cardX}
+            y={cardY}
+            width={CARD_W}
+            height={CARD_H}
+            rx={6}
+            className="fill-surface-elevated stroke-border"
+            strokeWidth={1}
+          />
+          <text x={cardX + 10} y={cardY + 17} className="fill-text-muted font-mono" fontSize={10}>
+            {hp.day}
+          </text>
+          <circle cx={cardX + 15} cy={cardY + 31} r={2.5} className="fill-brand-light" />
+          <text x={cardX + 23} y={cardY + 35} className="fill-brand-light font-mono" fontSize={11}>
+            PV {hp.pv.toLocaleString()}
+          </text>
+          <circle cx={cardX + 15} cy={cardY + 45} r={2.5} className="fill-accent" />
+          <text x={cardX + 23} y={cardY + 49} className="fill-accent font-mono" fontSize={11}>
+            UV {hp.uv.toLocaleString()}
+          </text>
+        </g>
+      )}
 
       {/* x 轴日期：首尾改用 start / end 对齐 —— 末点落在 x = W - PAD.right，
           若仍 textAnchor="middle"，右半截会超出 viewBox 被裁掉（屏幕上就是「11-1」缺一截）。 */}
