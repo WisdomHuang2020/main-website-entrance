@@ -60,8 +60,9 @@ export default function InternalPage({ liveVersions }: { liveVersions: Record<st
 
       {/* 内网系统 2026-11-11 起为 4 条 → 桌面 2 列 × 2 行，移动端 1 列；
           2026-11-18 增至 5 条，保持 sm:grid-cols-2 → 桌面 2 列 × 3 行（末行 1 张），
-          移动端仍 1 列。未改 3 列的原因：既有实测注释记录 820px 三列时标题已断成
-          「…入口 / 口」两行，且 3 列 × 5 条仍会在末行留 1 个空格，不解决孤卡问题，
+          2026-11-19 增至 6 条（wh 插在 pm 与 io 之间），2 列 × 3 行正好排满，
+          不再有孤卡；移动端仍 1 列。未改 3 列的原因：既有实测注释记录 820px
+          三列时标题已断成「…入口 / 口」两行，且 3 列 × 6 条同样排满、并无收益，
           反而牺牲卡片宽度。排列沿革见 src/index.css 末尾。 */}
       <div className="mt-12 grid gap-6 sm:grid-cols-2">
         {INTERNAL_SITES.map((site, i) => {

@@ -215,6 +215,24 @@
     "internal": true
   },
   {
+    "id": "wh",
+    "name": "研发工时统计分析",
+    "subtitle": "Work Hours Analytics · 研发工时多维统计",
+    "domain": "wh.power-knowledge.tech",
+    "url": "https://www.wh.power-knowledge.tech/",
+    "desc": "把研发工时填报按总览、组别、项目、人员四个视图汇总与对比：总工时与周趋势、组别分布、项目投入、人员明细，图表随主题重绘。需账号登录，仅团队内部使用。",
+    "tags": [
+      "工时总览",
+      "组别分析",
+      "人员明细"
+    ],
+    "accent": "#b45309",
+    "icon": "work-hours",
+    "iconSolid": true,
+    "version": "0.1.0",
+    "internal": true
+  },
+  {
     "id": "io",
     "name": "IO · 团队内部站点入口",
     "subtitle": "Team Portal · One Login, All Internal Sites",

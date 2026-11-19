@@ -14,6 +14,7 @@ import SquareWaveIcon from '../components/SquareWaveIcon'
 import DipSwitchIcon from '../components/DipSwitchIcon'
 import RotarySwitchIcon from '../components/RotarySwitchIcon'
 import ProjectLedgerIcon from '../components/ProjectLedgerIcon'
+import WorkHoursIcon from '../components/WorkHoursIcon'
 import raw from './sites.json'
 
 /**
@@ -60,6 +61,8 @@ export type SiteIconKey =
   /** 项目主数据图标（pm / 项目主数据管理系统）。组件名沿用 project-ledger，
    *  但当前图形是附件 A「数据库层叠」，见 components/ProjectLedgerIcon.tsx */
   | 'project-ledger'
+  /** 秒表（wh / 研发工时统计分析），见 components/WorkHoursIcon.tsx */
+  | 'work-hours'
 
 export interface Site {
   /** 同时用作服务器 web 根目录名：/var/www/<id>（巡检脚本依赖此约定） */
@@ -82,14 +85,16 @@ export interface Site {
   accent: string
   icon: SiteIconKey
   /** 图标底板改用实心品牌色 + 白色符号（不设 / false 时是 accent 12% 半透明底 + accent 色符号）。
-   *  2026-11-12 用户要求四张内网卡统一「smartbin 风格」，2026-11-18 新增第 5 张时沿用，
-   *  现为五张全部开启；各自仍用自己的 accent 作底色
-   *  （#0070c0 / #0f766e / #2563eb / #0e7490 / #4338ca），
+   *  2026-11-12 用户要求四张内网卡统一「smartbin 风格」，2026-11-18 新增第 5 张、
+   *  2026-11-19 新增第 6 张（wh）时沿用，现为六张全部开启；各自仍用自己的 accent 作底色
+   *  （#0070c0 / #0f766e / #2563eb / #4338ca / #b45309 / #0e7490），
    *  并未统一换成 smartbin 蓝 —— accent 同时被 .site-card 的 hover 点缀消费，
    *  改它会牵动卡片其它颜色。首页 9 张公开卡仍保持半透明底，这是用户明确接受的取舍。
    *  ⚠️ pm 站的 #4338ca 不是从子站读来的主色：其原始主色 #0070c0 与 01 评鉴测试卡
    *  完全相同，用户 2026-11-18 先选邻近蓝 #0369a1，同日又改选靛蓝 #4338ca
-   *  （五卡中唯一偏紫、最醒目），以便与 01 一眼可分。
+   *  （六卡中唯一偏紫、最醒目），以便与 01 一眼可分。
+   *  ⚠️ wh 站的 #b45309 同理：其主色 #0f766e 与 02 完全相同，取自己的次色
+   *  #f59e0b 压深一档成琥珀，六卡中唯一暖色。
    *  只影响 SiteCard 的图标底板，不改 accent 本身。 */
   iconSolid?: boolean
   version: string
@@ -134,7 +139,22 @@ export interface Site {
    *    与 smartbin 同构，前端 useLiveVersions 零改动。**不要写成 3000** ——
    *    那是同机另一个应用，health 报 1.0.0，接错会把假版本送上卡片。
    *    ⚠️ 早期注释写的「pm 跑在香港机」已过时：新域名解析到 43.142.148.37，
-   *    该机有 /var/www/pm 与 pm.service。 */
+   *    该机有 /var/www/pm 与 pm.service。
+   *  2026-11-19 追加：wh（研发工时统计分析，`www.wh.power-knowledge.tech`）。
+   *    用户指定「位置 05」，故插在 pm 之后、io 之前；io 顺延为第 06 张并继续压轴。
+   *    id 取域名前缀 `wh`，**不等于**服务器目录名 /var/www/work-hours
+   *    （systemd 服务也叫 work-hours，监听 127.0.0.1:3400）—— 内网站豁免
+   *    /var/www/<id> 约定，巡检脚本不会去找 /var/www/wh。
+   *    裸域 wh.power-knowledge.tech 只在 80 端口 301 到 www，443 没有该名字的证书
+   *    （与 pm 同构），故 domain 写裸名、url 保留 www，卡片点击不多跳。
+   *    版本 0.1.0 取 package.json / CHANGELOG（2026-11-19 首版）。该站没有
+   *    `.deployed-version` 哨兵，运行时 /api/health 的 version 当前返回 "dev"
+   *    （构建时未注入 NEXT_PUBLIC_APP_VERSION）—— 因此**不配** /api/version/wh
+   *    端点：`dev` 过不了 useLiveVersions 的三段式正则，配了也只会静默退回静态值。
+   *    发新版须手工同步这里的 version（与 io 同一缺口）。
+   *    accent #b45309（琥珀）是门户侧取值：该站主色 #0f766e 与 psu-model 完全相同，
+   *    取它自己的 --color-accent #f59e0b 压深一档，是六张里唯一暖色，
+   *    与其余五张冷色一眼可分。别按「accent 必须等于子站主色」改回去。 */
   internal?: boolean
 }
 
@@ -152,6 +172,7 @@ export const ICONS: Record<SiteIconKey, LucideIcon> = {
   'dip-switch': DipSwitchIcon,
   'rotary-switch': RotarySwitchIcon,
   'project-ledger': ProjectLedgerIcon,
+  'work-hours': WorkHoursIcon,
 }
 
 /**
