@@ -145,20 +145,21 @@
     "version": "1.1.6"
   },
   {
-    "id": "validation-test",
-    "name": "评鉴测试报告系统",
-    "subtitle": "LED 灯具评鉴测试报告填报与生成",
-    "domain": "validation.power-knowledge.tech",
-    "url": "https://validation.power-knowledge.tech/",
-    "desc": "按站内测试标准填报 LED 灯具的评鉴测试数据并生成报告。需账号登录，仅团队内部使用。",
+    "id": "pm",
+    "name": "项目主数据管理系统",
+    "subtitle": "Project Master Data · 项目台账",
+    "domain": "pm.power-knowledge.tech",
+    "url": "https://www.pm.power-knowledge.tech/",
+    "desc": "统一建立项目编号、正式名称、别名、机种系列与代表示意图的项目主数据台账。需账号登录，仅团队内部使用。",
     "tags": [
-      "评鉴测试",
-      "报告生成"
+      "项目编号",
+      "机种系列",
+      "主数据台账"
     ],
-    "accent": "#0070c0",
-    "icon": "square-wave",
+    "accent": "#4338ca",
+    "icon": "project-ledger",
     "iconSolid": true,
-    "version": "1.23.1",
+    "version": "0.4.4",
     "internal": true
   },
   {
@@ -197,21 +198,20 @@
     "internal": true
   },
   {
-    "id": "pm",
-    "name": "项目主数据管理系统",
-    "subtitle": "Project Master Data · 项目台账",
-    "domain": "pm.power-knowledge.tech",
-    "url": "https://www.pm.power-knowledge.tech/",
-    "desc": "统一建立项目编号、正式名称、别名、机种系列与代表示意图的项目主数据台账。需账号登录，仅团队内部使用。",
+    "id": "validation-test",
+    "name": "评鉴测试报告系统",
+    "subtitle": "LED 灯具评鉴测试报告填报与生成",
+    "domain": "validation.power-knowledge.tech",
+    "url": "https://validation.power-knowledge.tech/",
+    "desc": "按站内测试标准填报 LED 灯具的评鉴测试数据并生成报告。需账号登录，仅团队内部使用。",
     "tags": [
-      "项目编号",
-      "机种系列",
-      "主数据台账"
+      "评鉴测试",
+      "报告生成"
     ],
-    "accent": "#4338ca",
-    "icon": "project-ledger",
+    "accent": "#0070c0",
+    "icon": "square-wave",
     "iconSolid": true,
-    "version": "0.4.4",
+    "version": "1.23.1",
     "internal": true
   },
   {
