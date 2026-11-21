@@ -233,6 +233,24 @@
     "internal": true
   },
   {
+    "id": "connect",
+    "name": "1-Wire 单总线",
+    "subtitle": "1-Wire Bus · Devices & Protocol",
+    "domain": "connect.power-knowledge.tech",
+    "url": "https://connect.power-knowledge.tech/",
+    "desc": "1-Wire 单总线技术资料与器件说明。需账号登录，仅团队内部使用。",
+    "tags": [
+      "单总线",
+      "器件挂载",
+      "1-Wire"
+    ],
+    "accent": "#0d9488",
+    "icon": "connect-bus",
+    "iconSolid": true,
+    "version": "1.0.3",
+    "internal": true
+  },
+  {
     "id": "io",
     "name": "IO · 团队内部站点入口",
     "subtitle": "Team Portal · One Login, All Internal Sites",

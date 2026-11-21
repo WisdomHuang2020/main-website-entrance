@@ -57,21 +57,24 @@
 | LED光色电平衡配比系统 | `smartbin.power-knowledge.tech` | `#2563eb` | **0.5.0** | 子站运行时 `/api/health`，门户 `/api/version/smartbin` 同源代理后实时读取（2026-11-11 19:10 实测）；静态快照同步为 0.5.0 供 Pages 兜底 |
 | 评鉴测试报告系统 | `validation.power-knowledge.tech` | `#0070c0` | **1.23.1** | 服务器 `.deployed-version`，门户 `/api/version/validation-test` 实时读取（2026-11-11 实测） |
 | 研发工时统计分析 | `wh.power-knowledge.tech` | `#b45309` | **0.1.0** | `sites.json` 静态记录；运行时 `/api/health` 的 `version` 仍是 `dev`（构建未注入 `NEXT_PUBLIC_APP_VERSION`），故不配端点，人工维护 |
+| 1-Wire 单总线 | `connect.power-knowledge.tech` | `#0d9488` | **1.0.3** | 子站 `/version.json`（公开可读），门户跨机代理 `/api/version/connect` 实时读取顶层 `version`（2026-11-21 接入） |
 | IO · 团队内部站点入口 | `io.wx-seastar.cn` | `#0e7490` | **1.0.0** | `sites.json` 静态记录；无哨兵、无端点，人工维护 |
 
 > 表格此前只列 2 行，2026-11-10 补齐为 3 行；2026-11-11 接入 smartbin 补第 4 行，
-> 2026-11-18 接入 pm 补第 5 行，2026-11-19 接入 wh 补第 6 行。
+> 2026-11-18 接入 pm 补第 5 行，2026-11-19 接入 wh 补第 6 行，2026-11-21 接入 connect 补第 7 行。
 > 排序：2026-11-20 用户要求「01 和 04 对调」，故 **01 = 项目主数据管理系统、
-> 04 = 评鉴测试报告系统**，02 psu-model / 03 smartbin / 05 wh / 06 io 不变；
-> `io` 仍压轴为 06（2026-11-11 / 11-18 / 11-19 三次确认）。
+> 04 = 评鉴测试报告系统**，02 psu-model / 03 smartbin / 05 wh 不变；
+> 2026-11-21 connect 指定第 06 位、插在 io 之前，**io 顺延第 07 继续压轴**
+> （2026-11-11 / 11-18 / 11-19 / 11-21 四次确认压轴）。
 > wh 按用户指定的**位置 05** 插在 04 与 io 之间，别因为最新上线就挪到 io 之后。
 > 版本列的旧值（1.16.1 / 1.2.1）是 11-11 之前的静态快照，现已改走实时端点，一并校正。
 > `smartbin` 是 Next.js 站，没有自定义 `--color-primary`；登录页主色为 slate-900 `#0f172a`，
 > 实测在门户深色主题下卡片图标几乎不可辨（2026-11-11 截图确认），故 `accent` 取门户内网蓝
 > `#2563eb` —— 属门户侧取值，不是从子站读来的主色，别按「accent 必须等于子站主色」改回去。
 > 2026-11-12 起内网卡统一 `iconSolid: true`：底板为**实心品牌色**、符号为**白色工程线框符号**，
-> 2026-11-18 新增的 pm 卡与 11-19 新增的 wh 卡沿用；
-> 六张卡各自取自己的 accent（`#0070c0` / `#0f766e` / `#2563eb` / `#4338ca` / `#b45309` / `#0e7490`），
+> 2026-11-18 新增的 pm 卡、11-19 的 wh 卡与 11-21 的 connect 卡沿用；
+> 七张卡各自取自己的 accent
+> （`#0070c0` / `#0f766e` / `#2563eb` / `#4338ca` / `#b45309` / `#0d9488` / `#0e7490`），
 > 不统一换成 smartbin 蓝 —— accent 同时被 `.site-card` 的 hover 点缀消费，改它会牵动卡片其它颜色。
 > ⚠️ pm 站的原始主色就是 `#0070c0`，与 04 评鉴测试卡完全相同；
 > 用户 2026-11-18 先选邻近蓝 `#0369a1`，同日又改选靛蓝 `#4338ca`（六卡中唯一偏紫、最醒目），
@@ -86,17 +89,26 @@
 > 同日用户改选附件候选方案 A「数据库层叠」：顶椭圆 + 两侧壁 + 两条分层弧，
 > 语义是「主数据分层归档」，按 24×24 契约重绘后 bbox 约 62.5%，同为自绘 SVG；
 > wh 是 2026-11-19 新增的秒表（表冠 + 表身 + 指针），bbox 约 62.7%，同为自绘 SVG；
-> 六张同属「标准工程图纸符号」语言，不再是 lucide 通用 UI 图标。
+> connect 是 2026-11-21 新增的 1-Wire 单总线（水平总线 + 上拉电阻 + 两个挂载器件），
+> bbox 约 66.3%，同为自绘 SVG（三候选 A/B/C 中用户选 A）；
+> 七张同属「标准工程图纸符号」语言，不再是 lucide 通用 UI 图标。
 > 首页 9 张公开卡仍是半透明 accent 底 + accent 色图标 —— 这是用户明确接受的取舍，
 > 别按「全站统一」把公开卡也改成实心底。
 
-这六个系统**需要账号与密码登录、不对公众开放**（未登录访问任一系统都会被拦到 `/login`），因此：
+这七个系统**需要账号与密码登录、不对公众开放**（未登录访问任一系统都会被拦到 `/login`），因此：
 
 - 首页「工具与学习站」只列上面 9 个公开站（`SITES`），内网站只在 `/internal` 这一层列（`INTERNAL_SITES`）；
 - 首屏四条统计的口径限定为**公开站** —— 否则「使用门槛 0 项」会与内网系统的登录门禁自相矛盾；
-- `validation-test` / `psu-model` 走 `.deployed-version` 哨兵，`smartbin` 与 `pm`
-  走运行时健康接口，四站都有门户 `/api/version/<id>` 端点，卡片运行时读实时值；
+- `validation-test` / `psu-model` 走 `.deployed-version` 哨兵，`smartbin` / `pm`
+  走运行时健康接口，`connect` 走公网 `/version.json` 的跨机代理，五站都有门户
+  `/api/version/<id>` 端点，卡片运行时读实时值；
   只剩 `io` 与 `wh` 没有端点，显示 `sites.json` 静态值。
+  ⚠️ `connect` 的端点（2026-11-21）代理到
+  `https://www.connect.power-knowledge.tech/version.json`，**跨机**且必须带
+  `proxy_ssl_server_name on`（该站与本站群共用泛域名证书，无 SNI 会握手失败）。
+  该文件同时含 `sites.1wire.version`（1.1.7），但前端只认**顶层** `version`（1.0.3）；
+  用户 2026-11-21 选定顶层口径，别再按「1wire 内容版本更准」擅自改 hook。
+  盲区：1wire 子站单独发版时顶层号是否同步变化，无历史数据可证。
   ⚠️ `wh` 暂不配端点是**有意的**：它的 `/api/health` 里 `version` 由
   `NEXT_PUBLIC_APP_VERSION` 提供，而该变量目前没在构建时注入，实测返回 `dev`；
   `useLiveVersions` 的正则只认三段式，`dev` 会被丢弃、静默退回静态值 ——
@@ -120,13 +132,14 @@
      把 `liveVersions` 传入 InternalPage。别再把这行改回静态值。
   `scripts/check-versions.mjs` 仍显式跳过**全部** internal 站点，不与公开站混在同一套漂移巡检里
   （跳过是为了不制造「未找到哨兵」的假告警，见该脚本注释）。
-  ⚠️ **`io` 发新版后要手动改 `sites.json` 的 `version`** —— 没有自动同步，这是已知缺口；
-  `pm` 自 2026-11-18 起已接实时端点，不再需要手工同步（静态值仅作兜底）。
+  ⚠️ **`io` / `wh` 发新版后要手动改 `sites.json` 的 `version`** —— 没有自动同步，这是已知缺口；
+  `pm` 自 2026-11-18、`connect` 自 2026-11-21 起已接实时端点，不再需要手工同步
+  （静态值仅作兜底）。
   ⚠️ 门户 nginx 的端点定义在本仓库 `deploy/nginx-entrance.conf`，但 **CI 只发 `dist`**，
      新增/修改端点必须手工同步到服务器，否则线上仍是 200 + HTML、前端静默降级到静态值。
 - 前三站的 `id` 等于服务器 web 根目录名（`/var/www/validation-test`、`/var/www/psu-model`、
-  `/var/www/smartbin`），与公开站同一约定；`io` 与 `pm` 是挂独立域名的团队系统，
-  不走站群 web 根。
+  `/var/www/smartbin`），与公开站同一约定；`io`、`pm`、`wh`、`connect` 是挂独立域名的
+  团队系统，不走站群 web 根（其中 `connect` 在 47.250.38.16 从机，门户跨机取版本）。
   ⚠️ pm 已不在香港机：2026-11-18 新域名 `www.pm.power-knowledge.tech` 解析到
   43.142.148.37，该机有 `/var/www/pm` 与 `pm.service`（Next.js，`PORT=3300`，
   勿与同机 3000 端口的另一应用混淆）。门户已接 `/api/version/pm` 实时端点。

@@ -15,6 +15,7 @@ import DipSwitchIcon from '../components/DipSwitchIcon'
 import RotarySwitchIcon from '../components/RotarySwitchIcon'
 import ProjectLedgerIcon from '../components/ProjectLedgerIcon'
 import WorkHoursIcon from '../components/WorkHoursIcon'
+import ConnectBusIcon from '../components/ConnectBusIcon'
 import raw from './sites.json'
 
 /**
@@ -63,6 +64,8 @@ export type SiteIconKey =
   | 'project-ledger'
   /** 秒表（wh / 研发工时统计分析），见 components/WorkHoursIcon.tsx */
   | 'work-hours'
+  /** 1-Wire 单总线：总线 + 上拉电阻 + 双器件（connect），见 components/ConnectBusIcon.tsx */
+  | 'connect-bus'
 
 export interface Site {
   /** 同时用作服务器 web 根目录名：/var/www/<id>（巡检脚本依赖此约定） */
@@ -86,8 +89,9 @@ export interface Site {
   icon: SiteIconKey
   /** 图标底板改用实心品牌色 + 白色符号（不设 / false 时是 accent 12% 半透明底 + accent 色符号）。
    *  2026-11-12 用户要求四张内网卡统一「smartbin 风格」，2026-11-18 新增第 5 张、
-   *  2026-11-19 新增第 6 张（wh）时沿用，现为六张全部开启；各自仍用自己的 accent 作底色
-   *  （#0070c0 / #0f766e / #2563eb / #4338ca / #b45309 / #0e7490），
+   *  2026-11-19 新增第 6 张（wh）、2026-11-21 新增第 7 张（connect）时沿用，
+   *  现为七张全部开启；各自仍用自己的 accent 作底色
+   *  （#0070c0 / #0f766e / #2563eb / #4338ca / #b45309 / #0d9488 / #0e7490），
    *  并未统一换成 smartbin 蓝 —— accent 同时被 .site-card 的 hover 点缀消费，
    *  改它会牵动卡片其它颜色。首页 9 张公开卡仍保持半透明底，这是用户明确接受的取舍。
    *  ⚠️ pm 站的 #4338ca 不是从子站读来的主色：其原始主色 #0070c0 与 04 评鉴测试卡
@@ -159,7 +163,22 @@ export interface Site {
    *    pm 由第 04 张改为第 01 张，validation-test 由第 01 张改为第 04 张；
    *    其余序号（02 psu-model / 03 smartbin / 05 wh / 06 io）保持不变。
    *    这是显式指定的既成顺序，别按「validation 最早接入该在首位」或
-   *    「pm 11-18 才接入该在后面」复原。 */
+   *    「pm 11-18 才接入该在后面」复原。
+   *  2026-11-21 追加：connect（1-Wire 单总线，`www.connect.power-knowledge.tech`）。
+   *    实测 `/` 302 → `/__wd/login`（WorkDo 登录墙），裸域 301 → www，故
+   *    domain 写裸名；用户本次明确要求 **url 也不带 www**，故 url 同样用裸域，
+   *    代价是每次点击多一次 301（与 pm / wh 的「url 保留 www」不同，这是用户显式要求）。
+   *    站点在 47.250.38.16（从机），门户主机上没有它的 nginx 配置与 web 根。
+   *    版本来源：公网 `/version.json` 返回顶层 version 与 sites 子对象，
+   *    形如 { version: "1.0.3", sites: { "1wire": { version: "1wire-1.1.7" },
+   *    "portal": { version: "portal-1.0.3" } } }（原值带 v 前缀，这里按门禁要求略去）。
+   *    门户取**顶层** version（1.0.3）；`sites.1wire.version` 是子站内容版本，
+   *    useLiveVersions 只认顶层字段，故不显示 1.1.7。用户 2026-11-21 选定该口径。
+   *    已配跨机端点 `= /api/version/connect` → `https://www.connect.power-knowledge.tech/version.json`
+   *    （带 SNI，proxy_ssl_server_name）；该文件公开可读，不需登录。
+   *    ⚠️ 不确定 1wire 子站单独发版时顶层号是否同步变化 —— 无历史数据，属已知盲区。
+   *    位置：用户指定第 06 位，恰好等于「插在 io 之前」，io 顺延第 07 继续压轴。
+   *    accent #0d9488 是门户侧取值（青绿，七卡中与其余均不撞色）。 */
   internal?: boolean
 }
 
@@ -178,6 +197,7 @@ export const ICONS: Record<SiteIconKey, LucideIcon> = {
   'rotary-switch': RotarySwitchIcon,
   'project-ledger': ProjectLedgerIcon,
   'work-hours': WorkHoursIcon,
+  'connect-bus': ConnectBusIcon,
 }
 
 /**
