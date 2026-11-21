@@ -168,7 +168,14 @@ export interface Site {
    *    其余序号（02 psu-model / 03 smartbin / 05 wh / 06 io）保持不变。
    *    这是显式指定的既成顺序，别按「validation 最早接入该在首位」或
    *    「pm 11-18 才接入该在后面」复原。
-   *  2026-11-21 追加：connect（1-Wire 单总线，`www.connect.power-knowledge.tech`）。
+   *  2026-11-21 追加：connect（照明通信与控制技术，`www.connect.power-knowledge.tech`）。
+   *    ⚠️ 卡片定位是**照明灯具行业的通信与控制技术总纲**，不是单一 1-Wire 模块：
+   *    站内覆盖 1-Wire / DMX512-RDM / Modbus / PMBus / CAN 等有线总线，
+   *    WiFi / BLE / Matter 等无线协议，以及 IIR/FIR 滤波、PID 控制等算法。
+   *    2026-11-21 用户明确要求按此总纲口径改写名称与描述（此前写作「1-Wire 单总线」）。
+   *    站点对外登录页标题仍是「登录 · 1-wire 单总线」（当前默认模块），
+   *    robots.txt 自述「本站为内部技术知识库，全部页面需登录」——1-wire 只是首个模块，
+   *    别按登录页标题把卡片改回「1-Wire 单总线」。
    *    实测 `/` 302 → `/__wd/login`（WorkDo 登录墙），裸域 301 → www，故
    *    domain 写裸名；用户本次明确要求 **url 也不带 www**，故 url 同样用裸域，
    *    代价是每次点击多一次 301（与 pm / wh 的「url 保留 www」不同，这是用户显式要求）。
@@ -176,13 +183,13 @@ export interface Site {
    *    版本来源：公网 `/version.json` 返回顶层 version 与 sites 子对象，
    *    形如 { version: "1.0.3", sites: { "1wire": { version: "1wire-1.1.7" },
    *    "portal": { version: "portal-1.0.3" } } }（原值带 v 前缀，这里按门禁要求略去）。
-   *    门户取**顶层** version（1.0.3）；`sites.1wire.version` 是子站内容版本，
+   *    门户取**顶层** version（1.0.3）；`sites.1wire.version` 是子模块内容版本，
    *    useLiveVersions 只认顶层字段，故不显示 1.1.7。用户 2026-11-21 选定该口径。
    *    已配跨机端点 `= /api/version/connect` → `https://www.connect.power-knowledge.tech/version.json`
    *    （带 SNI，proxy_ssl_server_name）；该文件公开可读，不需登录。
-   *    ⚠️ 不确定 1wire 子站单独发版时顶层号是否同步变化 —— 无历史数据，属已知盲区。
-   *    位置：用户指定第 06 位，恰好等于「插在 io 之前」，io 顺延第 07 继续压轴。
-   *    accent #0d9488 是门户侧取值（青绿，七卡中与其余均不撞色）。
+   *    ⚠️ 不确定 1wire 子模块单独发版时顶层号是否同步变化 —— 无历史数据，属已知盲区。
+   *    位置：用户指定第 06 位，恰好等于「插在 io 之前」，io 顺延至第 08 继续压轴。
+   *    accent #0d9488 是门户侧取值（青绿，八卡中与其余均不撞色）。
    *  2026-11-21 追加：hr（组织架构图工作台，`www.hr.power-knowledge.tech`）。
    *    站点标题「组织架构图工作台 · SEA STAR 实益达」，描述为「无锡益明光电有限公司
    *    组织架构与汇报关系维护（登录访问）」。首页 302 到 `/?next=` 登录页，有门禁。

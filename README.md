@@ -57,7 +57,7 @@
 | LED光色电平衡配比系统 | `smartbin.power-knowledge.tech` | `#2563eb` | **0.5.0** | 子站运行时 `/api/health`，门户 `/api/version/smartbin` 同源代理后实时读取（2026-11-11 19:10 实测）；静态快照同步为 0.5.0 供 Pages 兜底 |
 | 评鉴测试报告系统 | `validation.power-knowledge.tech` | `#0070c0` | **1.23.1** | 服务器 `.deployed-version`，门户 `/api/version/validation-test` 实时读取（2026-11-11 实测） |
 | 研发工时统计分析 | `wh.power-knowledge.tech` | `#b45309` | **0.1.0** | `sites.json` 静态记录；运行时 `/api/health` 的 `version` 仍是 `dev`（构建未注入 `NEXT_PUBLIC_APP_VERSION`），故不配端点，人工维护 |
-| 1-Wire 单总线 | `connect.power-knowledge.tech` | `#0d9488` | **1.0.3** | 子站 `/version.json`（公开可读），门户跨机代理 `/api/version/connect` 实时读取顶层 `version`（2026-11-21 接入） |
+| 照明通信与控制技术 | `connect.power-knowledge.tech` | `#0d9488` | **1.0.3** | 子站 `/version.json`（公开可读），门户跨机代理 `/api/version/connect` 实时读取顶层 `version`（2026-11-21 接入） |
 | 组织架构图工作台 | `hr.power-knowledge.tech` | `#004b96` | **2.2.0** | 子站运行时 `/api/health`（hr-orgchart.service，PORT=3500），门户 `/api/version/hr` 同源代理后实时读取（2026-11-21 接入） |
 | IO · 团队内部站点入口 | `io.wx-seastar.cn` | `#0e7490` | **1.0.0** | `sites.json` 静态记录；无哨兵、无端点，人工维护 |
 
@@ -91,8 +91,11 @@
 > 同日用户改选附件候选方案 A「数据库层叠」：顶椭圆 + 两侧壁 + 两条分层弧，
 > 语义是「主数据分层归档」，按 24×24 契约重绘后 bbox 约 62.5%，同为自绘 SVG；
 > wh 是 2026-11-19 新增的秒表（表冠 + 表身 + 指针），bbox 约 62.7%，同为自绘 SVG；
-> connect 是 2026-11-21 新增的 1-Wire 单总线（水平总线 + 上拉电阻 + 两个挂载器件），
+> connect 是 2026-11-21 新增的 1-Wire 单总线图标（水平总线 + 上拉电阻 + 两个挂载器件），
 > bbox 约 66.3%，同为自绘 SVG（三候选 A/B/C 中用户选 A）；
+> ⚠️ 该卡的**定位是照明通信与控制技术总纲**（有线总线 / 无线协议 / 滤波与 PID 算法），
+> 1-Wire 只是站内首个模块，图标因此仍是单总线符号 —— 语义偏窄，是否换图另议；
+> 别按「图标是 1-Wire 就把卡片名写回 1-Wire 单总线」。
 > hr 是 2026-11-21 新增的组织架构树（根节点 + 横梁 + 两个下级），bbox 约 66.0%，
 > 同为自绘 SVG（三候选中用户选 A 纵向树）；
 > 八张同属「标准工程图纸符号」语言，不再是 lucide 通用 UI 图标。
