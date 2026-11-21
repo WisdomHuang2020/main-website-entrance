@@ -251,6 +251,23 @@
     "internal": true
   },
   {
+    "id": "hr",
+    "name": "组织架构图工作台",
+    "subtitle": "Org Chart Workbench · SEA STAR",
+    "domain": "hr.power-knowledge.tech",
+    "url": "https://www.hr.power-knowledge.tech/",
+    "desc": "无锡益明光电有限公司组织架构与汇报关系维护。需账号登录，仅团队内部使用。",
+    "tags": [
+      "组织架构",
+      "汇报关系"
+    ],
+    "accent": "#004b96",
+    "icon": "org-chart",
+    "iconSolid": true,
+    "version": "2.2.0",
+    "internal": true
+  },
+  {
     "id": "io",
     "name": "IO · 团队内部站点入口",
     "subtitle": "Team Portal · One Login, All Internal Sites",

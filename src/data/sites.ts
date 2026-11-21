@@ -16,6 +16,7 @@ import RotarySwitchIcon from '../components/RotarySwitchIcon'
 import ProjectLedgerIcon from '../components/ProjectLedgerIcon'
 import WorkHoursIcon from '../components/WorkHoursIcon'
 import ConnectBusIcon from '../components/ConnectBusIcon'
+import OrgChartIcon from '../components/OrgChartIcon'
 import raw from './sites.json'
 
 /**
@@ -66,6 +67,8 @@ export type SiteIconKey =
   | 'work-hours'
   /** 1-Wire 单总线：总线 + 上拉电阻 + 双器件（connect），见 components/ConnectBusIcon.tsx */
   | 'connect-bus'
+  /** 组织架构树：根节点 + 横梁 + 两个下级（hr），见 components/OrgChartIcon.tsx */
+  | 'org-chart'
 
 export interface Site {
   /** 同时用作服务器 web 根目录名：/var/www/<id>（巡检脚本依赖此约定） */
@@ -89,9 +92,10 @@ export interface Site {
   icon: SiteIconKey
   /** 图标底板改用实心品牌色 + 白色符号（不设 / false 时是 accent 12% 半透明底 + accent 色符号）。
    *  2026-11-12 用户要求四张内网卡统一「smartbin 风格」，2026-11-18 新增第 5 张、
-   *  2026-11-19 新增第 6 张（wh）、2026-11-21 新增第 7 张（connect）时沿用，
-   *  现为七张全部开启；各自仍用自己的 accent 作底色
-   *  （#0070c0 / #0f766e / #2563eb / #4338ca / #b45309 / #0d9488 / #0e7490），
+   *  2026-11-19 新增第 6 张（wh）、2026-11-21 新增第 7 张（connect）与第 8 张（hr）时沿用，
+   *  现为八张全部开启；各自仍用自己的 accent 作底色
+   *  （按数组顺序：pm #4338ca / psu-model #0f766e / smartbin #2563eb /
+   *    validation-test #0070c0 / wh #b45309 / connect #0d9488 / hr #004b96 / io #0e7490），
    *  并未统一换成 smartbin 蓝 —— accent 同时被 .site-card 的 hover 点缀消费，
    *  改它会牵动卡片其它颜色。首页 9 张公开卡仍保持半透明底，这是用户明确接受的取舍。
    *  ⚠️ pm 站的 #4338ca 不是从子站读来的主色：其原始主色 #0070c0 与 04 评鉴测试卡
@@ -178,7 +182,18 @@ export interface Site {
    *    （带 SNI，proxy_ssl_server_name）；该文件公开可读，不需登录。
    *    ⚠️ 不确定 1wire 子站单独发版时顶层号是否同步变化 —— 无历史数据，属已知盲区。
    *    位置：用户指定第 06 位，恰好等于「插在 io 之前」，io 顺延第 07 继续压轴。
-   *    accent #0d9488 是门户侧取值（青绿，七卡中与其余均不撞色）。 */
+   *    accent #0d9488 是门户侧取值（青绿，七卡中与其余均不撞色）。
+   *  2026-11-21 追加：hr（组织架构图工作台，`www.hr.power-knowledge.tech`）。
+   *    站点标题「组织架构图工作台 · SEA STAR 实益达」，描述为「无锡益明光电有限公司
+   *    组织架构与汇报关系维护（登录访问）」。首页 302 到 `/?next=` 登录页，有门禁。
+   *    裸域 hr.power-knowledge.tech 301 到 www ⇒ domain 写裸名、url 保留 www
+   *    （与 pm / wh 同构，点击不多跳）。
+   *    版本源：`/api/health` 返回 { ok, service: "hr-orgchart", version, docVersion, uptime }，
+   *    实测 2.2.0；服务 hr-orgchart.service 挂在 127.0.0.1:3500，门户已配
+   *    `= /api/version/hr` → `127.0.0.1:3500/api/health`，实时跟随。
+   *    位置：用户 2026-11-21 选定「插在 io 之前」，hr 为第 07 张，io 顺延第 08 继续压轴。
+   *    accent #004b96 取自站点品牌深蓝（与 04 的 #0070c0 同色系但更深，用户确认可接受）。
+   *    图标 A 纵向组织树，七卡同族语言。 */
   internal?: boolean
 }
 
@@ -198,6 +213,7 @@ export const ICONS: Record<SiteIconKey, LucideIcon> = {
   'project-ledger': ProjectLedgerIcon,
   'work-hours': WorkHoursIcon,
   'connect-bus': ConnectBusIcon,
+  'org-chart': OrgChartIcon,
 }
 
 /**
