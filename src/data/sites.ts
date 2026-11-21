@@ -170,7 +170,7 @@ export interface Site {
    *    「pm 11-18 才接入该在后面」复原。
    *  2026-11-21 追加：connect（照明通信与控制技术，`www.connect.power-knowledge.tech`）。
    *    ⚠️ 卡片定位是**照明灯具行业的通信与控制技术总纲**，不是单一 1-Wire 模块：
-   *    站内覆盖 1-Wire / DMX512-RDM / Modbus / PMBus / CAN 等有线总线，
+   *    站内覆盖 1-Wire / DALI / DMX512-RDM / Modbus / PMBus / CAN 等有线总线，
    *    WiFi / BLE / Matter 等无线协议，以及 IIR/FIR 滤波、PID 控制等算法。
    *    2026-11-21 用户明确要求按此总纲口径改写名称与描述（此前写作「1-Wire 单总线」）。
    *    站点对外登录页标题仍是「登录 · 1-wire 单总线」（当前默认模块），

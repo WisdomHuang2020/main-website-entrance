@@ -238,7 +238,7 @@
     "subtitle": "Lighting Connectivity & Control · Protocols & Algorithms",
     "domain": "connect.power-knowledge.tech",
     "url": "https://connect.power-knowledge.tech/",
-    "desc": "照明灯具行业的通信与控制技术总纲：1-Wire、DMX512/RDM、Modbus、PMBus、CAN 有线总线；WiFi、BLE、Matter 无线协议；IIR/FIR 滤波、PID 控制算法。需账号登录，仅团队内部使用。",
+    "desc": "照明灯具行业的通信与控制技术总纲：1-Wire、DALI、DMX512/RDM、Modbus、PMBus、CAN 有线总线；WiFi、BLE、Matter 无线协议；IIR/FIR 滤波、PID 控制算法。需账号登录，仅团队内部使用。",
     "tags": [
       "有线总线",
       "无线协议",
