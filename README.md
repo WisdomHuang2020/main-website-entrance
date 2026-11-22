@@ -59,7 +59,7 @@
 | 研发工时统计分析 | `wh.power-knowledge.tech` | `#b45309` | **0.1.0** | `sites.json` 静态记录；运行时 `/api/health` 的 `version` 仍是 `dev`（构建未注入 `NEXT_PUBLIC_APP_VERSION`），故不配端点，人工维护 |
 | 照明通信与控制技术 | `connect.power-knowledge.tech` | `#0d9488` | **1.0.3** | 子站 `/version.json`（公开可读），门户跨机代理 `/api/version/connect` 实时读取顶层 `version`（2026-11-21 接入） |
 | 组织架构图工作台 | `hr.power-knowledge.tech` | `#004b96` | **2.2.0** | 子站运行时 `/api/health`（hr-orgchart.service，PORT=3500），门户 `/api/version/hr` 同源代理后实时读取（2026-11-21 接入） |
-| IO · 团队内部站点入口 | `io.wx-seastar.cn` | `#0e7490` | **1.0.0** | `sites.json` 静态记录；无哨兵、无端点，人工维护 |
+| IO · 团队内部站点入口 | `io.wx-seastar.cn` | `#0e7490` | **1.0.1** | `sites.json` 静态记录；无哨兵、无端点，人工维护 |
 
 > 表格此前只列 2 行，2026-11-10 补齐为 3 行；2026-11-11 接入 smartbin 补第 4 行，
 > 2026-11-18 接入 pm 补第 5 行，2026-11-19 接入 wh 补第 6 行，2026-11-21 接入

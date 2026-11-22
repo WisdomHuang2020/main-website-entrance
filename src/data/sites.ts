@@ -124,7 +124,7 @@ export interface Site {
    *    pm 插在 io 之前成为第 04 张，io 顺延为第 05 张并继续压轴。
    *    ⚠️ 两次都是显式插队，不要按上线时间把 pm 挪到 io 之后。
    *    它跑在阿里云 47.82.x 那台，与本站群不同机、无 `.deployed-version` 哨兵，
-   *    version 只能人工维护（当前 1.0.0），改版时需手动同步这个数字。
+   *    version 只能人工维护（当前 1.0.1），改版时需手动同步这个数字。
    *  2026-11-11 追加：smartbin（smartbin.power-knowledge.tech，LED 光色电平衡配比系统）。
    *    Node 应用反代、需账号登录；服务器 /var/www/smartbin/.deployed-version 接入时实测 0.2.2，
    *    当日 16:47 又发到 0.3.0，sites.json 静态值已同步（Pages 兜底通道靠它）。
