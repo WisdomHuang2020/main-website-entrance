@@ -124,8 +124,20 @@ jobs:
             echo "::warning title=无线上版本记录::服务器 $LH_ROOT/.deployed-version 不存在，本次跳过降级检查。"
           fi
 
-          # 上传前先备份，留退路（失败不阻断部署）
-          $SSH_CMD "tar czf ~/webroot-backup-entrance-\$(date +%F-%H%M%S).tar.gz -C '$LH_ROOT' . 2>/dev/null || true"
+          # 上传前先备份，留退路（失败不阻断部署）。
+          # 本工作流下面会先清空目标目录，所以这份备份是唯一退路，更要真正校验。
+          # 时间戳由**服务器**生成，与历史文件名口径一致。
+          BK_NAME=$($SSH_CMD "tar czf ~/webroot-backup-entrance-\$(date +%F-%H%M%S).tar.gz -C '$LH_ROOT' . 2>/dev/null && ls -1t ~/webroot-backup-entrance-[0-9]*.tar.gz | head -1") || true
+          if [ -n "$BK_NAME" ]; then
+            echo "已备份：$BK_NAME"
+            # ── 备份保留策略：只留最近 3 个 ──
+            # 只清 webroot-backup-entrance-*，不碰同机 control-mode 的 webroot-backup-<时间>*。
+            # 保险：只有最新备份能被 tar 读通才执行清理。
+            $SSH_CMD 'NEWEST=$(ls -1t ~/webroot-backup-entrance-[0-9]*.tar.gz 2>/dev/null | head -1); if [ -n "$NEWEST" ] && tar tzf "$NEWEST" >/dev/null 2>&1; then ls -1t ~/webroot-backup-entrance-[0-9]*.tar.gz 2>/dev/null | tail -n +4 | while IFS= read -r old; do rm -f -- "$old" && echo "已清理旧备份：$old"; done; echo "备份清理完成，保留最近 3 个"; else echo "最新备份校验失败，跳过清理（宁可占空间也不删可用备份）"; fi' \
+              || echo "::warning::备份清理出错，不阻断部署（清理只是家务，不能让它挡住上线）"
+          else
+            echo "::warning title=备份失败::上传前备份未成功，部署继续，本次跳过清理。"
+          fi
 
           # 清空目标目录（保留 .deployed-version，稍后由本步骤重写）。
           # 理由：产物文件名带内容哈希，纯增量解包会让旧版 index-*.js 永久残留。
