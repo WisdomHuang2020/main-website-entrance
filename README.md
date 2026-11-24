@@ -52,13 +52,13 @@
 
 | 系统 | 域名 | 主色 | 版本 | 版本的核实依据 |
 |---|---|---|---|---|
-| 项目主数据管理系统 | `pm.power-knowledge.tech` | `#4338ca` | **0.4.4** | 子站运行时 `/api/health`（pm.service，PORT=3300），门户 `/api/version/pm` 同源代理后实时读取（2026-11-18 20:17 补） |
-| 电源型号编码生成器 | `psu-model.power-knowledge.tech` | `#0f766e` | **1.15.0** | 服务器 `.deployed-version`，门户 `/api/version/psu-model` 实时读取（2026-11-11 实测） |
-| LED光色电平衡配比系统 | `smartbin.power-knowledge.tech` | `#2563eb` | **0.5.0** | 子站运行时 `/api/health`，门户 `/api/version/smartbin` 同源代理后实时读取（2026-11-11 19:10 实测）；静态快照同步为 0.5.0 供 Pages 兜底 |
+| 项目主数据管理系统 | `pm.power-knowledge.tech` | `#4338ca` | **0.6.50** | 子站运行时 `/api/health`（pm.service，PORT=3300），门户 `/api/version/pm` 同源代理后实时读取（2026-11-18 20:17 补） |
+| 电源型号编码生成器 | `psu-model.power-knowledge.tech` | `#0f766e` | **2.4.0** | 服务器 `.deployed-version`，门户 `/api/version/psu-model` 实时读取（2026-11-11 实测） |
+| LED光色电平衡配比系统 | `smartbin.power-knowledge.tech` | `#2563eb` | **1.3.6** | 子站运行时 `/api/health`，门户 `/api/version/smartbin` 同源代理后实时读取（2026-11-11 19:10 实测）；静态快照同步为 1.3.6 供 Pages 兜底 |
 | 评鉴测试报告系统 | `validation.power-knowledge.tech` | `#0070c0` | **1.23.1** | 服务器 `.deployed-version`，门户 `/api/version/validation-test` 实时读取（2026-11-11 实测） |
-| 研发工时统计分析 | `wh.power-knowledge.tech` | `#b45309` | **0.1.0** | `sites.json` 静态记录；运行时 `/api/health` 的 `version` 仍是 `dev`（构建未注入 `NEXT_PUBLIC_APP_VERSION`），故不配端点，人工维护 |
-| 照明通信与控制技术 | `connect.power-knowledge.tech` | `#0d9488` | **1.0.3** | 子站 `/version.json`（公开可读），门户跨机代理 `/api/version/connect` 实时读取顶层 `version`（2026-11-21 接入） |
-| 组织架构图工作台 | `hr.power-knowledge.tech` | `#004b96` | **2.2.0** | 子站运行时 `/api/health`（hr-orgchart.service，PORT=3500），门户 `/api/version/hr` 同源代理后实时读取（2026-11-21 接入） |
+| 研发工时统计分析 | `wh.power-knowledge.tech` | `#b45309` | **0.8.22** | `sites.json` 静态记录，取值口径为服务器 `/var/www/work-hours/app/package.json`（2026-11-25 核实 0.8.22，构建于 11-24 11:14）；运行时 `/api/health` 的 `version` 仍是 `dev`（构建未注入 `NEXT_PUBLIC_APP_VERSION`），故不配端点，人工维护 |
+| 照明通信与控制技术 | `connect.power-knowledge.tech` | `#0d9488` | **1.0.7** | 子站 `/version.json`（公开可读），门户跨机代理 `/api/version/connect` 实时读取顶层 `version`（2026-11-21 接入） |
+| 组织架构图工作台 | `hr.power-knowledge.tech` | `#004b96` | **2.34.0** | 子站运行时 `/api/health`（hr-orgchart.service，PORT=3500），门户 `/api/version/hr` 同源代理后实时读取（2026-11-21 接入） |
 | IO · 团队内部站点入口 | `io.wx-seastar.cn` | `#0e7490` | **1.0.1** | `sites.json` 静态记录；无哨兵、无端点，人工维护 |
 
 > 表格此前只列 2 行，2026-11-10 补齐为 3 行；2026-11-11 接入 smartbin 补第 4 行，
@@ -68,6 +68,12 @@
 > 04 = 评鉴测试报告系统**，02 psu-model / 03 smartbin / 05 wh 不变；
 > 2026-11-21 connect 指定第 06 位、hr 指定插在 io 之前，**io 顺延第 08 继续压轴**
 > （2026-11-11 / 11-18 / 11-19 / 11-21 多次确认压轴）。
+
+> ⚠️ **hr 的口径差异（2026-11-25 实测）**：服务器 `/var/www/hr/package.json` 写的是 `2.34.1`
+> （11-23 08:51 修改），但 `hr-orgchart.service` 自 **11-21 21:38** 起未重启，运行中进程上报的
+> 仍是 `2.34.0`。卡片显示的是**运行中的应用**版本，故 `sites.json` 记 `2.34.0`。
+> 若之后重启了服务，端点会变成 `2.34.1`，那时再把静态值跟上即可——
+> 不要拿磁盘上的 `package.json` 覆盖运行值，卡片会显示一个实际没在跑的版本。
 > wh 按用户指定的**位置 05** 插在 04 与 io 之间，别因为最新上线就挪到 io 之后。
 > 版本列的旧值（1.16.1 / 1.2.1）是 11-11 之前的静态快照，现已改走实时端点，一并校正。
 > `smartbin` 是 Next.js 站，没有自定义 `--color-primary`；登录页主色为 slate-900 `#0f172a`，
